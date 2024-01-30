@@ -7,11 +7,13 @@ import Profile from '../screens/Profile';
 import { AntDesign } from '@expo/vector-icons';
 import { Ionicons } from '@expo/vector-icons';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import Search from '../components/Search';
+import Search from '../components/SearchModal';
+import Header from '../components/Header';
 
 const Tab = createBottomTabNavigator();
+const Stack = createNativeStackNavigator();
 
-const Router = () => {
+const Router = ({ navigation }) => {
   return (
     <Tab.Navigator
       initialRouteName="HomeScreen"
@@ -20,6 +22,7 @@ const Router = () => {
         tabBarLabelStyle: {
           fontSize: 12
         },
+        header: () => <Header navigation={navigation} />,
       }}
     >
       <Tab.Screen
@@ -66,8 +69,6 @@ const Router = () => {
   )
 }
 
-const Stack = createNativeStackNavigator();
-
 const SearchModal = ({ navigation }) => {
   return (
     <Stack.Navigator
@@ -75,7 +76,7 @@ const SearchModal = ({ navigation }) => {
         headerShadowVisible: false,
         headerTitle: '',
         headerBackVisible:false,
-        headerRight: () => (
+        headerLeft: () => (
             <AntDesign 
               name="close" 
               size={24} 

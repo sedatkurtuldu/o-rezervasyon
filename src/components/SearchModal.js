@@ -1,15 +1,15 @@
 import { StyleSheet, Text, View } from 'react-native'
 import React from 'react'
 
-const Search = () => {
+const SearchModal = () => {
   return (
     <View>
-      <Text>Deneme</Text>
+      <Text>Search Modal</Text>
     </View>
   )
 }
 
-export default Search
+export default SearchModal
 
 const styles = StyleSheet.create({
     
