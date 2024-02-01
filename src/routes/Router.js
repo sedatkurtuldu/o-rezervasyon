@@ -1,4 +1,4 @@
-import { StyleSheet } from 'react-native'
+import { StyleSheet, View } from 'react-native'
 import React from 'react'
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import HomeScreen from '../screens/HomeScreen';
@@ -6,12 +6,12 @@ import Favorites from '../screens/Favorites';
 import Profile from '../screens/Profile';
 import { AntDesign } from '@expo/vector-icons';
 import { Ionicons } from '@expo/vector-icons';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import Search from '../components/SearchModal';
+import Search from '../components/Search';
 import Header from '../components/Header';
+import { createStackNavigator } from '@react-navigation/stack';
 
 const Tab = createBottomTabNavigator();
-const Stack = createNativeStackNavigator();
+const Stack = createStackNavigator();
 
 const Router = ({ navigation }) => {
   return (
@@ -67,6 +67,19 @@ const Router = ({ navigation }) => {
       />
     </Tab.Navigator>
   )
+};
+
+const Main = () => {
+  return (
+    <Stack.Navigator
+      screenOptions={{
+        headerShown: false,
+      }}
+    >
+      <Stack.Screen name="Main" component={Router} />
+      <Stack.Screen name="SearchModal" component={SearchModal} />
+    </Stack.Navigator>
+  );
 }
 
 const SearchModal = ({ navigation }) => {
@@ -77,29 +90,20 @@ const SearchModal = ({ navigation }) => {
         headerTitle: '',
         headerBackVisible:false,
         headerLeft: () => (
+          <View style={{ marginLeft: 12 }}>
             <AntDesign 
               name="close" 
               size={24} 
               color="black"
               onPress={() => navigation.goBack()}
               />
-           )
+          </View>
+          ),
     }}
     >
-        <Stack.Screen name="Search" component={Search} />
+        <Stack.Screen name="Search" options={{ presentation: 'transparentModal', animation: 'fade'}} component={Search} />
     </Stack.Navigator>
   )
-}
+};
 
-export default () => {
-  return (
-    <Stack.Navigator
-      screenOptions={{
-        headerShown: false,
-      }}
-    >
-      <Stack.Screen name="Main" component={Router} />
-      <Stack.Screen name="SearchModal" options={{ animation:"slide_from_bottom"}} component={SearchModal} />
-    </Stack.Navigator>
-  );
-}
+export default Main;

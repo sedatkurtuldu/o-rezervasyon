@@ -19,7 +19,7 @@ const MyBottomSheet = React.forwardRef((props, ref) => {
   const snapPoints = useMemo(() => ['4%', '50%', '100%'], []);
 
   const handleSheetChanges = useCallback((index) => {
-    console.log('handleSheetChanges', index);
+    // console.log('handleSheetChanges', index);
   }, []);
 
   return (
