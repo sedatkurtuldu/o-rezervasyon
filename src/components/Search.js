@@ -1,5 +1,5 @@
-import { StyleSheet, Text, TextInput, Pressable, View } from 'react-native';
 import React from 'react';
+import { StyleSheet, Text, TextInput, Pressable, View } from 'react-native';
 import Animated, {
   Easing,
   useAnimatedStyle,
@@ -28,13 +28,29 @@ const Search = () => {
     };
   });
 
-  const cardTextContainerStyle = useAnimatedStyle(() => {
+  const placeContainerStyle = useAnimatedStyle(() => {
     return {
-      marginTop: isCardExpanded.value ? 0 : 15
+      opacity: withTiming(isCardExpanded.value ? 0 : 1, {
+        duration: 200,
+        easing: Easing.ease,
+      }),
+      display: isCardExpanded.value ? 'none' : 'flex',
     };
   });
 
-
+  const cardTextContainerStyle = useAnimatedStyle(() => {
+    return {
+      marginTop: withTiming(isCardExpanded.value ? 0 : 15, {
+        duration: 200,
+        easing: Easing.ease,
+      }),
+      opacity: withTiming(isCardExpanded.value ? 1 : 0, {
+        duration: 200,
+        easing: Easing.ease,
+      }),
+      display: isCardExpanded.value ? 'flex' : 'none',
+    };
+  });
 
   const textInputContainerStyle = useAnimatedStyle(() => {
     return {
@@ -46,16 +62,15 @@ const Search = () => {
     };
   });
 
-
   return (
     <Pressable style={styles.container} onPress={handleCardPress}>
       <Animated.View style={[styles.cardContainer, cardContainerStyle]}>
         <Animated.View style={styles.iconContainer}>
+          <Animated.View style={[styles.placeContainer, placeContainerStyle]}>
+            <Text>Yer</Text>
+            <Text>Esnek Arama</Text>
+          </Animated.View>
           <Animated.View style={[styles.cardTextContainer, cardTextContainerStyle]}>
-            {/* <View style={styles.placeContainer}>
-              <Text>Yer</Text>
-              <Text>Esnek Arama</Text>
-            </View> */}
             <Animated.View style={textInputContainerStyle}>
               <Text style={styles.whereto}>Nereye?</Text>
               <View style={styles.inputContainer}>
@@ -110,16 +125,13 @@ const styles = StyleSheet.create({
     flex: 1,
     marginLeft: 10,
   },
-  whereto:{
+  whereto: {
     fontWeight: 'bold'
   },
   placeContainer: {
-    marginTop: 8,
+    flex: 1,
     flexDirection: 'row',
     justifyContent: 'space-between',
-  },
-  searchContainer: {
-    flex: 1,
   },
   inputContainer: {
     flexDirection: 'row',
