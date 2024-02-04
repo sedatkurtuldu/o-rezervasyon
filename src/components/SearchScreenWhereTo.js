@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, Text, TextInput, Pressable, View, Dimensions, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, TextInput, Pressable, View, Dimensions, TouchableOpacity, BackHandler } from 'react-native';
 import Animated, {
   Easing,
   useAnimatedStyle,
@@ -18,7 +18,6 @@ const SearchScreenWhereTo = () => {
 
   const [cities, setCities] = useState(null);
   const [searchText, setSearchText] = useState('');
-  const [selectedPlace, setSelectedPlace ] = useState('');
 
   useEffect(() => {
     if (searchText.trim() !== '') {
@@ -27,6 +26,20 @@ const SearchScreenWhereTo = () => {
         .then(data => setCities(data));
     }
   }, [searchText]);
+
+  useEffect(() => {
+    const handleBackPress = () => {
+      if (isCardExpanded.value) {
+        isCardExpanded.value = false;
+        return true;
+      }
+      return false;
+    };
+
+    const backHandler = BackHandler.addEventListener('hardwareBackPress', handleBackPress);
+
+    return () => backHandler.remove();
+  }, [isCardExpanded]);
 
   const handleCardPress = () => {
     isCardExpanded.value = !isCardExpanded.value;
@@ -37,8 +50,8 @@ const SearchScreenWhereTo = () => {
   };
 
   const handleSelectedListItem = (item) => {
-    setSelectedPlace(item.TEXT)
-  }
+    setSearchText(item.TEXT);
+  };
 
   const filteredCities = cities
     ? cities.filter((city) => city.TEXT.trim().toLowerCase().includes(searchText.trim().toLowerCase()))
@@ -119,12 +132,11 @@ const SearchScreenWhereTo = () => {
         <Animated.View style={styles.iconContainer}>
           <Animated.View style={[styles.placeContainer, placeContainerStyle]}>
             <Text style={styles.placeText}>Yer</Text>
-            {selectedPlace != '' ? 
-               <Text style={styles.placeText}>{selectedPlace}</Text>
+            {searchText !== '' ? 
+               <Text style={styles.placeText}>{searchText}</Text>
             :
             <Text style={styles.placeText}>Esnek Arama</Text>
             }
-            
           </Animated.View>
           <Animated.View style={[styles.cardTextContainer, cardTextContainerStyle]}>
             <Animated.View style={textInputContainerStyle}>
