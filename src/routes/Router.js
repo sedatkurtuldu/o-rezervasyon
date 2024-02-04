@@ -6,7 +6,7 @@ import Favorites from '../screens/Favorites';
 import Profile from '../screens/Profile';
 import { AntDesign } from '@expo/vector-icons';
 import { Ionicons } from '@expo/vector-icons';
-import Search from '../components/Search';
+import SearchScreen from '../screens/SearchScreen';
 import Header from '../components/Header';
 import { createStackNavigator } from '@react-navigation/stack';
 
@@ -101,7 +101,7 @@ const SearchModal = ({ navigation }) => {
           ),
     }}
     >
-        <Stack.Screen name="Search" options={{ presentation: 'transparentModal', animation: 'fade'}} component={Search} />
+        <Stack.Screen name="SearchScreen" options={{ presentation: 'transparentModal', animation: 'fade'}} component={SearchScreen} />
     </Stack.Navigator>
   )
 };

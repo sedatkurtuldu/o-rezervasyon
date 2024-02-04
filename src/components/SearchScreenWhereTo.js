@@ -1,5 +1,5 @@
-import React from 'react';
-import { StyleSheet, Text, TextInput, Pressable, View } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { StyleSheet, Text, TextInput, Pressable, View, Dimensions, TouchableOpacity } from 'react-native';
 import Animated, {
   Easing,
   useAnimatedStyle,
@@ -8,23 +8,59 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 import { AntDesign } from '@expo/vector-icons';
+import { EvilIcons } from '@expo/vector-icons';
+import { FlatList } from 'react-native-gesture-handler';
 
-const Search = () => {
+const height = Dimensions.get('window').height;
+
+const SearchScreenWhereTo = () => {
   const isCardExpanded = useSharedValue(false);
+
+  const [cities, setCities] = useState(null);
+  const [searchText, setSearchText] = useState('');
+  const [selectedPlace, setSelectedPlace ] = useState('');
+
+  useEffect(() => {
+    if (searchText.trim() !== '') {
+      fetch(`https://api.kadircolak.com/Konum/JSON/API/ShowAllCity`)
+        .then(response => response.json())
+        .then(data => setCities(data));
+    }
+  }, [searchText]);
 
   const handleCardPress = () => {
     isCardExpanded.value = !isCardExpanded.value;
   };
 
+  const handleSearchTextChange = (text) => {
+    setSearchText(text);
+  };
+
+  const handleSelectedListItem = (item) => {
+    setSelectedPlace(item.TEXT)
+  }
+
+  const filteredCities = cities
+    ? cities.filter((city) => city.TEXT.trim().toLowerCase().includes(searchText.trim().toLowerCase()))
+    : [];
+
   const cardContainerStyle = useAnimatedStyle(() => {
     return {
-      height: withSpring(isCardExpanded.value ? 120 : 50, {
+      height: withSpring(isCardExpanded.value ? height : 50, {
         damping: 17,
         stiffness: 100,
         overshootClamping: false,
         restDisplacementThreshold: 0.1,
         restSpeedThreshold: 0.1,
       }),
+      width: withSpring(isCardExpanded.value ? '107%' : '100%', {
+        damping: 17,
+        stiffness: 100,
+        overshootClamping: false,
+        restDisplacementThreshold: 0.1,
+        restSpeedThreshold: 0.1,
+      }),
+      alignItems: isCardExpanded.value ? 'flex-start' : 'center',
     };
   });
 
@@ -49,6 +85,7 @@ const Search = () => {
         easing: Easing.ease,
       }),
       display: isCardExpanded.value ? 'flex' : 'none',
+      marginTop: isCardExpanded.value ? 16 : 0
     };
   });
 
@@ -62,20 +99,52 @@ const Search = () => {
     };
   });
 
+  const listItem = ({ item }) => {
+    
+    const handlePress = () => {
+      handleSelectedListItem(item);
+    };
+
+    return (
+      <TouchableOpacity onPress={handlePress} style={styles.listItemContainer}>
+        <EvilIcons name="location" size={24} color="black" style={styles.locationIcon} />
+        <Text style={styles.listItemText}>{item.TEXT}</Text>
+      </TouchableOpacity>
+    );
+  }
+
   return (
     <Pressable style={styles.container} onPress={handleCardPress}>
       <Animated.View style={[styles.cardContainer, cardContainerStyle]}>
         <Animated.View style={styles.iconContainer}>
           <Animated.View style={[styles.placeContainer, placeContainerStyle]}>
-            <Text>Yer</Text>
-            <Text>Esnek Arama</Text>
+            <Text style={styles.placeText}>Yer</Text>
+            {selectedPlace != '' ? 
+               <Text style={styles.placeText}>{selectedPlace}</Text>
+            :
+            <Text style={styles.placeText}>Esnek Arama</Text>
+            }
+            
           </Animated.View>
           <Animated.View style={[styles.cardTextContainer, cardTextContainerStyle]}>
             <Animated.View style={textInputContainerStyle}>
               <Text style={styles.whereto}>Nereye?</Text>
               <View style={styles.inputContainer}>
                 <AntDesign name="search1" size={20} color="black" style={styles.searchIcon} />
-                <TextInput placeholder="Gidilecek yerleri arayın" style={styles.input} />
+                <TextInput 
+                  placeholder="Yerleri arayın" 
+                  value={searchText}
+                  onChangeText={handleSearchTextChange}
+                  style={styles.input} 
+                />
+              </View>
+              <View style={styles.flatList}>
+                <FlatList
+                  data={filteredCities}
+                  renderItem={listItem}
+                  keyExtractor={(city) => city.ID.toString()}
+                  showsVerticalScrollIndicator={false}
+                />
               </View>
             </Animated.View>
           </Animated.View>
@@ -85,7 +154,7 @@ const Search = () => {
   );
 };
 
-export default Search;
+export default SearchScreenWhereTo;
 
 const styles = StyleSheet.create({
   container: {
@@ -96,12 +165,9 @@ const styles = StyleSheet.create({
     backgroundColor: 'white'
   },
   cardContainer: {
-    width: '100%',
     borderRadius: 20,
     backgroundColor: 'white',
     flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-evenly',
     paddingVertical: 8,
     paddingHorizontal: 16,
     shadowColor: '#000',
@@ -115,7 +181,6 @@ const styles = StyleSheet.create({
   },
   iconContainer: {
     flexDirection: 'row',
-    alignItems: 'center',
   },
   searchIcon: {
     marginRight: 14,
@@ -126,12 +191,18 @@ const styles = StyleSheet.create({
     marginLeft: 10,
   },
   whereto: {
-    fontWeight: 'bold'
+    fontWeight: 'bold',
+    fontSize: 24,
+    marginBottom: 16
   },
   placeContainer: {
     flex: 1,
     flexDirection: 'row',
     justifyContent: 'space-between',
+  },
+  placeText: {
+    fontSize: 16,
+    fontWeight: '500'
   },
   inputContainer: {
     flexDirection: 'row',
@@ -145,5 +216,23 @@ const styles = StyleSheet.create({
   },
   input: {
     flex: 1,
+  },
+  flatList: {
+    marginTop: 10,
+    marginBottom: 10
+  },
+  listItemContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 8,
+    borderBottomWidth: 1,
+    borderBottomColor: 'gray',
+  },
+  locationIcon: {
+    marginRight: 10,
+  },
+  listItemText: {
+    fontSize: 16,
+    fontWeight: '500',
   },
 });
