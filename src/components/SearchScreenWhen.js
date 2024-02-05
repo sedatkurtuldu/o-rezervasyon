@@ -23,8 +23,6 @@ const SearchScreenWhen = () => {
   const isCardExpanded = useSharedValue(false);
 
   const [range, setRange] = useState({});
-  const [calendarVisible, setCalendarVisible] = useState(false);
-  console.log(calendarVisible)
 
   useEffect(() => {
     const handleBackPress = () => {
@@ -45,7 +43,6 @@ const SearchScreenWhen = () => {
 
   const handleCardPress = () => {
     isCardExpanded.value = !isCardExpanded.value;
-    setCalendarVisible(isCardExpanded.value = !isCardExpanded.value);
   };
 
   const cardContainerStyle = useAnimatedStyle(() => {
@@ -110,22 +107,20 @@ const SearchScreenWhen = () => {
           <Animated.View
             style={[styles.cardTextContainer, cardTextContainerStyle]}
           >
-            {calendarVisible && (
-              <Animated.View>
-                <Calendar
-                  locale={CALENDAR_TR_LOCALE}
-                  disabledBeforeToday
-                  pastYearRange={0}
-                  futureYearRange={2}
-                  onChange={({ startDate, endDate }) =>
-                    setRange({
-                      startDate: moment(startDate).format("DD-MM-YYYY"),
-                      endDate: moment(endDate).format("DD-MM-YYYY"),
-                    })
-                  }
-                />
-              </Animated.View>
-            )}
+            <Animated.View>
+              <Calendar
+                locale={CALENDAR_TR_LOCALE}
+                disabledBeforeToday
+                pastYearRange={0}
+                initialNumToRender={0}
+                onChange={({ startDate, endDate }) =>
+                  setRange({
+                    startDate: moment(startDate).format("DD/MM/YYYY"),
+                    endDate: moment(endDate).format("DD/MM/YYYY"),
+                  })
+                }
+              />
+            </Animated.View>
           </Animated.View>
         </Animated.View>
       </Animated.View>
