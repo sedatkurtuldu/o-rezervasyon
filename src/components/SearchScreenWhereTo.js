@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, Text, TextInput, Pressable, View, Dimensions, TouchableOpacity, BackHandler } from 'react-native';
+import { StyleSheet, Text, TextInput, Pressable, View, Dimensions, TouchableOpacity, BackHandler, TouchableWithoutFeedback, Keyboard } from 'react-native';
 import Animated, {
   Easing,
   useAnimatedStyle,
@@ -116,15 +116,20 @@ const SearchScreenWhereTo = () => {
     
     const handlePress = () => {
       handleSelectedListItem(item);
+      Keyboard.dismiss();
+      isCardExpanded.value = false
     };
-
+  
     return (
-      <TouchableOpacity onPress={handlePress} style={styles.listItemContainer}>
-        <EvilIcons name="location" size={24} color="black" style={styles.locationIcon} />
-        <Text style={styles.listItemText}>{item.TEXT}</Text>
-      </TouchableOpacity>
+      <TouchableWithoutFeedback onPress={handlePress}>
+        <View style={styles.listItemContainer}>
+          <EvilIcons name="location" size={30} color="black" style={styles.locationIcon} />
+          <Text style={styles.listItemText}>{item.TEXT}</Text>
+        </View>
+      </TouchableWithoutFeedback>
     );
-  }
+  };
+  
 
   return (
     <Pressable style={styles.container} onPress={handleCardPress}>
@@ -156,6 +161,7 @@ const SearchScreenWhereTo = () => {
                   renderItem={listItem}
                   keyExtractor={(city) => city.ID.toString()}
                   showsVerticalScrollIndicator={false}
+                  keyboardShouldPersistTaps='handled'
                 />
               </View>
             </Animated.View>
@@ -170,11 +176,9 @@ export default SearchScreenWhereTo;
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
     flexDirection: 'row',
     justifyContent: 'center',
     padding: 16,
-    backgroundColor: 'white'
   },
   cardContainer: {
     borderRadius: 20,
@@ -219,12 +223,10 @@ const styles = StyleSheet.create({
   inputContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    borderWidth: 1,
-    borderColor: 'gray',
+    backgroundColor: '#EBEBEB',
     borderRadius: 12,
     marginTop: 8,
-    paddingHorizontal: 8,
-    paddingVertical: 6,
+    padding: 10
   },
   input: {
     flex: 1,
@@ -236,12 +238,15 @@ const styles = StyleSheet.create({
   listItemContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 8,
+    paddingVertical: 20,
     borderBottomWidth: 1,
-    borderBottomColor: 'gray',
+    borderBottomColor: '#EBEBEB',
+    gap: 20
   },
   locationIcon: {
-    marginRight: 10,
+    backgroundColor: '#EBEBEB',
+    padding: 12,
+    borderRadius: 10,
   },
   listItemText: {
     fontSize: 16,
