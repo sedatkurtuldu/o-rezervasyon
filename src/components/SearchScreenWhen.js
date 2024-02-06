@@ -113,12 +113,17 @@ const SearchScreenWhen = () => {
                 disabledBeforeToday
                 pastYearRange={0}
                 initialNumToRender={0}
-                onChange={({ startDate, endDate }) =>
+                onChange={({ startDate, endDate }) => {
                   setRange({
                     startDate: moment(startDate).format("DD/MM/YYYY"),
                     endDate: moment(endDate).format("DD/MM/YYYY"),
-                  })
-                }
+                  });
+                  if (startDate && endDate) {
+                    setTimeout(() => {
+                      isCardExpanded.value = false;
+                    }, 300);
+                  }
+                }}
               />
             </Animated.View>
           </Animated.View>

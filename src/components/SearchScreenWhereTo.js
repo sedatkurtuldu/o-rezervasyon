@@ -117,7 +117,9 @@ const SearchScreenWhereTo = () => {
     const handlePress = () => {
       handleSelectedListItem(item);
       Keyboard.dismiss();
-      isCardExpanded.value = false
+      setTimeout(() => {
+        isCardExpanded.value = false;
+      }, 300);
     };
   
     return (
