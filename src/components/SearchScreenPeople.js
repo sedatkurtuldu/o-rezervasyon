@@ -1,10 +1,11 @@
-import React, { useEffect, useState, useMemo } from "react";
+import React, { useEffect, useState } from "react";
 import {
   StyleSheet,
   Text,
   Pressable,
   Dimensions,
   BackHandler,
+  View,
 } from "react-native";
 import Animated, {
   Easing,
@@ -13,40 +14,13 @@ import Animated, {
   withSpring,
   withTiming,
 } from "react-native-reanimated";
-import moment from "moment";
-import CALENDAR_TR_LOCALE from "../locales/CALENDAR_TR_LOCALE";
-import { Calendar, LocaleConfig } from "react-native-calendars";
-import { MaterialIcons } from "@expo/vector-icons";
+
+import SearchScreenPeopleInnerItem from "./SearchScreenPeopleInnerItem";
 
 const height = Dimensions.get("window").height;
 
-LocaleConfig.locales["tr"] = CALENDAR_TR_LOCALE;
-
-LocaleConfig.defaultLocale = "tr";
-
-const SearchScreenWhen = () => {
+const SearchScreenPeople = () => {
   const isCardExpanded = useSharedValue(false);
-
-  const [startDate, setStartDate] = useState(null);
-  const [endDate, setEndDate] = useState("");
-
-  const handleDayPress = (day) => {
-    const formattedDate = moment(day.dateString, "YYYY-MM-DD").format(
-      "YYYY-MM-DD"
-    );
-
-    if (!startDate || endDate) {
-      setStartDate(formattedDate);
-      setEndDate("");
-    } else {
-      if (moment(formattedDate).isBefore(startDate)) {
-        setStartDate(formattedDate);
-        setEndDate(startDate);
-      } else {
-        setEndDate(formattedDate);
-      }
-    }
-  };
 
   useEffect(() => {
     const handleBackPress = () => {
@@ -64,16 +38,6 @@ const SearchScreenWhen = () => {
 
     return () => backHandler.remove();
   }, [isCardExpanded]);
-
-  useEffect(() => {
-    if (startDate && endDate) {
-      const timeout = setTimeout(() => {
-        isCardExpanded.value = false;
-      }, 300);
-
-      return () => clearTimeout(timeout);
-    }
-  }, [startDate, endDate, isCardExpanded]);
 
   const handleCardPress = () => {
     isCardExpanded.value = !isCardExpanded.value;
@@ -124,77 +88,29 @@ const SearchScreenWhen = () => {
     };
   });
 
-  const memoizedCalendar = useMemo(() => {
-    const markedDates = {};
-
-    if (startDate && endDate) {
-      let currentDate = moment(startDate);
-      while (currentDate.isSameOrBefore(endDate)) {
-        const formattedDate = currentDate.format("YYYY-MM-DD");
-        markedDates[formattedDate] = { textColor: "white", color: "#f871b8" };
-        currentDate.add(1, "days");
-      }
-    }
-
-    if (startDate) {
-      markedDates[moment(startDate).format("YYYY-MM-DD")] = {
-        startingDay: true,
-        textColor: "white",
-        color: "#e81f89",
-      };
-    }
-    if (endDate) {
-      markedDates[moment(endDate).format("YYYY-MM-DD")] = {
-        endingDay: true,
-        textColor: "white",
-        color: "#e81f89",
-      };
-    }
-
-    return (
-      <Calendar
-        markingType={"period"}
-        minDate={moment().format("YYYY-MM-DD")}
-        current={moment().format("YYYY-MM-DD")}
-        firstDay={1}
-        markedDates={markedDates}
-        onDayPress={handleDayPress}
-        locale={CALENDAR_TR_LOCALE}
-        renderArrow={(direction) => (
-          <MaterialIcons
-            name={
-              direction === "left"
-                ? "keyboard-arrow-left"
-                : "keyboard-arrow-right"
-            }
-            size={36}
-            color="#be1870"
-          />
-        )}
-      />
-    );
-  }, [startDate, endDate]);
-
   return (
     <Pressable style={styles.container} onPress={handleCardPress}>
       <Animated.View style={[styles.cardContainer, cardContainerStyle]}>
         <Animated.View style={styles.iconContainer}>
           <Animated.View style={[styles.placeContainer, placeContainerStyle]}>
-            <Text style={styles.placeText}>Tarih</Text>
-            {startDate && endDate ? (
+            {/* {startDate && endDate ? (
               <Text style={styles.placeText}>
                 {startDate} - {endDate}
               </Text>
             ) : (
-              <Text style={[styles.placeText, { color: "gray", fontSize: 14 }]}>Tarih Seçin</Text>
-            )}
+              <Text style={styles.placeText}>Tarih Seçin</Text>
+            )} */}
+            <Text style={styles.placeText}>Kişiler</Text>
+            <Text style={[styles.placeText, { color: "gray", fontSize: 14 }]}>Kişileri Ekleyin</Text>
           </Animated.View>
           <Animated.View
             style={[styles.cardTextContainer, cardTextContainerStyle]}
           >
             <Animated.View>
-              <Text style={styles.whenText}>Ne zaman ?</Text>
-              {memoizedCalendar}
+              <Text style={styles.peopleText}>Kaç kişi ?</Text>
+              <SearchScreenPeopleInnerItem leftUpperText={"Yetişkinler"} leftBottomText={"13 yaş ve üstü"} isBorder={true}/>
+              <SearchScreenPeopleInnerItem leftUpperText={"Çocuklar"} leftBottomText={"3-12 yaş"} isBorder={true}/>
+              <SearchScreenPeopleInnerItem leftUpperText={"Bebekler"} leftBottomText={"3 yaş altı"} isBorder={false}/>
             </Animated.View>
           </Animated.View>
         </Animated.View>
@@ -203,7 +119,7 @@ const SearchScreenWhen = () => {
   );
 };
 
-export default SearchScreenWhen;
+export default SearchScreenPeople;
 
 const styles = StyleSheet.create({
   container: {
@@ -242,13 +158,10 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "500",
   },
-  calendarContainer: {
-    marginTop: 10,
-    marginBottom: 10,
-  },
-  whenText: {
+  peopleText: {
     fontWeight: "bold",
     fontSize: 24,
-    marginBottom: 16
+    marginBottom: 16,
   },
+ 
 });

@@ -142,7 +142,7 @@ const SearchScreenWhereTo = () => {
             {searchText !== '' ? 
                <Text style={styles.placeText}>{searchText}</Text>
             :
-            <Text style={styles.placeText}>Esnek Arama</Text>
+            <Text style={[styles.placeText, { color: "gray", fontSize: 14 }]}>Esnek Arama</Text>
             }
           </Animated.View>
           <Animated.View style={[styles.cardTextContainer, cardTextContainerStyle]}>
