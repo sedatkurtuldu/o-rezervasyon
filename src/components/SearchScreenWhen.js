@@ -1,49 +1,46 @@
-import React, { useEffect, useState, useMemo } from "react";
+import React, { useEffect, useState, useMemo } from 'react';
 import {
   StyleSheet,
   Text,
   Pressable,
   Dimensions,
   BackHandler,
-} from "react-native";
+} from 'react-native';
 import Animated, {
   Easing,
   useAnimatedStyle,
   useSharedValue,
   withSpring,
   withTiming,
-} from "react-native-reanimated";
-import moment from "moment";
-import CALENDAR_TR_LOCALE from "../locales/CALENDAR_TR_LOCALE";
-import { Calendar, LocaleConfig } from "react-native-calendars";
-import { MaterialIcons } from "@expo/vector-icons";
+} from 'react-native-reanimated';
+import moment from 'moment';
+import CALENDAR_TR_LOCALE from '../locales/CALENDAR_TR_LOCALE';
+import { Calendar, LocaleConfig } from 'react-native-calendars';
+import { MaterialIcons } from '@expo/vector-icons';
 
-const height = Dimensions.get("window").height;
+const height = Dimensions.get('window').height;
 
-LocaleConfig.locales["tr"] = CALENDAR_TR_LOCALE;
+LocaleConfig.locales['tr'] = CALENDAR_TR_LOCALE;
 
-LocaleConfig.defaultLocale = "tr";
+LocaleConfig.defaultLocale = 'tr';
 
 const SearchScreenWhen = () => {
   const isCardExpanded = useSharedValue(false);
 
   const [startDate, setStartDate] = useState(null);
-  const [endDate, setEndDate] = useState("");
+  const [endDate, setEndDate] = useState('');
 
   const handleDayPress = (day) => {
-    const formattedDate = moment(day.dateString, "YYYY-MM-DD").format(
-      "YYYY-MM-DD"
-    );
 
     if (!startDate || endDate) {
-      setStartDate(formattedDate);
-      setEndDate("");
+      setStartDate(day.dateString);
+      setEndDate('');
     } else {
-      if (moment(formattedDate).isBefore(startDate)) {
-        setStartDate(formattedDate);
+      if (moment(day.dateString).isBefore(startDate)) {
+        setStartDate(day.dateString);
         setEndDate(startDate);
       } else {
-        setEndDate(formattedDate);
+        setEndDate(day.dateString);
       }
     }
   };
@@ -58,7 +55,7 @@ const SearchScreenWhen = () => {
     };
 
     const backHandler = BackHandler.addEventListener(
-      "hardwareBackPress",
+      'hardwareBackPress',
       handleBackPress
     );
 
@@ -88,14 +85,14 @@ const SearchScreenWhen = () => {
         restDisplacementThreshold: 0.1,
         restSpeedThreshold: 0.1,
       }),
-      width: withSpring(isCardExpanded.value ? "108%" : "100%", {
+      width: withSpring(isCardExpanded.value ? '108%' : '100%', {
         damping: 17,
         stiffness: 100,
         overshootClamping: false,
         restDisplacementThreshold: 0.1,
         restSpeedThreshold: 0.1,
       }),
-      alignItems: isCardExpanded.value ? "flex-start" : "center",
+      alignItems: isCardExpanded.value ? 'flex-start' : 'center',
     };
   });
 
@@ -109,7 +106,7 @@ const SearchScreenWhen = () => {
         duration: 200,
         easing: Easing.ease,
       }),
-      display: isCardExpanded.value ? "flex" : "none",
+      display: isCardExpanded.value ? 'flex' : 'none',
       marginTop: isCardExpanded.value ? 16 : 0,
     };
   });
@@ -120,7 +117,7 @@ const SearchScreenWhen = () => {
         duration: 200,
         easing: Easing.ease,
       }),
-      display: isCardExpanded.value ? "none" : "flex",
+      display: isCardExpanded.value ? 'none' : 'flex',
     };
   });
 
@@ -130,32 +127,32 @@ const SearchScreenWhen = () => {
     if (startDate && endDate) {
       let currentDate = moment(startDate);
       while (currentDate.isSameOrBefore(endDate)) {
-        const formattedDate = currentDate.format("YYYY-MM-DD");
-        markedDates[formattedDate] = { textColor: "white", color: "#f871b8" };
-        currentDate.add(1, "days");
+        const formattedDate = currentDate.format('YYYY-MM-DD');
+        markedDates[formattedDate] = { textColor: 'white', color: '#f871b8' };
+        currentDate.add(1, 'days');
       }
     }
 
     if (startDate) {
-      markedDates[moment(startDate).format("YYYY-MM-DD")] = {
+      markedDates[moment(startDate).format('YYYY-MM-DD')] = {
         startingDay: true,
-        textColor: "white",
-        color: "#e81f89",
+        textColor: 'white',
+        color: '#e81f89',
       };
     }
     if (endDate) {
-      markedDates[moment(endDate).format("YYYY-MM-DD")] = {
+      markedDates[moment(endDate).format('YYYY-MM-DD')] = {
         endingDay: true,
-        textColor: "white",
-        color: "#e81f89",
+        textColor: 'white',
+        color: '#e81f89',
       };
     }
 
     return (
       <Calendar
-        markingType={"period"}
-        minDate={moment().format("YYYY-MM-DD")}
-        current={moment().format("YYYY-MM-DD")}
+        markingType={'period'}
+        minDate={moment().format('YYYY-MM-DD')}
+        current={moment().format('YYYY-MM-DD')}
         firstDay={1}
         markedDates={markedDates}
         onDayPress={handleDayPress}
@@ -163,9 +160,9 @@ const SearchScreenWhen = () => {
         renderArrow={(direction) => (
           <MaterialIcons
             name={
-              direction === "left"
-                ? "keyboard-arrow-left"
-                : "keyboard-arrow-right"
+              direction === 'left'
+                ? 'keyboard-arrow-left'
+                : 'keyboard-arrow-right'
             }
             size={36}
             color="#be1870"
@@ -183,10 +180,13 @@ const SearchScreenWhen = () => {
             <Text style={styles.placeText}>Tarih</Text>
             {startDate && endDate ? (
               <Text style={styles.placeText}>
-                {startDate} - {endDate}
+                {moment(startDate).format('DD/MM/YYYY')} - {' '}
+                {moment(endDate).format('DD/MM/YYYY')}
               </Text>
             ) : (
-              <Text style={[styles.placeText, { color: "gray", fontSize: 14 }]}>Tarih Seçin</Text>
+              <Text style={[styles.placeText, { color: 'gray', fontSize: 14 }]}>
+                Tarih Seçin
+              </Text>
             )}
           </Animated.View>
           <Animated.View
@@ -207,17 +207,17 @@ export default SearchScreenWhen;
 
 const styles = StyleSheet.create({
   container: {
-    flexDirection: "row",
-    justifyContent: "center",
+    flexDirection: 'row',
+    justifyContent: 'center',
     padding: 16,
   },
   cardContainer: {
     borderRadius: 20,
-    backgroundColor: "white",
-    flexDirection: "row",
+    backgroundColor: 'white',
+    flexDirection: 'row',
     paddingVertical: 8,
     paddingHorizontal: 16,
-    shadowColor: "#000",
+    shadowColor: '#000',
     shadowOffset: {
       width: 0,
       height: 1,
@@ -227,7 +227,7 @@ const styles = StyleSheet.create({
     elevation: 6,
   },
   iconContainer: {
-    flexDirection: "row",
+    flexDirection: 'row',
   },
   cardTextContainer: {
     flex: 1,
@@ -235,20 +235,20 @@ const styles = StyleSheet.create({
   },
   placeContainer: {
     flex: 1,
-    flexDirection: "row",
-    justifyContent: "space-between",
+    flexDirection: 'row',
+    justifyContent: 'space-between',
   },
   placeText: {
     fontSize: 16,
-    fontWeight: "500",
+    fontWeight: '500',
   },
   calendarContainer: {
     marginTop: 10,
     marginBottom: 10,
   },
   whenText: {
-    fontWeight: "bold",
+    fontWeight: 'bold',
     fontSize: 24,
-    marginBottom: 16
+    marginBottom: 16,
   },
 });
