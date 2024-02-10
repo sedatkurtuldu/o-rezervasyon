@@ -17,6 +17,8 @@ import moment from 'moment';
 import CALENDAR_TR_LOCALE from '../locales/CALENDAR_TR_LOCALE';
 import { Calendar, LocaleConfig } from 'react-native-calendars';
 import { MaterialIcons } from '@expo/vector-icons';
+import { useDispatch, useSelector } from 'react-redux';
+import { setCalendarDateRange } from '../slices/calendarDateRangeSlice';
 
 const height = Dimensions.get('window').height;
 
@@ -27,23 +29,19 @@ LocaleConfig.defaultLocale = 'tr';
 const SearchScreenWhen = () => {
   const isCardExpanded = useSharedValue(false);
 
-  const [startDate, setStartDate] = useState(null);
-  const [endDate, setEndDate] = useState('');
+  //TO-DO : RE-RENDER PROBLEMİ VAR 4 KERE GETİRİYOR STATE'İ ONUN ÇÖZÜLMESİ GEREK!!!
+  const calendarDateRange = useSelector((state) => state.calendarDateRange);
+  const dispatch = useDispatch();
 
-  const handleDayPress = (day) => {
+  useEffect(() => {
+    if (calendarDateRange.startDate && calendarDateRange.endDate) {
+      const timeout = setTimeout(() => {
+        isCardExpanded.value = false;
+      }, 300);
 
-    if (!startDate || endDate) {
-      setStartDate(day.dateString);
-      setEndDate('');
-    } else {
-      if (moment(day.dateString).isBefore(startDate)) {
-        setStartDate(day.dateString);
-        setEndDate(startDate);
-      } else {
-        setEndDate(day.dateString);
-      }
+      return () => clearTimeout(timeout);
     }
-  };
+  }, [calendarDateRange, isCardExpanded]);
 
   useEffect(() => {
     const handleBackPress = () => {
@@ -62,18 +60,29 @@ const SearchScreenWhen = () => {
     return () => backHandler.remove();
   }, [isCardExpanded]);
 
-  useEffect(() => {
-    if (startDate && endDate) {
-      const timeout = setTimeout(() => {
-        isCardExpanded.value = false;
-      }, 300);
-
-      return () => clearTimeout(timeout);
-    }
-  }, [startDate, endDate, isCardExpanded]);
-
   const handleCardPress = () => {
     isCardExpanded.value = !isCardExpanded.value;
+  };
+
+  const handleDayPress = (day) => {
+    if (!calendarDateRange.startDate || calendarDateRange.endDate) {
+      dispatch(
+        setCalendarDateRange({ startDate: day.dateString, endDate: '' })
+      );
+    } else {
+      if (moment(day.dateString).isBefore(calendarDateRange.startDate)) {
+        dispatch(
+          setCalendarDateRange({ startDate: day.dateString, endDate: '' })
+        );
+      } else {
+        dispatch(
+          setCalendarDateRange({
+            ...calendarDateRange,
+            endDate: day.dateString,
+          })
+        );
+      }
+    }
   };
 
   const cardContainerStyle = useAnimatedStyle(() => {
@@ -124,24 +133,24 @@ const SearchScreenWhen = () => {
   const memoizedCalendar = useMemo(() => {
     const markedDates = {};
 
-    if (startDate && endDate) {
-      let currentDate = moment(startDate);
-      while (currentDate.isSameOrBefore(endDate)) {
+    if (calendarDateRange.startDate && calendarDateRange.endDate) {
+      let currentDate = moment(calendarDateRange.startDate);
+      while (currentDate.isSameOrBefore(calendarDateRange.endDate)) {
         const formattedDate = currentDate.format('YYYY-MM-DD');
         markedDates[formattedDate] = { textColor: 'white', color: '#f871b8' };
         currentDate.add(1, 'days');
       }
     }
 
-    if (startDate) {
-      markedDates[moment(startDate).format('YYYY-MM-DD')] = {
+    if (calendarDateRange.startDate) {
+      markedDates[moment(calendarDateRange.startDate).format('YYYY-MM-DD')] = {
         startingDay: true,
         textColor: 'white',
         color: '#e81f89',
       };
     }
-    if (endDate) {
-      markedDates[moment(endDate).format('YYYY-MM-DD')] = {
+    if (calendarDateRange.endDate) {
+      markedDates[moment(calendarDateRange.endDate).format('YYYY-MM-DD')] = {
         endingDay: true,
         textColor: 'white',
         color: '#e81f89',
@@ -170,7 +179,7 @@ const SearchScreenWhen = () => {
         )}
       />
     );
-  }, [startDate, endDate]);
+  }, [calendarDateRange]);
 
   return (
     <Pressable style={styles.container} onPress={handleCardPress}>
@@ -178,10 +187,10 @@ const SearchScreenWhen = () => {
         <Animated.View style={styles.iconContainer}>
           <Animated.View style={[styles.placeContainer, placeContainerStyle]}>
             <Text style={styles.placeText}>Tarih</Text>
-            {startDate && endDate ? (
+            {calendarDateRange.startDate && calendarDateRange.endDate ? (
               <Text style={styles.placeText}>
-                {moment(startDate).format('DD/MM/YYYY')} - {' '}
-                {moment(endDate).format('DD/MM/YYYY')}
+                {moment(calendarDateRange.startDate).format('DD/MM/YYYY')} -{' '}
+                {moment(calendarDateRange.endDate).format('DD/MM/YYYY')}
               </Text>
             ) : (
               <Text style={[styles.placeText, { color: 'gray', fontSize: 14 }]}>

@@ -10,6 +10,8 @@ import Animated, {
 import { AntDesign } from '@expo/vector-icons';
 import { EvilIcons } from '@expo/vector-icons';
 import { FlatList } from 'react-native-gesture-handler';
+import { useDispatch, useSelector } from 'react-redux';
+import { setSelectedCity } from '../slices/selectedCitySlice';
 
 const height = Dimensions.get('window').height;
 
@@ -17,15 +19,18 @@ const SearchScreenWhereTo = () => {
   const isCardExpanded = useSharedValue(false);
 
   const [cities, setCities] = useState(null);
-  const [searchText, setSearchText] = useState('');
+
+  //TO-DO : RE-RENDER PROBLEMİ VAR 4 KERE GETİRİYOR STATE'İ ONUN ÇÖZÜLMESİ GEREK!!!
+  const selectedCity = useSelector(state => state.selectedCity.city);
+  const dispatch = useDispatch()
 
   useEffect(() => {
-    if (searchText.trim() !== '') {
+    if (selectedCity.trim() !== '') {
       fetch(`https://api.kadircolak.com/Konum/JSON/API/ShowAllCity`)
         .then(response => response.json())
         .then(data => setCities(data));
     }
-  }, [searchText]);
+  }, [selectedCity]);
 
   useEffect(() => {
     const handleBackPress = () => {
@@ -46,15 +51,15 @@ const SearchScreenWhereTo = () => {
   };
 
   const handleSearchTextChange = (text) => {
-    setSearchText(text);
+    dispatch(setSelectedCity(text));
   };
 
   const handleSelectedListItem = (item) => {
-    setSearchText(item.TEXT);
+    dispatch(setSelectedCity(item.TEXT));
   };
 
   const filteredCities = cities
-    ? cities.filter((city) => city.TEXT.trim().toLowerCase().includes(searchText.trim().toLowerCase()))
+    ? cities.filter((city) => city.TEXT.trim().toLowerCase().includes(selectedCity.trim().toLowerCase()))
     : [];
 
   const cardContainerStyle = useAnimatedStyle(() => {
@@ -139,8 +144,8 @@ const SearchScreenWhereTo = () => {
         <Animated.View style={styles.iconContainer}>
           <Animated.View style={[styles.placeContainer, placeContainerStyle]}>
             <Text style={styles.placeText}>Yer</Text>
-            {searchText !== '' ? 
-               <Text style={styles.placeText}>{searchText}</Text>
+            {selectedCity !== '' ? 
+               <Text style={styles.placeText}>{selectedCity}</Text>
             :
             <Text style={[styles.placeText, { color: "gray", fontSize: 14 }]}>Esnek Arama</Text>
             }
@@ -152,7 +157,7 @@ const SearchScreenWhereTo = () => {
                 <AntDesign name="search1" size={20} color="black" style={styles.searchIcon} />
                 <TextInput 
                   placeholder="Yerleri arayın" 
-                  value={searchText}
+                  value={selectedCity}
                   onChangeText={handleSearchTextChange}
                   style={styles.input} 
                 />
