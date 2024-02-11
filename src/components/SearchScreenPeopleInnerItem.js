@@ -1,5 +1,5 @@
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import React, { useState } from 'react';
+import React from 'react';
 import { EvilIcons } from '@expo/vector-icons';
 import CounterActions from '../enums/CounterEnum';
 import { useDispatch, useSelector } from 'react-redux';

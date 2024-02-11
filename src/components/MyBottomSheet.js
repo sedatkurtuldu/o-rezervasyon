@@ -1,11 +1,18 @@
 // MyBottomSheet.js
 
-import React, { useCallback, useMemo, useRef, useImperativeHandle } from 'react';
-import { View, Text, StyleSheet, Button } from 'react-native';
+import React, {
+  useCallback,
+  useMemo,
+  useRef,
+  useImperativeHandle,
+} from 'react';
+import { View, Text, StyleSheet, Button, FlatList } from 'react-native';
 import {
+  BottomSheetFlatList,
   BottomSheetModal,
   BottomSheetModalProvider,
 } from '@gorhom/bottom-sheet';
+import HomeScreenCard from './HomeScreenCard';
 
 const MyBottomSheet = React.forwardRef((props, ref) => {
   const bottomSheetModalRef = useRef(null);
@@ -22,6 +29,10 @@ const MyBottomSheet = React.forwardRef((props, ref) => {
     // console.log('handleSheetChanges', index);
   }, []);
 
+  const data = [1, 2, 3, 4, 5];
+
+  const renderItem = ({ item }) => <HomeScreenCard />;
+
   return (
     <BottomSheetModalProvider>
       <View style={styles.container}>
@@ -33,7 +44,12 @@ const MyBottomSheet = React.forwardRef((props, ref) => {
           enablePanDownToClose={false}
         >
           <View style={styles.contentContainer}>
-            <Text>Awesome 🎉</Text>
+            <BottomSheetFlatList
+              data={data}
+              renderItem={renderItem}
+              keyExtractor={(item) => item.toString()}
+              showsVerticalScrollIndicator={false}
+            />
           </View>
         </BottomSheetModal>
       </View>
