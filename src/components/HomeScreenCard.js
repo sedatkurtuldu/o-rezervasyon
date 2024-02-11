@@ -1,3 +1,5 @@
+// HomeScreenCard.js
+import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -7,28 +9,34 @@ import {
   Pressable,
   TouchableOpacity,
 } from 'react-native';
-import React, { useState } from 'react';
 import Carousel from 'react-native-reanimated-carousel';
 import { Ionicons } from '@expo/vector-icons';
+import { getHotelImages } from '../service/api';
 
 const width = Dimensions.get('window').width;
-const HomeScreenCard = () => {
-  const data = [
-    {
-      imgUrl: 'https://picsum.photos/id/11/200/300',
-    },
-    {
-      imgUrl: 'https://picsum.photos/id/10/200/300',
-    },
-    {
-      imgUrl: 'https://picsum.photos/id/12/200/300',
-    },
-  ];
-  const [isFavorite, setIsFavorite] = useState(false);
 
+const HomeScreenCard = ({ data }) => { 
+
+  const [isFavorite, setIsFavorite] = useState(false);
+  const [hotelImages, setHotelImages] = useState([]);
+  
   const handleFavIconPress = () => {
     setIsFavorite(!isFavorite);
   };
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const hotelImagesData = await getHotelImages(data.id);
+        setHotelImages(hotelImagesData);
+      } catch (error) {
+        console.error('Error fetching hotels:', error);
+      }
+    };
+  
+    fetchData();
+  }, []);
+
   return (
     <Pressable style={styles.card}>
       <TouchableOpacity style={styles.favIcon} onPress={handleFavIconPress}>
@@ -52,20 +60,23 @@ const HomeScreenCard = () => {
         width={width * 0.9}
         height={width / 1.5}
         autoPlay={true}
-        data={data}
+        data={hotelImages}
         scrollAnimationDuration={1000}
         renderItem={({ item }) => (
-          <Image source={{ uri: item.imgUrl }} style={styles.image} />
+          <Image source={{ uri: item.imageUrl }} style={styles.image} />
         )}
+        panGestureHandlerProps={{
+            activeOffsetX: [-10, 10],
+        }}
       />
       <View style={styles.contentContainer}>
         <View style={styles.content}>
-          <Text style={styles.title}>İlçe, İl</Text>
-          <Text>Konyaaltı plajı</Text>
+          <Text style={styles.title}>{data.district}, {data.city}</Text>
+          <Text>{data.name}</Text>
         </View>
         <View style={styles.priceContainer}>
           <Text style={styles.price}>
-            3000 ₺
+            {data.price} ₺
           </Text>
           <Text style={{ color: '#666', fontWeight: 'normal', marginLeft: 12}}>Gece</Text>
         </View>

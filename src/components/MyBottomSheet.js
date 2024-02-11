@@ -1,10 +1,11 @@
 // MyBottomSheet.js
-
 import React, {
   useCallback,
   useMemo,
   useRef,
   useImperativeHandle,
+  useEffect,
+  useState,
 } from 'react';
 import { View, Text, StyleSheet, Button, FlatList } from 'react-native';
 import {
@@ -13,10 +14,26 @@ import {
   BottomSheetModalProvider,
 } from '@gorhom/bottom-sheet';
 import HomeScreenCard from './HomeScreenCard';
+import { getHotels } from '../service/api';
 
 const MyBottomSheet = React.forwardRef((props, ref) => {
   const bottomSheetModalRef = useRef(null);
 
+  const [hotels, setHotels] = useState([]);
+  
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const hotelsData = await getHotels();
+        setHotels(hotelsData);
+      } catch (error) {
+        console.error('Error fetching hotels:', error);
+      }
+    };
+  
+    fetchData();
+  }, []);
+  
   useImperativeHandle(ref, () => ({
     openBottomSheet: () => {
       bottomSheetModalRef.current?.present();
@@ -29,9 +46,7 @@ const MyBottomSheet = React.forwardRef((props, ref) => {
     // console.log('handleSheetChanges', index);
   }, []);
 
-  const data = [1, 2, 3, 4, 5];
-
-  const renderItem = ({ item }) => <HomeScreenCard />;
+  const renderItem = ({ item }) => <HomeScreenCard data={item} />;
 
   return (
     <BottomSheetModalProvider>
@@ -45,9 +60,9 @@ const MyBottomSheet = React.forwardRef((props, ref) => {
         >
           <View style={styles.contentContainer}>
             <BottomSheetFlatList
-              data={data}
+              data={hotels}
               renderItem={renderItem}
-              keyExtractor={(item) => item.toString()}
+              keyExtractor={(item) => item.id.toString()}
               showsVerticalScrollIndicator={false}
             />
           </View>
