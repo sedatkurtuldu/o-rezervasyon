@@ -78,7 +78,7 @@ const HomeScreenCard = ({ data }) => {
           <Text style={styles.price}>
             {data.price} ₺
           </Text>
-          <Text style={{ color: '#666', fontWeight: 'normal', marginLeft: 12}}>Gece</Text>
+          <Text style={{ color: '#666', fontWeight: 'normal', marginLeft: 12}}>gece</Text>
         </View>
       </View>
     </Pressable>

@@ -1,5 +1,3 @@
-// HomeScreen.js
-
 import { StyleSheet, View, Text, Button } from 'react-native';
 import React, { useRef, useEffect } from 'react';
 import MapView from 'react-native-maps';
