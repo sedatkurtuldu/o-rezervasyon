@@ -9,7 +9,9 @@
     "web": "expo start --web"
   },
   "dependencies": {
+    "@firebase/auth": "^1.6.0",
     "@gorhom/bottom-sheet": "^4.6.0",
+    "@react-native-async-storage/async-storage": "^1.21.0",
     "@react-native-firebase/firestore": "^18.8.0",
     "@react-native-firebase/storage": "^18.8.0",
     "@react-navigation/bottom-tabs": "^6.5.11",

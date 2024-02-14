@@ -1,5 +1,5 @@
 import { StyleSheet, View } from "react-native";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import HomeScreen from "../screens/HomeScreen";
 import Favorites from "../screens/Favorites";
@@ -12,11 +12,21 @@ import { createStackNavigator } from "@react-navigation/stack";
 import RegisterScreen from "../screens/RegisterScreen";
 import RegisterPasswordScreen from "../screens/RegisterPasswordScreen";
 import LoginScreen from "../screens/LoginScreen";
+import { auth } from "../service/firebase";
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
 
 const Router = ({ navigation }) => {
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    auth.onAuthStateChanged((user) => {
+      if (user) setUser(user);
+      else setUser(null);
+    });
+  }, []);
+
   return (
     <Tab.Navigator
       initialRouteName="HomeScreen"
@@ -55,7 +65,7 @@ const Router = ({ navigation }) => {
 
       <Tab.Screen
         options={{
-          tabBarLabel: "Oturum açın",
+          tabBarLabel: user !== null ? "Profil" : "Oturum açın",
           tabBarIcon: ({ color, size, focused }) =>
             focused ? (
               <Ionicons name="person-circle" size={size} color={color} />
@@ -68,8 +78,9 @@ const Router = ({ navigation }) => {
             ),
         }}
         name="Profile"
-        component={Profile}
-      />
+      >
+        {() => <Profile user={user} navigation={navigation} />}
+      </Tab.Screen>
     </Tab.Navigator>
   );
 };
@@ -89,7 +100,7 @@ const Main = () => {
           headerShown: true,
           headerShadowVisible: false,
           headerTitle: "O-Rezervasyon'a Kaydolun",
-          headerTitleAlign: 'center',
+          headerTitleAlign: "center",
           headerBackVisible: false,
           headerLeft: () => (
             <View style={{ marginLeft: 12 }}>
@@ -105,12 +116,22 @@ const Main = () => {
         component={RegisterScreen}
       />
       <Stack.Screen
-        options={{ headerShown: true , headerTitle: "Şifre Belirle", headerTitleAlign: 'center', headerShadowVisible: false }}
+        options={{
+          headerShown: true,
+          headerTitle: "Şifre Belirle",
+          headerTitleAlign: "center",
+          headerShadowVisible: false,
+        }}
         name="RegisterPasswordScreen"
         component={RegisterPasswordScreen}
       />
-       <Stack.Screen
-        options={{ headerShown: true , headerTitle: "Giriş Yap", headerTitleAlign: 'center', headerShadowVisible: false }}
+      <Stack.Screen
+        options={{
+          headerShown: true,
+          headerTitle: "Giriş Yap",
+          headerTitleAlign: "center",
+          headerShadowVisible: false,
+        }}
         name="LoginScreen"
         component={LoginScreen}
       />

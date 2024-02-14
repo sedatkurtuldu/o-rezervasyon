@@ -5,6 +5,7 @@ import {
   TextInput,
   View,
   TouchableOpacity,
+  Alert,
 } from "react-native";
 
 const RegisterScreen = ({ navigation }) => {
@@ -16,7 +17,11 @@ const RegisterScreen = ({ navigation }) => {
   });
 
   const handleToPasswordScreen = () => {
-    navigation.navigate("RegisterPasswordScreen", { values });
+    if (values.name && values.surname && values.email && values.phone) {
+      navigation.navigate("RegisterPasswordScreen", { values });
+    } else {
+      Alert.alert("Hata", "Lütfen tüm alanları doldurun.");
+    }
   };
 
   const handleChange = (field, value) => {

@@ -7,15 +7,17 @@ import {
 } from "react-native";
 import React, { useState } from "react";
 import { Feather } from "@expo/vector-icons";
+import { auth } from "../service/firebase";
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile } from "@firebase/auth";
 
-const RegisterPasswordScreen = ({ route }) => {
+const RegisterPasswordScreen = ({ route, navigation }) => {
   const { values } = route.params;
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [showPasswordConfirmation, setShowPasswordConfirmation] = useState(false);
   const [passwordMismatch, setPasswordMismatch] = useState(false);
-
+  
   const toggleShowPassword = (type) => {
     if (type === "password") {
       setShowPassword(!showPassword);
@@ -34,14 +36,31 @@ const RegisterPasswordScreen = ({ route }) => {
     setPasswordMismatch(false);
   };
 
-  const handleRegister = () => {
-    if (password !== confirmPassword) {
+  const handleRegister = async () => {
+    if (
+      password !== confirmPassword &&
+      password !== "" &&
+      confirmPassword !== ""
+    ) {
       setPasswordMismatch(true);
       return;
     }
+    else {
+      try {
+        await createUserWithEmailAndPassword(auth, values.email, confirmPassword);
 
-    // Passwords match, proceed with registration
-    // Your registration logic here
+        await updateProfile(auth.currentUser, {
+          displayName: values.name
+        });
+
+        await signInWithEmailAndPassword(auth, values.email, confirmPassword);
+        
+        navigation.navigate("Profile")
+
+      } catch (createUserError) {
+        console.error("Kullanıcı oluşturma hatası: ", createUserError);
+      }
+    }
   };
 
   return (
@@ -140,6 +159,6 @@ const styles = StyleSheet.create({
   errorText: {
     color: "red",
     marginTop: 5,
-    textAlign: 'center'
+    textAlign: "center",
   },
 });

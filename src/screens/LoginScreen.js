@@ -7,9 +7,32 @@ import {
 } from "react-native";
 import React, { useState } from "react";
 import { Feather } from "@expo/vector-icons";
+import { signInWithEmailAndPassword } from "@firebase/auth";
+import { auth } from "../service/firebase";
 
-const LoginScreen = () => {
+const LoginScreen = ({ navigation }) => {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+
+  const handleLogin = async () => {
+
+    if(email === "" && password === ""){
+      alert("E-Posta ve Şifre alanı boş geçilemez.")
+      return;
+    }
+
+    try {
+      await signInWithEmailAndPassword(auth, email, password);
+
+      navigation.navigate("HomeScreen");
+    } catch (error) {
+
+      console.error("Giriş yaparken bir hata oluştu: ", error.message);
+
+      alert("Giriş yaparken bir hata oluştu, lütfen tekrar deneyin.");
+    }
+  };
 
   const toggleShowPassword = (type) => {
     if (type === "password") {
@@ -25,6 +48,8 @@ const LoginScreen = () => {
           style={styles.input}
           placeholder="E-Posta Adresi"
           keyboardType="email-address"
+          value={email}
+          onChangeText={(text) => setEmail(text)}
         />
       </View>
 
@@ -32,6 +57,8 @@ const LoginScreen = () => {
         <TextInput
           style={styles.input}
           placeholder="Şifre"
+          value={password}
+          onChangeText={(text) => setPassword(text)}
           secureTextEntry={!showPassword}
         />
         <TouchableOpacity
@@ -46,7 +73,7 @@ const LoginScreen = () => {
         </TouchableOpacity>
       </View>
 
-      <TouchableOpacity style={styles.button}>
+      <TouchableOpacity onPress={handleLogin} style={styles.button}>
         <Text style={styles.buttonText}>Giriş Yap</Text>
       </TouchableOpacity>
     </View>
