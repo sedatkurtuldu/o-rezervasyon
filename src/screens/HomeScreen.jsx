@@ -141,7 +141,7 @@ const HomeScreen = () => {
           </MapView>
         )}
         <FlatList
-          style={{ position: "absolute", bottom: 70, alignSelf: "center" }}
+          style={styles.flatList}
           data={hotels}
           horizontal
           renderItem={renderFlatListItem}
@@ -191,6 +191,11 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: "green",
     marginTop: 5,
+  },
+  flatList: {
+    position: "absolute",
+    bottom: 70,
+    alignSelf: "center",
   },
 });
 
