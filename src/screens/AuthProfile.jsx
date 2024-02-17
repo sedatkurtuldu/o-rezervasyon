@@ -4,13 +4,20 @@ import { auth, db } from "../service/firebase";
 import AuthProfileCard from "../components/AuthProfileCard";
 import { addDoc, collection } from "firebase/firestore";
 import { getUser } from "../service/api";
+import { useDispatch, useSelector } from "react-redux";
+import { setIsUpdated } from "../slices/isEditUpdated";
 
-const AuthProfile = ({ user, navigation }) => {
+const AuthProfile = ({ navigation }) => {
+
+  //TO-DO: DİĞER BUTONLARIN ACTIVE OPACITY PROP'U 0.6 OLARAK AYARLANACAK!!!!
   const [userData, setUserData] = useState({
     name: "",
     surname: "",
     phoneNumber: "",
   });
+
+  const dispatch = useDispatch();
+  const isUpdated = useSelector((state) => state.isUpdated);
 
   const handleAddCollection = async () => {
     const existingUser = await getUser(auth.currentUser.uid);
@@ -29,7 +36,7 @@ const AuthProfile = ({ user, navigation }) => {
       handleAddCollection();
     }
 
-    const handleUser = async () => {
+    const fetchData = async () => {
       const data = await getUser(auth.currentUser.uid);
       setUserData({
         name: data.Name,
@@ -37,11 +44,15 @@ const AuthProfile = ({ user, navigation }) => {
         phoneNumber: data.PhoneNumber,
       });
     };
+  
+    fetchData();
 
-    handleUser();
-  }, []);
+    if (isUpdated) {
+      fetchData();
+      dispatch(setIsUpdated(false));
+    }
+  }, [isUpdated]);
 
-  //TO-DO: DİĞER BUTONLARIN ACTIVE OPACITY PROP'U 0.6 OLARAK AYARLANACAK!!!!
   const logOut = () => {
     auth
       .signOut()

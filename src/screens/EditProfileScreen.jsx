@@ -4,31 +4,114 @@ import {
   TextInput,
   TouchableOpacity,
   View,
+  Alert,
 } from "react-native";
-import React, { useEffect, useState } from "react";
-import { auth } from "../service/firebase";
+import React, { useState } from "react";
+import { auth, db } from "../service/firebase";
+import { verifyBeforeUpdateEmail } from "@firebase/auth";
+import { getUser } from "../service/api";
+import { doc, updateDoc } from "firebase/firestore";
+import { useDispatch } from "react-redux";
+import { setIsUpdated } from "../slices/isEditUpdated";
 
-const EditProfileScreen = ({ route }) => {
-  const { name, surname, phoneNumber } = route.params;
+const EditProfileScreen = ({ route, navigation }) => {
+  const [name, setName] = useState(route.params.name);
+  const [surname, setSurname] = useState(route.params.surname);
+  const [phoneNumber, setPhoneNumber] = useState(route.params.phoneNumber);
+  const [newEmail, setNewEmail] = useState(auth.currentUser.email);
+
+  const dispatch = useDispatch();
+
+  const handleUpdate = async () => {
+    if (newEmail === auth.currentUser.email) {
+      const data = await getUser(auth.currentUser.uid);
+
+      const updatedUserData = {
+        ...data,
+        Name: name,
+        Surname: surname,
+        PhoneNumber: phoneNumber,
+      };
+
+      const userRef = doc(db, "users", updatedUserData.id);
+      try {
+        await updateDoc(userRef, updatedUserData);
+        Alert.alert("Başarılı!", "Kullanıcı bilgileriniz güncellendi.", [
+          {
+            text: "TAMAM",
+            onPress: () => {
+              navigation.navigate("Profile");
+              dispatch(setIsUpdated(true))
+            },
+          },
+        ]);
+      } catch (error) {
+        Alert.alert(
+          "Başarısız!",
+          "Kullanıcı bilgileri güncellenirken hata oluştu.",
+          [
+            {
+              text: "TAMAM",
+            },
+          ]
+        );
+
+        console.error("Kullanıcı bilgileri güncellenirken hata oluştu:", error);
+      }
+      return;
+    } else {
+      verifyBeforeUpdateEmail(auth.currentUser, newEmail)
+        .then(() => {
+          Alert.alert(
+            "Başarılı!",
+            "Eski mailinize e-posta güncelleme için doğrulama maili gönderilmiştir. Doğrulamanızı sağladıktan sonra mailiniz güncellenecektir.",
+            [
+              {
+                text: "TAMAM",
+                onPress: () => {
+                  auth.signOut();
+                  navigation.replace("LoginScreen");
+                },
+              },
+            ]
+          );
+        })
+        .catch((error) => {
+          console.error("Başarısız!", error.message);
+        });
+    }
+  };
 
   return (
     <View style={styles.container}>
-      <TextInput value={name} style={styles.input} placeholder="Adı" />
-      <TextInput value={surname} style={styles.input} placeholder="Soyadı" />
+      <TextInput
+        value={name}
+        onChangeText={setName}
+        style={styles.input}
+        placeholder="Adı"
+      />
+      <TextInput
+        value={surname}
+        onChangeText={setSurname}
+        style={styles.input}
+        placeholder="Soyadı"
+      />
       <TextInput
         style={styles.input}
         placeholder="E-Posta Adresi"
         keyboardType="email-address"
-        value={auth.currentUser.email}
+        value={newEmail}
+        onChangeText={setNewEmail}
       />
       <TextInput
         style={styles.input}
         placeholder="Telefon"
         keyboardType="phone-pad"
         value={phoneNumber}
+        onChangeText={setPhoneNumber}
       />
 
-      <TouchableOpacity style={styles.button}>
+      <TouchableOpacity onPress={handleUpdate} style={styles.button}>
         <Text style={styles.buttonText}>Kaydet</Text>
       </TouchableOpacity>
     </View>

@@ -1,14 +1,23 @@
 import { StyleSheet } from "react-native";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import AuthProfile from "./AuthProfile";
 import UnAuthProfile from "./UnAuthProfile";
+import { auth } from "../service/firebase";
 
-const Profile = ({ user, navigation }) => {
-  return user ? <AuthProfile user={user} navigation={navigation} /> : <UnAuthProfile />;
+const Profile = ({ navigation }) => {
+
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    auth.onAuthStateChanged((user) => {
+      if (user) setUser(user);
+      else setUser(null);
+    });
+  }, []);
+
+  return user ? <AuthProfile navigation={navigation} /> : <UnAuthProfile />;
 };
 
 export default Profile;
 
-const styles = StyleSheet.create({
-  
-});
+const styles = StyleSheet.create({});

@@ -20,7 +20,11 @@ const RegisterScreen = ({ navigation }) => {
     if (values.name && values.surname && values.email && values.phone) {
       navigation.navigate("RegisterPasswordScreen", { values });
     } else {
-      Alert.alert("Hata", "Lütfen tüm alanları doldurun.");
+      Alert.alert("Hata", "Lütfen tüm alanları doldurun.",[
+        {
+          text: "TAMAM"
+        },
+      ]);
     }
   };
 

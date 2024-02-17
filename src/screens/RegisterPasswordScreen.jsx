@@ -60,9 +60,9 @@ const RegisterPasswordScreen = ({ route, navigation }) => {
       try {
         await createUserWithEmailAndPassword(auth, values.email, confirmPassword);
 
-        // await updateProfile(auth.currentUser, {
-        //   displayName: values.name
-        // });
+        await updateProfile(auth.currentUser, {
+          displayName: values.name
+        });
 
         await signInWithEmailAndPassword(auth, values.email, confirmPassword);
         

@@ -65,6 +65,8 @@ const BottomTab = ({ navigation }) => {
       />
 
       <Tab.Screen
+        name="Profile"
+        component={Profile}
         options={{
           tabBarLabel: user !== null ? "Profil" : "Oturum açın",
           tabBarIcon: ({ color, size, focused }) =>
@@ -78,10 +80,7 @@ const BottomTab = ({ navigation }) => {
               />
             ),
         }}
-        name="Profile"
-      >
-        {() => <Profile user={user} navigation={navigation} />}
-      </Tab.Screen>
+      />
     </Tab.Navigator>
   );
 };
@@ -141,7 +140,7 @@ const Router = () => {
         options={{
           headerShown: true,
           headerTitle: "Kişisel Bilgileri Düzenle",
-          headerTitleAlign: 'center',
+          headerTitleAlign: "center",
           headerShadowVisible: false,
         }}
         name="EditProfileScreen"
