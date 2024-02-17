@@ -13,11 +13,12 @@ import RegisterScreen from "../screens/RegisterScreen";
 import RegisterPasswordScreen from "../screens/RegisterPasswordScreen";
 import LoginScreen from "../screens/LoginScreen";
 import { auth } from "../service/firebase";
+import EditProfileScreen from "../screens/EditProfileScreen";
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
 
-const Router = ({ navigation }) => {
+const BottomTab = ({ navigation }) => {
   const [user, setUser] = useState(null);
 
   useEffect(() => {
@@ -85,14 +86,14 @@ const Router = ({ navigation }) => {
   );
 };
 
-const Main = () => {
+const Router = () => {
   return (
     <Stack.Navigator
       screenOptions={{
         headerShown: false,
       }}
     >
-      <Stack.Screen name="Main" component={Router} />
+      <Stack.Screen name="BottomTab" component={BottomTab} />
       <Stack.Screen name="SearchModal" component={SearchModal} />
       <Stack.Screen
         name="RegisterScreen"
@@ -135,6 +136,16 @@ const Main = () => {
         name="LoginScreen"
         component={LoginScreen}
       />
+
+      <Stack.Screen
+        options={{
+          headerShown: true,
+          headerTitle: "",
+          headerShadowVisible: false,
+        }}
+        name="EditProfileScreen"
+        component={EditProfileScreen}
+      />
     </Stack.Navigator>
   );
 };
@@ -163,4 +174,4 @@ const SearchModal = ({ navigation }) => {
   );
 };
 
-export default Main;
+export default Router;

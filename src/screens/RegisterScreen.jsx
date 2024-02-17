@@ -13,7 +13,7 @@ const RegisterScreen = ({ navigation }) => {
     name: "",
     surname: "",
     email: "",
-    phone: "",
+    phone: "+90",
   });
 
   const handleToPasswordScreen = () => {

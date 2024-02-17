@@ -5,10 +5,12 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Feather } from "@expo/vector-icons";
 import { auth } from "../service/firebase";
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile } from "@firebase/auth";
+import { useDispatch } from "react-redux";
+import { setPhone } from "../slices/userPhoneSlice";
 
 const RegisterPasswordScreen = ({ route, navigation }) => {
   const { values } = route.params;
@@ -17,6 +19,12 @@ const RegisterPasswordScreen = ({ route, navigation }) => {
   const [showPassword, setShowPassword] = useState(false);
   const [showPasswordConfirmation, setShowPasswordConfirmation] = useState(false);
   const [passwordMismatch, setPasswordMismatch] = useState(false);
+
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(setPhone(values.phone));
+  }, [])
   
   const toggleShowPassword = (type) => {
     if (type === "password") {

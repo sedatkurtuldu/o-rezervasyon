@@ -1,11 +1,31 @@
 import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import React from "react";
 import { AntDesign } from "@expo/vector-icons";
-import { Ionicons } from '@expo/vector-icons';
+import { Ionicons } from "@expo/vector-icons";
 
-const AuthProfileCard = ({ userName, displayPhoto, displayEditProfileText }) => {
+const AuthProfileCard = ({
+  userName,
+  displayPhoto,
+  displayEditProfileText,
+  navigation,
+  routeName,
+}) => {
+
+  const handleNavigation = () => {
+    if (routeName !== undefined) {
+      navigation.navigate(routeName);
+    }
+    else {
+      return;
+    }
+  };
+
   return (
-    <TouchableOpacity style={styles.cardButton} activeOpacity={0.9}>
+    <TouchableOpacity
+      onPress={handleNavigation}
+      style={styles.cardButton}
+      activeOpacity={0.9}
+    >
       <View style={styles.cardContainer}>
         {displayPhoto && (
           <View>
@@ -21,15 +41,21 @@ const AuthProfileCard = ({ userName, displayPhoto, displayEditProfileText }) => 
         {displayEditProfileText ? (
           <View style={styles.cardTextContainer}>
             <Text style={styles.userName}>{userName}</Text>
-            <Text style={styles.editProfileText}>Kişisel Bilgileri Düzenle</Text>
+            <Text style={styles.editProfileText}>
+              Kişisel Bilgileri Düzenle
+            </Text>
           </View>
         ) : (
-          <View style={[styles.cardTextContainer, { flexDirection: 'row', alignItems: 'center', marginLeft: 20 }]}>
+          <View
+            style={[
+              styles.cardTextContainer,
+              { flexDirection: "row", alignItems: "center", marginLeft: 20 },
+            ]}
+          >
             <Ionicons name="calendar-outline" size={28} color="black" />
             <Text style={styles.myReservationsText}>Rezervasyonlarım</Text>
           </View>
         )}
-
       </View>
       <View style={styles.iconContainer}>
         <AntDesign name="right" size={20} color="black" />
@@ -80,6 +106,6 @@ const styles = StyleSheet.create({
   },
   myReservationsText: {
     padding: 20,
-    fontSize: 18
-  }
+    fontSize: 18,
+  },
 });

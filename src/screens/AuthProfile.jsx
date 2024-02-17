@@ -1,9 +1,27 @@
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import React from "react";
-import { auth } from "../service/firebase";
+import React, { useEffect } from "react";
+import { auth, db } from "../service/firebase";
 import AuthProfileCard from "../components/AuthProfileCard";
+import { addDoc, collection } from "firebase/firestore";
+import { useSelector } from "react-redux";
 
 const AuthProfile = ({ user, navigation }) => {
+
+  const { phone } = useSelector((state) => state.userPhone);
+
+  const handleAddCollection = async (phone) => {
+    await addDoc(collection(db, "userPhoneNumbers"), {
+      UserId: auth.currentUser.uid,
+      PhoneNumber: phone,
+    });
+  };
+
+  useEffect(() => {
+    if (phone !== undefined && phone) {
+      handleAddCollection(phone);
+    }
+  }, []);
+
   //TO-DO: DİĞER BUTONLARIN ACTIVE OPACITY PROP'U 0.6 OLARAK AYARLANACAK!!!!
   const logOut = () => {
     auth
@@ -20,10 +38,25 @@ const AuthProfile = ({ user, navigation }) => {
     <View style={styles.container}>
       <View style={styles.profileContainer}>
         <Text style={styles.profileText}>Profil</Text>
-        <AuthProfileCard userName={user.displayName} displayPhoto={true} displayEditProfileText={true} />
-        <AuthProfileCard userName={user.displayName} displayPhoto={false} displayEditProfileText={false} />
+        <AuthProfileCard
+          userName={user.displayName}
+          displayPhoto={true}
+          displayEditProfileText={true}
+          navigation={navigation}
+          routeName={"EditProfileScreen"}
+        />
+        <AuthProfileCard
+          userName={user.displayName}
+          displayPhoto={false}
+          displayEditProfileText={false}
+          navigation={navigation}
+        />
       </View>
-      <TouchableOpacity style={styles.logOutButton} activeOpacity={0.6} onPress={logOut}>
+      <TouchableOpacity
+        style={styles.logOutButton}
+        activeOpacity={0.6}
+        onPress={logOut}
+      >
         <Text style={styles.logOutText}>Çıkış Yap</Text>
       </TouchableOpacity>
     </View>
@@ -40,7 +73,7 @@ const styles = StyleSheet.create({
   profileContainer: {
     marginHorizontal: 16,
     gap: 20,
-    flex: 1
+    flex: 1,
   },
   profileText: {
     fontSize: 26,
@@ -58,11 +91,11 @@ const styles = StyleSheet.create({
     marginTop: 20,
     alignItems: "center",
     marginHorizontal: 16,
-    marginBottom: 20
+    marginBottom: 20,
   },
   logOutText: {
     color: "white",
     fontSize: 16,
     fontWeight: "bold",
-  }
+  },
 });
