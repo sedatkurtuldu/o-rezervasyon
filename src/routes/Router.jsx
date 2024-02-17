@@ -140,7 +140,8 @@ const Router = () => {
       <Stack.Screen
         options={{
           headerShown: true,
-          headerTitle: "",
+          headerTitle: "Kişisel Bilgileri Düzenle",
+          headerTitleAlign: 'center',
           headerShadowVisible: false,
         }}
         name="EditProfileScreen"

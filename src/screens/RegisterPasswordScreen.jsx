@@ -10,7 +10,8 @@ import { Feather } from "@expo/vector-icons";
 import { auth } from "../service/firebase";
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile } from "@firebase/auth";
 import { useDispatch } from "react-redux";
-import { setPhone } from "../slices/userPhoneSlice";
+import { setPhone } from "../slices/userSlice";
+import { setName, setSurname } from "../slices/userSlice";
 
 const RegisterPasswordScreen = ({ route, navigation }) => {
   const { values } = route.params;
@@ -24,6 +25,8 @@ const RegisterPasswordScreen = ({ route, navigation }) => {
 
   useEffect(() => {
     dispatch(setPhone(values.phone));
+    dispatch(setName(values.name));
+    dispatch(setSurname(values.surname));
   }, [])
   
   const toggleShowPassword = (type) => {
@@ -57,9 +60,9 @@ const RegisterPasswordScreen = ({ route, navigation }) => {
       try {
         await createUserWithEmailAndPassword(auth, values.email, confirmPassword);
 
-        await updateProfile(auth.currentUser, {
-          displayName: values.name
-        });
+        // await updateProfile(auth.currentUser, {
+        //   displayName: values.name
+        // });
 
         await signInWithEmailAndPassword(auth, values.email, confirmPassword);
         

@@ -1,10 +1,12 @@
 import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { AntDesign } from "@expo/vector-icons";
 import { Ionicons } from "@expo/vector-icons";
 
 const AuthProfileCard = ({
   userName,
+  surname,
+  phoneNumber,
   displayPhoto,
   displayEditProfileText,
   navigation,
@@ -13,9 +15,8 @@ const AuthProfileCard = ({
 
   const handleNavigation = () => {
     if (routeName !== undefined) {
-      navigation.navigate(routeName);
-    }
-    else {
+      navigation.navigate(routeName, { name: userName, surname: surname, phoneNumber: phoneNumber });
+    } else {
       return;
     }
   };
@@ -40,7 +41,7 @@ const AuthProfileCard = ({
 
         {displayEditProfileText ? (
           <View style={styles.cardTextContainer}>
-            <Text style={styles.userName}>{userName}</Text>
+            <Text style={styles.userName}>{userName} {surname}</Text>
             <Text style={styles.editProfileText}>
               Kişisel Bilgileri Düzenle
             </Text>

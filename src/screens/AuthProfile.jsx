@@ -1,25 +1,44 @@
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { auth, db } from "../service/firebase";
 import AuthProfileCard from "../components/AuthProfileCard";
 import { addDoc, collection } from "firebase/firestore";
-import { useSelector } from "react-redux";
+import { getUser } from "../service/api";
 
 const AuthProfile = ({ user, navigation }) => {
+  const [userData, setUserData] = useState({
+    name: "",
+    surname: "",
+    phoneNumber: "",
+  });
 
-  const { phone } = useSelector((state) => state.userPhone);
-
-  const handleAddCollection = async (phone) => {
-    await addDoc(collection(db, "userPhoneNumbers"), {
-      UserId: auth.currentUser.uid,
-      PhoneNumber: phone,
-    });
+  const handleAddCollection = async () => {
+    const existingUser = await getUser(auth.currentUser.uid);
+    if (!existingUser) {
+      await addDoc(collection(db, "users"), {
+        UserId: auth.currentUser.uid,
+        Name: userData.name,
+        Surname: userData.surname,
+        PhoneNumber: userData.phoneNumber,
+      });
+    }
   };
 
   useEffect(() => {
-    if (phone !== undefined && phone) {
-      handleAddCollection(phone);
+    if (userData.name !== undefined && userData.name) {
+      handleAddCollection();
     }
+
+    const handleUser = async () => {
+      const data = await getUser(auth.currentUser.uid);
+      setUserData({
+        name: data.Name,
+        surname: data.Surname,
+        phoneNumber: data.PhoneNumber,
+      });
+    };
+
+    handleUser();
   }, []);
 
   //TO-DO: DİĞER BUTONLARIN ACTIVE OPACITY PROP'U 0.6 OLARAK AYARLANACAK!!!!
@@ -39,14 +58,15 @@ const AuthProfile = ({ user, navigation }) => {
       <View style={styles.profileContainer}>
         <Text style={styles.profileText}>Profil</Text>
         <AuthProfileCard
-          userName={user.displayName}
+          userName={userData.name}
+          surname={userData.surname}
+          phoneNumber={userData.phoneNumber}
           displayPhoto={true}
           displayEditProfileText={true}
           navigation={navigation}
           routeName={"EditProfileScreen"}
         />
         <AuthProfileCard
-          userName={user.displayName}
           displayPhoto={false}
           displayEditProfileText={false}
           navigation={navigation}
