@@ -15,6 +15,8 @@ export const getHotels = async () => {
       name: hotel.name,
       city: hotel.city,
       district: hotel.district,
+      latitude: hotel.latitude,
+      longitude: hotel.longitude,
       description: hotel.description,
       price: hotel.price,
     };
