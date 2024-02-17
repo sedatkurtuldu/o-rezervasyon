@@ -43,6 +43,22 @@ export const getHotelImages = async (id) => {
   return getHotelImages;
 };
 
+export const getAllHotelImages = async () => {
+  const allHotelImagesCollection = collection(db, HOTEL_IMAGES_TABLE);
+  const snapshot = await getDocs(allHotelImagesCollection);
+
+  const getAllHotelImages = snapshot.docs.map((doc) => {
+    const id = doc.id;
+    const image = doc.data();
+    return {
+      id: id,
+      HotelId: image.HotelId,
+      imageUrl: image.imageUrl,
+    };
+  });
+  return getAllHotelImages;
+};
+
 const USERS_TABLE = 'users';
 
 export const getUser = async (id) => {
