@@ -119,17 +119,20 @@ export const getRoomTypes = async (id) => {
     return {
       id: id,
       RoomName: roomTypes.RoomName,
+      BedType: roomTypes.BedType,
       Status: roomTypes.Status,
     };
   });
 
   const roomTypeMappings = await getRoomsAndTypesMapping(id);
 
-  const mappedData = getRoomTypes.filter((type) => {
-    return roomTypeMappings.some((mapping) => {
-      return mapping.RoomTypeId === type.id && mapping.Status === 1;
-    });
-  });
+  const mappedData = getRoomTypes
+    .filter((type) => {
+      return roomTypeMappings.some((mapping) => {
+        return mapping.RoomTypeId === type.id && mapping.Status === 1;
+      });
+    })
+    .sort((a, b) => a.RoomName.localeCompare(b.RoomName));
 
   return mappedData;
 };
