@@ -12,10 +12,13 @@ import {
 import Carousel from 'react-native-reanimated-carousel';
 import { Ionicons } from '@expo/vector-icons';
 import { getHotelImages } from '../service/api';
+import { useNavigation } from '@react-navigation/native';
 
 const width = Dimensions.get('window').width;
 
-const HomeScreenCard = ({ data }) => { 
+const HomeScreenCard = ({ data }) => {
+
+  const navigation = useNavigation();
 
   const [isFavorite, setIsFavorite] = useState(false);
   const [hotelImages, setHotelImages] = useState([]);
@@ -37,8 +40,12 @@ const HomeScreenCard = ({ data }) => {
     fetchData();
   }, []);
 
+  const navigateToDetailPage = () => {
+    navigation.navigate("HotelDetailPage", { data })
+  }
+
   return (
-    <Pressable style={styles.card}>
+    <Pressable onPress={navigateToDetailPage} style={styles.card}>
       <TouchableOpacity style={styles.favIcon} onPress={handleFavIconPress}>
         {isFavorite ? (
           <View>

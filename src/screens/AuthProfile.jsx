@@ -10,6 +10,7 @@ import { setName, setPhone, setSurname } from "../slices/userSlice";
 
 const AuthProfile = ({ navigation }) => {
   //TO-DO: DİĞER BUTONLARIN ACTIVE OPACITY PROP'U 0.6 OLARAK AYARLANACAK!!!!
+  //TO-DO: REGİSTER OLURKEN PROMISE UNRESOLVE HATASI VAR ONA BAK!!!
   const dispatch = useDispatch();
   const user = useSelector((state) => state.user);
   const isUpdated = useSelector((state) => state.isUpdated);

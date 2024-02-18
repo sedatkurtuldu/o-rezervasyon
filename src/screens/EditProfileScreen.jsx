@@ -18,68 +18,49 @@ const EditProfileScreen = ({ route, navigation }) => {
   const [name, setName] = useState(route.params.name);
   const [surname, setSurname] = useState(route.params.surname);
   const [phoneNumber, setPhoneNumber] = useState(route.params.phoneNumber);
-  const [newEmail, setNewEmail] = useState(auth.currentUser.email);
 
   const dispatch = useDispatch();
 
   const handleUpdate = async () => {
-    if (newEmail === auth.currentUser.email) {
-      const data = await getUser(auth.currentUser.uid);
+    const data = await getUser(auth.currentUser.uid);
 
-      const updatedUserData = {
-        ...data,
-        Name: name,
-        Surname: surname,
-        PhoneNumber: phoneNumber,
-      };
+    const updatedUserData = {
+      ...data,
+      Name: name,
+      Surname: surname,
+      PhoneNumber: phoneNumber,
+    };
 
-      const userRef = doc(db, "users", updatedUserData.id);
-      try {
-        await updateDoc(userRef, updatedUserData);
-        Alert.alert("Başarılı!", "Kullanıcı bilgileriniz güncellendi.", [
+    const userRef = doc(db, "users", updatedUserData.id);
+    try {
+      await updateDoc(userRef, updatedUserData);
+      dispatch(setIsUpdated(true));
+      Alert.alert("Başarılı!", "Kullanıcı bilgileriniz güncellendi.", [
+        {
+          text: "TAMAM",
+          onPress: () => {
+            navigation.navigate("Profile");
+          },
+        },
+      ]);
+    } catch (error) {
+      Alert.alert(
+        "Başarısız!",
+        "Kullanıcı bilgileri güncellenirken hata oluştu.",
+        [
           {
             text: "TAMAM",
-            onPress: () => {
-              navigation.navigate("Profile");
-              dispatch(setIsUpdated(true))
-            },
           },
-        ]);
-      } catch (error) {
-        Alert.alert(
-          "Başarısız!",
-          "Kullanıcı bilgileri güncellenirken hata oluştu.",
-          [
-            {
-              text: "TAMAM",
-            },
-          ]
-        );
+        ]
+      );
 
-        console.error("Kullanıcı bilgileri güncellenirken hata oluştu:", error);
-      }
-      return;
-    } else {
-      verifyBeforeUpdateEmail(auth.currentUser, newEmail)
-        .then(() => {
-          Alert.alert(
-            "Başarılı!",
-            "Eski mailinize e-posta güncelleme için doğrulama maili gönderilmiştir. Doğrulamanızı sağladıktan sonra mailiniz güncellenecektir.",
-            [
-              {
-                text: "TAMAM",
-                onPress: () => {
-                  auth.signOut();
-                  navigation.replace("LoginScreen");
-                },
-              },
-            ]
-          );
-        })
-        .catch((error) => {
-          console.error("Başarısız!", error.message);
-        });
+      console.error("Kullanıcı bilgileri güncellenirken hata oluştu:", error);
     }
+    return;
+  };
+
+  const navigateToEmailScreen = () => {
+    navigation.navigate("EditEmailScreen");
   };
 
   return (
@@ -98,13 +79,6 @@ const EditProfileScreen = ({ route, navigation }) => {
       />
       <TextInput
         style={styles.input}
-        placeholder="E-Posta Adresi"
-        keyboardType="email-address"
-        value={newEmail}
-        onChangeText={setNewEmail}
-      />
-      <TextInput
-        style={styles.input}
         placeholder="Telefon"
         keyboardType="phone-pad"
         value={phoneNumber}
@@ -114,6 +88,16 @@ const EditProfileScreen = ({ route, navigation }) => {
       <TouchableOpacity onPress={handleUpdate} style={styles.button}>
         <Text style={styles.buttonText}>Kaydet</Text>
       </TouchableOpacity>
+
+      <View style={styles.emailContainer}>
+        <View>
+          <Text style={styles.emailText}>E-Posta</Text>
+          <Text style={styles.emailEmail}>{auth.currentUser.email}</Text>
+        </View>
+        <TouchableOpacity onPress={navigateToEmailScreen} activeOpacity={0.6}>
+          <Text style={styles.editText}>Düzenle</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 };
@@ -144,6 +128,23 @@ const styles = StyleSheet.create({
   buttonText: {
     color: "white",
     fontSize: 16,
+    fontWeight: "bold",
+  },
+  emailContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginTop: 30,
+  },
+  emailText: {
+    fontWeight: "bold",
+    fontSize: 18,
+  },
+  emailEmail: {
+    color: "#898989",
+  },
+  editText: {
+    textDecorationLine: "underline",
     fontWeight: "bold",
   },
 });

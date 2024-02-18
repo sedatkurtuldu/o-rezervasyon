@@ -14,6 +14,8 @@ import RegisterPasswordScreen from "../screens/RegisterPasswordScreen";
 import LoginScreen from "../screens/LoginScreen";
 import { auth } from "../service/firebase";
 import EditProfileScreen from "../screens/EditProfileScreen";
+import EditEmailScreen from "../screens/EditEmailScreen";
+import HotelDetailPage from "../screens/HotelDetailPage";
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -145,6 +147,26 @@ const Router = () => {
         }}
         name="EditProfileScreen"
         component={EditProfileScreen}
+      />
+
+      <Stack.Screen
+        options={{
+          headerShown: true,
+          headerTitle: "Email Düzenle",
+          headerTitleAlign: "center",
+          headerShadowVisible: false,
+          presentation: "modal",
+        }}
+        name="EditEmailScreen"
+        component={EditEmailScreen}
+      />
+
+      <Stack.Screen
+        options={{
+          headerShadowVisible: false
+        }}
+        name="HotelDetailPage"
+        component={HotelDetailPage}
       />
     </Stack.Navigator>
   );
