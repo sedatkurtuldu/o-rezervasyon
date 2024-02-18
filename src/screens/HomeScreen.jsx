@@ -62,13 +62,17 @@ const HomeScreen = () => {
       }
     };
 
+    const alwaysOnBottomSheet = () => {
+      bottomSheetRef.current?.openBottomSheet();
+    };
+
     requestLocationPermission();
 
     fetchHotels();
 
     fetchHotelImages();
 
-    bottomSheetRef.current?.openBottomSheet();
+    alwaysOnBottomSheet();
   }, []);
 
   const handleHotelSelect = async (id) => {

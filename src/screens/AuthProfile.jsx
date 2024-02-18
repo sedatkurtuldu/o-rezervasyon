@@ -6,46 +6,21 @@ import { addDoc, collection } from "firebase/firestore";
 import { getUser } from "../service/api";
 import { useDispatch, useSelector } from "react-redux";
 import { setIsUpdated } from "../slices/isEditUpdated";
+import { setName, setPhone, setSurname } from "../slices/userSlice";
 
 const AuthProfile = ({ navigation }) => {
-
   //TO-DO: DİĞER BUTONLARIN ACTIVE OPACITY PROP'U 0.6 OLARAK AYARLANACAK!!!!
-  const [userData, setUserData] = useState({
-    name: "",
-    surname: "",
-    phoneNumber: "",
-  });
-
   const dispatch = useDispatch();
+  const user = useSelector((state) => state.user);
   const isUpdated = useSelector((state) => state.isUpdated);
 
-  const handleAddCollection = async () => {
-    const existingUser = await getUser(auth.currentUser.uid);
-    if (!existingUser) {
-      await addDoc(collection(db, "users"), {
-        UserId: auth.currentUser.uid,
-        Name: userData.name,
-        Surname: userData.surname,
-        PhoneNumber: userData.phoneNumber,
-      });
-    }
-  };
-
   useEffect(() => {
-    if (userData.name !== undefined && userData.name) {
-      handleAddCollection();
-    }
-
     const fetchData = async () => {
       const data = await getUser(auth.currentUser.uid);
-      setUserData({
-        name: data.Name,
-        surname: data.Surname,
-        phoneNumber: data.PhoneNumber,
-      });
+      dispatch(setName(data.Name));
+      dispatch(setSurname(data.Surname));
+      dispatch(setPhone(data.PhoneNumber));
     };
-  
-    fetchData();
 
     if (isUpdated) {
       fetchData();
@@ -69,15 +44,19 @@ const AuthProfile = ({ navigation }) => {
       <View style={styles.profileContainer}>
         <Text style={styles.profileText}>Profil</Text>
         <AuthProfileCard
-          userName={userData.name}
-          surname={userData.surname}
-          phoneNumber={userData.phoneNumber}
+          userName={user.name}
+          surname={user.surname}
+          phoneNumber={user.phone}
           displayPhoto={true}
           displayEditProfileText={true}
           navigation={navigation}
           routeName={"EditProfileScreen"}
         />
+
         <AuthProfileCard
+          userName={user.name}
+          surname={user.surname}
+          phoneNumber={user.phone}
           displayPhoto={false}
           displayEditProfileText={false}
           navigation={navigation}

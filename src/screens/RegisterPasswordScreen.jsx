@@ -7,11 +7,12 @@ import {
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import { Feather } from "@expo/vector-icons";
-import { auth } from "../service/firebase";
+import { auth, db } from "../service/firebase";
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile } from "@firebase/auth";
 import { useDispatch } from "react-redux";
-import { setPhone } from "../slices/userSlice";
+import { setPhone, setUserId } from "../slices/userSlice";
 import { setName, setSurname } from "../slices/userSlice";
+import { addDoc, collection } from "firebase/firestore";
 
 const RegisterPasswordScreen = ({ route, navigation }) => {
   const { values } = route.params;
@@ -47,6 +48,17 @@ const RegisterPasswordScreen = ({ route, navigation }) => {
     setPasswordMismatch(false);
   };
 
+  const handleAddUser = async () => {
+    dispatch(setUserId(auth.currentUser.uid));
+    await addDoc(collection(db, "users"), {
+      UserId: auth.currentUser.uid,
+      Name: values.name,
+      Surname: values.surname,
+      PhoneNumber: values.phone,
+    });
+  };
+
+
   const handleRegister = async () => {
     if (
       password !== confirmPassword &&
@@ -65,6 +77,8 @@ const RegisterPasswordScreen = ({ route, navigation }) => {
         });
 
         await signInWithEmailAndPassword(auth, values.email, confirmPassword);
+
+        await handleAddUser();
         
         navigation.navigate("Profile")
 
