@@ -344,8 +344,16 @@ const styles = StyleSheet.create({
     bottom: 70,
     right: 10,
     backgroundColor: "white",
-    opacity: 0.8,
+    opacity: 0.7,
     padding: 6,
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.22,
+    shadowRadius: 2.22,
+    elevation: 6,
+    borderRadius: 2
   },
   reservationContainer: {
     backgroundColor: "white",
