@@ -22,6 +22,7 @@ const HotelDetailPage = ({ route }) => {
   const [hotelImages, setHotelImages] = useState([]);
   const [roomTypes, setRoomTypes] = useState([]);
   const [isFavorite, setIsFavorite] = useState(false);
+  const [showFullDescription, setShowFullDescription] = useState(false);
 
   useEffect(() => {
     const fetchHotelImages = async () => {
@@ -41,6 +42,10 @@ const HotelDetailPage = ({ route }) => {
 
   const handleFavIconPress = () => {
     setIsFavorite(!isFavorite);
+  };
+
+  const toggleDescription = () => {
+    setShowFullDescription(!showFullDescription);
   };
 
   return (
@@ -105,7 +110,31 @@ const HotelDetailPage = ({ route }) => {
         )}
         <View style={styles.line}></View>
         <View>
+          {data.description.length > 250 ? (
+            showFullDescription ? (
+              <Text>{data.description}</Text>
+            ) : (
+              <Text>
+                {data.description.substring(0, 250)}...
+                <Text
+                  style={{ color: "#595959", textDecorationLine: "underline" }}
+                  onPress={toggleDescription}
+                >
+                  Daha Fazla Göster
+                </Text>
+              </Text>
+            )
+          ) : (
             <Text>{data.description}</Text>
+          )}
+          {data.description.length > 250 && showFullDescription && (
+            <Text
+              style={{ color: "#595959", textDecorationLine: "underline" }}
+              onPress={toggleDescription}
+            >
+              Daha Az Göster
+            </Text>
+          )}
         </View>
       </View>
     </View>
@@ -164,6 +193,6 @@ const styles = StyleSheet.create({
     height: 1,
     backgroundColor: "gray",
     marginVertical: 16,
-    opacity: 0.6
+    opacity: 0.6,
   },
 });
