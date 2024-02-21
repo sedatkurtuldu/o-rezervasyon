@@ -59,7 +59,7 @@ const HomeScreenCard = ({ data, navigation }) => {
           style={{
             flexDirection: "row",
             alignItems: "center",
-            gap: 3,
+            gap: 2,
           }}
         >
           <Text>En Yakın: </Text>
@@ -91,7 +91,7 @@ const HomeScreenCard = ({ data, navigation }) => {
               style={{
                 flexDirection: "row",
                 alignItems: "center",
-                gap: 3,
+                gap: 2,
               }}
             >
               <Text>En Yakın: </Text>
