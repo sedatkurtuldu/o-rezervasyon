@@ -10,25 +10,25 @@ import {
 } from "react-native";
 import React, { useEffect, useRef, useState } from "react";
 import Carousel from "react-native-reanimated-carousel";
-import { getHotelImages, getRoomTypes } from "../service/api";
+import { getBookedRooms, getHotelImages, getRoomTypes } from "../service/api";
 import { AntDesign } from "@expo/vector-icons";
-import { useNavigation } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons";
 import MapView, { Marker } from "react-native-maps";
 import { SimpleLineIcons } from "@expo/vector-icons";
+import moment from "moment";
 
 const width = Dimensions.get("window").width;
 
-const HotelDetailPage = ({ route }) => {
+const HotelDetailPage = ({ navigation, route }) => {
   const data = route.params.data;
 
-  const navigation = useNavigation();
   const mapRef = useRef(null);
   const [hotelRegion, setHotelRegion] = useState(null);
   const [hotelImages, setHotelImages] = useState([]);
   const [roomTypes, setRoomTypes] = useState([]);
   const [isFavorite, setIsFavorite] = useState(false);
   const [showFullDescription, setShowFullDescription] = useState(false);
+  const [endDate, setEndDate] = useState("");
 
   useEffect(() => {
     const fetchHotelImages = async () => {
@@ -39,6 +39,12 @@ const HotelDetailPage = ({ route }) => {
     const roomTypes = async () => {
       const roomTypes = await getRoomTypes(data.id);
       setRoomTypes(roomTypes);
+    };
+
+    const fetchBookedRoomsForEndDate = async () => {
+      const bookedRooms = await getBookedRooms(data.id);
+      const endDate = getEndDate(bookedRooms);
+      setEndDate(endDate);
     };
 
     const userLocation = async () => {
@@ -55,6 +61,8 @@ const HotelDetailPage = ({ route }) => {
     roomTypes();
 
     fetchHotelImages();
+
+    fetchBookedRoomsForEndDate();
   }, []);
 
   const handleFavIconPress = () => {
@@ -76,6 +84,23 @@ const HotelDetailPage = ({ route }) => {
       },
       1000
     );
+  };
+
+  const handleReservation = () => {
+    navigation.navigate("Booking", { data });
+  };
+
+  const getEndDate = (bookedRooms) => {
+    if (bookedRooms.length === 1) {
+      return moment(bookedRooms[0].EndDate).add(1, "days").format("D MMM");
+    } else if (bookedRooms.length > 1) {
+      const maxEndDate = moment.max(
+        bookedRooms.map((room) => moment(room.EndDate))
+      );
+      return maxEndDate.add(1, "days").format("D MMM");
+    } else {
+      return moment().add(1, "days").format("D MMM");
+    }
   };
 
   const renderFlatListItem = ({ item }) => {
@@ -240,12 +265,16 @@ const HotelDetailPage = ({ route }) => {
         <View style={styles.reservationTextContainer}>
           <View style={styles.reservationPriceContainer}>
             <Text style={styles.priceText}>{data.price} ₺</Text>
-            <Text style={{ color: '#595959' }}>gece</Text>
+            <Text style={{ color: "#595959" }}>gece</Text>
           </View>
-          <Text style={{ textDecorationLine: 'underline' }}>20-26 Nisan</Text>
+          <Text style={{ textDecorationLine: "underline" }}>{endDate}</Text>
         </View>
         <View style={styles.reservationButtonContainer}>
-          <TouchableOpacity style={styles.reservationButton} activeOpacity={0.6}>
+          <TouchableOpacity
+            onPress={handleReservation}
+            style={styles.reservationButton}
+            activeOpacity={0.6}
+          >
             <Text style={styles.reservationText}>Rezerve Edin</Text>
           </TouchableOpacity>
         </View>
@@ -353,7 +382,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.22,
     shadowRadius: 2.22,
     elevation: 6,
-    borderRadius: 2
+    borderRadius: 2,
   },
   reservationContainer: {
     backgroundColor: "white",
@@ -367,32 +396,32 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.22,
     shadowRadius: 2.22,
     elevation: 6,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
   },
   reservationTextContainer: {
-    marginHorizontal: 20
+    marginHorizontal: 20,
   },
   reservationPriceContainer: {
-    flexDirection: 'row',
-    gap: 8
+    flexDirection: "row",
+    gap: 8,
   },
   priceText: {
-    fontWeight: 'bold',
-    fontSize: 16
+    fontWeight: "bold",
+    fontSize: 16,
   },
   reservationButtonContainer: {
     marginHorizontal: 20,
   },
   reservationButton: {
-    backgroundColor: '#cb1d53',
+    backgroundColor: "#cb1d53",
     padding: 10,
     borderRadius: 10,
   },
   reservationText: {
-    color: 'white',
-    fontWeight: '500',
-    fontSize: 16
-  }
+    color: "white",
+    fontWeight: "500",
+    fontSize: 16,
+  },
 });

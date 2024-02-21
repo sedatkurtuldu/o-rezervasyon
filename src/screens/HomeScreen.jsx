@@ -18,7 +18,7 @@ import Carousel from "react-native-reanimated-carousel";
 
 const width = Dimensions.get("window").width;
 
-const HomeScreen = () => {
+const HomeScreen = ({ navigation }) => {
   const mapRef = useRef(null);
   const bottomSheetRef = useRef(null);
   const [initialRegion, setInitialRegion] = useState(null);
@@ -152,7 +152,7 @@ const HomeScreen = () => {
           keyExtractor={(item) => item.id.toString()}
           showsHorizontalScrollIndicator={false}
         />
-        <MyBottomSheet ref={bottomSheetRef} />
+        <MyBottomSheet ref={bottomSheetRef} navigation={navigation} />
       </GestureHandlerRootView>
     </BottomSheetModalProvider>
   );

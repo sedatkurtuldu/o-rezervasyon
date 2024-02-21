@@ -136,3 +136,28 @@ export const getRoomTypes = async (id) => {
 
   return mappedData;
 };
+
+const BOOKEDROOMS_TABLE = "bookedRoomes";
+
+export const getBookedRooms = async (id) => {
+  const bookedRoomsCollection = collection(db, BOOKEDROOMS_TABLE);
+  const q = query(bookedRoomsCollection, where("HotelId", "==", id));
+  const snapshot = await getDocs(q);
+
+  const getBookedRooms = snapshot.docs.map((doc) => {
+    const id = doc.id;
+    const bookedRoom = doc.data();
+    return {
+      id: id,
+      HotelId: bookedRoom.HotelId,
+      RoomTypeId: bookedRoom.RoomTypeId,
+      UserId: bookedRoom.UserId,
+      StartDate: bookedRoom.StartDate,
+      EndDate: bookedRoom.EndDate,
+      AdultCount: bookedRoom.AdultCount,
+      BabyCount: bookedRoom.BabyCount,
+      Status: bookedRoom.Status,
+    };
+  });
+  return getBookedRooms;
+};

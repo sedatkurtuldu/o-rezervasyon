@@ -37,7 +37,7 @@ const EditEmailScreen = ({ navigation }) => {
         value={email}
         onChangeText={setEmail}
       />
-      <TouchableOpacity onPress={handleEmailUpdate} style={styles.button}>
+      <TouchableOpacity activeOpacity={0.6} onPress={handleEmailUpdate} style={styles.button}>
         <Text style={styles.buttonText}>Kaydet</Text>
       </TouchableOpacity>
     </View>

@@ -16,6 +16,7 @@ import { auth } from "../service/firebase";
 import EditProfileScreen from "../screens/EditProfileScreen";
 import EditEmailScreen from "../screens/EditEmailScreen";
 import HotelDetailPage from "../screens/HotelDetailPage";
+import Booking from "../screens/Booking";
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -167,6 +168,16 @@ const Router = () => {
         }}
         name="HotelDetailPage"
         component={HotelDetailPage}
+      />
+      <Stack.Screen
+        options={{
+          headerShown: true,
+          headerTitle: "Rezervasyon Yap",
+          headerTitleAlign: "center",
+          headerShadowVisible: false
+        }}
+        name="Booking"
+        component={Booking}
       />
     </Stack.Navigator>
   );
