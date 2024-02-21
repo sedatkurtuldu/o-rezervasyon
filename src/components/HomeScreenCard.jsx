@@ -55,9 +55,18 @@ const HomeScreenCard = ({ data, navigation }) => {
     if (bookedRooms.length === 0) {
       const roomEndDatePlusOne = moment().add(1, "days");
       return (
-        <Text style={{ textDecorationLine: "underline", marginTop: 6 }}>
-          {roomEndDatePlusOne.format("D MMM")}
-        </Text>
+        <View
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+            gap: 3,
+          }}
+        >
+          <Text>En Yakın: </Text>
+          <Text style={{ textDecorationLine: "underline" }}>
+            {roomEndDatePlusOne.format("D MMM")}
+          </Text>
+        </View>
       );
     }
 
@@ -77,12 +86,19 @@ const HomeScreenCard = ({ data, navigation }) => {
             roomEndDatePlusOne = maxEndDate.add(1, "days");
           }
           return (
-            <Text
+            <View
               key={room.id}
-              style={{ textDecorationLine: "underline", marginTop: 6 }}
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                gap: 3,
+              }}
             >
-              {roomEndDatePlusOne.format("D MMM")}
-            </Text>
+              <Text>En Yakın: </Text>
+              <Text style={{ textDecorationLine: "underline" }}>
+                {roomEndDatePlusOne.format("D MMM")}
+              </Text>
+            </View>
           );
         })}
       </>

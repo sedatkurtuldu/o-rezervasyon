@@ -267,7 +267,16 @@ const HotelDetailPage = ({ navigation, route }) => {
             <Text style={styles.priceText}>{data.price} ₺</Text>
             <Text style={{ color: "#595959" }}>gece</Text>
           </View>
-          <Text style={{ textDecorationLine: "underline" }}>{endDate}</Text>
+          <View
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              gap: 2,
+            }}
+          >
+            <Text>En Yakın: </Text>
+            <Text style={{ textDecorationLine: "underline" }}>{endDate}</Text>
+          </View>
         </View>
         <View style={styles.reservationButtonContainer}>
           <TouchableOpacity
