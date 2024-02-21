@@ -143,10 +143,10 @@ const HomeScreenCard = ({ data, navigation }) => {
       />
       <View style={styles.contentContainer}>
         <View style={styles.content}>
-          <Text style={styles.title}>
+          <Text style={styles.title}>{data.name}</Text>
+          <Text style={{ marginBottom: 3, fontWeight: '500', fontSize: 15 }}>
             {data.district}, {data.city}
           </Text>
-          <Text>{data.name}</Text>
           <EndDates />
         </View>
         <View style={styles.priceContainer}>
@@ -189,7 +189,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 18,
     fontWeight: "bold",
-    marginBottom: 5,
+    marginBottom: 3,
   },
   priceContainer: {
     justifyContent: "flex-end",
