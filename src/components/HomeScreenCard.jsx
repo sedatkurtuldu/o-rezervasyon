@@ -1,5 +1,4 @@
-// HomeScreenCard.js
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import {
   View,
   Text,
@@ -11,21 +10,23 @@ import {
 } from "react-native";
 import Carousel from "react-native-reanimated-carousel";
 import { Ionicons } from "@expo/vector-icons";
-import { getBookedRooms, getHotelImages } from "../service/api";
+import { getBookedRoom, getBookedRooms, getHotelImages } from "../service/api";
 import moment from "moment";
 import "moment/locale/tr";
+import { db } from "../service/firebase";
+import { doc, updateDoc } from "firebase/firestore";
 
 const width = Dimensions.get("window").width;
 moment.locale("tr");
 
-const HomeScreenCard = ({ data, navigation }) => {
+const HomeScreenCard = React.memo(({ data, navigation }) => {
   const [isFavorite, setIsFavorite] = useState(false);
   const [hotelImages, setHotelImages] = useState([]);
   const [bookedRooms, setBookedRooms] = useState([]);
 
-  const handleFavIconPress = () => {
-    setIsFavorite(!isFavorite);
-  };
+  const handleFavIconPress = useCallback(() => {
+    setIsFavorite((prevIsFavorite) => !prevIsFavorite);
+  }, []);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -47,11 +48,21 @@ const HomeScreenCard = ({ data, navigation }) => {
     };
 
     fetchData();
-
     fetchBookedRooms();
-  }, []);
+  }, [data.id]);
 
-  const EndDates = () => {
+  const EndDates = useCallback(() => {
+    const updateBookedRoomStatus = async (id) => {
+      const data = await getBookedRoom(id);
+      const updatedBookedRoomData = {
+        ...data,
+        Status: 0,
+      };
+
+      const bookedRoomRef = doc(db, "bookedRooms", id);
+      await updateDoc(bookedRoomRef, updatedBookedRoomData);
+    };
+
     if (bookedRooms.length === 0) {
       const roomEndDatePlusOne = moment().add(1, "days");
       return (
@@ -79,11 +90,18 @@ const HomeScreenCard = ({ data, navigation }) => {
               1,
               "days"
             );
+            if (roomEndDatePlusOne.isBefore(moment())) {
+              updateBookedRoomStatus(room.id);
+            }
           } else if (bookedRooms.length > 1) {
             const maxEndDate = moment.max(
               bookedRooms.map((room) => moment(room.EndDate, "YYYY-MM-DD"))
             );
             roomEndDatePlusOne = maxEndDate.add(1, "days");
+            console.log("roomEndDatePlusOne:", roomEndDatePlusOne);
+            if (roomEndDatePlusOne.isBefore(moment(), "day")) {
+              updateBookedRoomStatus(room.id);
+            }
           }
           return (
             <View
@@ -103,11 +121,11 @@ const HomeScreenCard = ({ data, navigation }) => {
         })}
       </>
     );
-  };
+  }, [bookedRooms]);
 
-  const navigateToDetailPage = () => {
+  const navigateToDetailPage = useCallback(() => {
     navigation.navigate("HotelDetailPage", { data });
-  };
+  }, [data, navigation]);
 
   return (
     <Pressable onPress={navigateToDetailPage} style={styles.card}>
@@ -144,7 +162,7 @@ const HomeScreenCard = ({ data, navigation }) => {
       <View style={styles.contentContainer}>
         <View style={styles.content}>
           <Text style={styles.title}>{data.name}</Text>
-          <Text style={{ marginBottom: 3, fontWeight: '500', fontSize: 15 }}>
+          <Text style={{ marginBottom: 3, fontWeight: "500", fontSize: 15 }}>
             {data.district}, {data.city}
           </Text>
           <EndDates />
@@ -158,7 +176,7 @@ const HomeScreenCard = ({ data, navigation }) => {
       </View>
     </Pressable>
   );
-};
+});
 
 export default HomeScreenCard;
 

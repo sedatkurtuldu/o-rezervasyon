@@ -89,7 +89,7 @@ const Booking = ({ route }) => {
         <Text style={styles.cardText}>İptal Politikası</Text>
         <Text>
           48 saat süresince ücretsiz iptal hakkınız vardır. İptal işlemini
-          rezervasyonlarım sayfasından kolaylıkça gerçekleştirebilirsiniz.
+          rezervasyonlarım sayfasından kolaylıkla gerçekleştirebilirsiniz.
         </Text>
       </View>
       <Line />

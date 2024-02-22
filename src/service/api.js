@@ -141,7 +141,11 @@ const BOOKEDROOMS_TABLE = "bookedRoomes";
 
 export const getBookedRooms = async (id) => {
   const bookedRoomsCollection = collection(db, BOOKEDROOMS_TABLE);
-  const q = query(bookedRoomsCollection, where("HotelId", "==", id));
+  const q = query(
+    bookedRoomsCollection,
+    where("HotelId", "==", id),
+    where("Status", "==", 1)
+  );
   const snapshot = await getDocs(q);
 
   const getBookedRooms = snapshot.docs.map((doc) => {
@@ -160,4 +164,32 @@ export const getBookedRooms = async (id) => {
     };
   });
   return getBookedRooms;
+};
+
+export const getBookedRoom = async (id) => {
+  const bookedRoomsCollection = collection(db, BOOKEDROOMS_TABLE);
+  const q = query(
+    bookedRoomsCollection,
+    where("id", "==", id),
+    where("Status", "==", 1)
+  );
+  const snapshot = await getDocs(q);
+
+  if (!snapshot.empty) {
+    const doc = snapshot.docs[0];
+    const bookedRoom = {
+      id: doc.id,
+      HotelId:  doc.data().HotelId,
+      RoomTypeId:  doc.data().RoomTypeId,
+      UserId:  doc.data().UserId,
+      StartDate:  doc.data().StartDate,
+      EndDate:  doc.data().EndDate,
+      AdultCount:  doc.data().AdultCount,
+      BabyCount:  doc.data().BabyCount,
+      Status:  doc.data().Status,
+    };
+    return bookedRoom;
+  } else {
+    return null;
+  }
 };
