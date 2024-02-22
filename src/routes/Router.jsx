@@ -17,6 +17,7 @@ import EditProfileScreen from "../screens/EditProfileScreen";
 import EditEmailScreen from "../screens/EditEmailScreen";
 import HotelDetailPage from "../screens/HotelDetailPage";
 import Booking from "../screens/Booking";
+import ReservationDateSelectScreen from "../screens/ReservationDateSelectScreen";
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -178,6 +179,16 @@ const Router = () => {
         }}
         name="Booking"
         component={Booking}
+      />
+       <Stack.Screen
+        options={{
+          headerShown: true,
+          headerTitle: "Tarih Seçin",
+          headerTitleAlign: "center",
+          headerShadowVisible: false
+        }}
+        name="ReservationDateSelectScreen"
+        component={ReservationDateSelectScreen}
       />
     </Stack.Navigator>
   );

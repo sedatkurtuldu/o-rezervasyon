@@ -10,9 +10,12 @@ import React, { useEffect, useState } from "react";
 import { getHotelImages } from "../service/api";
 import Line from "../components/Line";
 import RezervationBookingPlan from "../components/RezervationBookingPlan";
+import { useSelector } from "react-redux";
+import moment from "moment";
 
-const Booking = ({ route }) => {
+const Booking = ({ navigation, route }) => {
   const data = route.params.data;
+  const reservationDateSelect = useSelector((state) => state.reservationDateSelect);
 
   const [imageUrl, setImageUrl] = useState("");
 
@@ -49,18 +52,24 @@ const Booking = ({ route }) => {
         <Text style={styles.cardText}>Planınızı Seçiniz</Text>
         <RezervationBookingPlan
           firstText={"Tarihler"}
-          secondText={"10-18 Nisan"}
+          secondText={moment(reservationDateSelect.endDate, "YYYY-MM-DD").format("D MMMM")}
           isMiddle={false}
+          navigation={navigation}
+          screenName={"ReservationDateSelectScreen"}
         />
         <RezervationBookingPlan
           firstText={"Odalar"}
           secondText={"1 Kişilik"}
           isMiddle={true}
+          navigation={navigation}
+          screenName={"ReservationDateSelectScreen"}
         />
         <RezervationBookingPlan
           firstText={"Kişiler"}
           secondText={"1 Kişi"}
           isMiddle={false}
+          navigation={navigation}
+          screenName={"ReservationDateSelectScreen"}
         />
       </View>
       <Line />

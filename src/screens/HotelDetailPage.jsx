@@ -16,6 +16,8 @@ import { Ionicons } from "@expo/vector-icons";
 import MapView, { Marker } from "react-native-maps";
 import { SimpleLineIcons } from "@expo/vector-icons";
 import moment from "moment";
+import { useDispatch } from "react-redux";
+import { setReservationDateSelect } from "../slices/reservationDateSelectSlice";
 
 const width = Dimensions.get("window").width;
 
@@ -23,6 +25,8 @@ const HotelDetailPage = ({ navigation, route }) => {
   const data = route.params.data;
 
   const mapRef = useRef(null);
+  const dispatch = useDispatch();
+
   const [hotelRegion, setHotelRegion] = useState(null);
   const [hotelImages, setHotelImages] = useState([]);
   const [roomTypes, setRoomTypes] = useState([]);
@@ -45,6 +49,7 @@ const HotelDetailPage = ({ navigation, route }) => {
       const bookedRooms = await getBookedRooms(data.id);
       const endDate = getEndDate(bookedRooms);
       setEndDate(endDate);
+      dispatch(setReservationDateSelect({startDate: '', endDate: moment(endDate, "D MMM").format("YYYY-MM-DD")}))
     };
 
     const userLocation = async () => {

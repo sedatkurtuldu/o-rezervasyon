@@ -162,6 +162,7 @@ const SearchScreenWhen = () => {
         markingType={'period'}
         minDate={moment().format('YYYY-MM-DD')}
         current={moment().format('YYYY-MM-DD')}
+        enableSwipeMonths
         firstDay={1}
         markedDates={markedDates}
         onDayPress={handleDayPress}

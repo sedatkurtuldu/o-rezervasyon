@@ -1,14 +1,19 @@
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import React from "react";
 
-const RezervationBookingPlan = ({ firstText, secondText, isMiddle }) => {
+const RezervationBookingPlan = ({ firstText, secondText, isMiddle, navigation, screenName }) => {
+
+  const handleNavigation = () => {
+    navigation.navigate(screenName)
+  }
+
   return (
     <View style={[styles.planContainer, { marginVertical: isMiddle ? 16 : 0 }]}>
       <View>
         <Text style={{ fontSize: 16, fontWeight: "700" }}>{firstText}</Text>
         <Text>{secondText}</Text>
       </View>
-      <TouchableOpacity activeOpacity={0.6}>
+      <TouchableOpacity onPress={handleNavigation} activeOpacity={0.6}>
         <Text
           style={{
             fontWeight: "bold",

@@ -59,7 +59,7 @@ const HomeScreenCard = React.memo(({ data, navigation }) => {
         Status: 0,
       };
 
-      const bookedRoomRef = doc(db, "bookedRooms", id);
+      const bookedRoomRef = doc(db, "bookedRoomes", id);
       await updateDoc(bookedRoomRef, updatedBookedRoomData);
     };
 
@@ -98,8 +98,7 @@ const HomeScreenCard = React.memo(({ data, navigation }) => {
               bookedRooms.map((room) => moment(room.EndDate, "YYYY-MM-DD"))
             );
             roomEndDatePlusOne = maxEndDate.add(1, "days");
-            console.log("roomEndDatePlusOne:", roomEndDatePlusOne);
-            if (roomEndDatePlusOne.isBefore(moment(), "day")) {
+            if (roomEndDatePlusOne.isBefore(moment())) {
               updateBookedRoomStatus(room.id);
             }
           }

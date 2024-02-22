@@ -4,6 +4,7 @@ import { calendarDateRangeReducer } from "../slices/calendarDateRangeSlice";
 import { peopleCounterReducer } from "../slices/peopleCounterSlice";
 import userSlice from "../slices/userSlice";
 import isEditUpdated from "../slices/isEditUpdated";
+import { reservationDateSelectSliceReducer } from "../slices/reservationDateSelectSlice";
 
 const store = configureStore({
     reducer: {
@@ -11,7 +12,8 @@ const store = configureStore({
         calendarDateRange: calendarDateRangeReducer,
         peopleCounter: peopleCounterReducer,
         user: userSlice,
-        isUpdated: isEditUpdated
+        isUpdated: isEditUpdated,
+        reservationDateSelect: reservationDateSelectSliceReducer
     }
   });
   
