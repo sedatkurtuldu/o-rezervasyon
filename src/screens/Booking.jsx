@@ -52,7 +52,7 @@ const Booking = ({ navigation, route }) => {
         <Text style={styles.cardText}>Planınızı Seçiniz</Text>
         <RezervationBookingPlan
           firstText={"Tarihler"}
-          secondText={reservationDateSelect.startDate !== "" ? `${moment(reservationDateSelect.startDate, "YYYY-MM-DD").format("D MMMM")} - ${moment(reservationDateSelect.endDate, "YYYY-MM-DD").format("D MMMM")}` : moment(reservationDateSelect.endDate, "YYYY-MM-DD").format("D MMMM")}
+          secondText={reservationDateSelect.endDate !== "" ? `${moment(reservationDateSelect.startDate, "YYYY-MM-DD").format("D MMMM")} - ${moment(reservationDateSelect.endDate, "YYYY-MM-DD").format("D MMMM")}` : moment(reservationDateSelect.startDate, "YYYY-MM-DD").format("D MMMM")}
           isMiddle={false}
           navigation={navigation}
           screenName={"ReservationDateSelectScreen"}

@@ -49,7 +49,7 @@ const HotelDetailPage = ({ navigation, route }) => {
       const bookedRooms = await getBookedRooms(data.id);
       const endDate = getEndDate(bookedRooms);
       setEndDate(endDate);
-      dispatch(setReservationDateSelect({startDate: '', endDate: moment(endDate, "D MMM").format("YYYY-MM-DD")}))
+      dispatch(setReservationDateSelect({startDate: moment(endDate, "D MMM").format("YYYY-MM-DD"), endDate: ''}))
     };
 
     const userLocation = async () => {
