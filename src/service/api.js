@@ -19,6 +19,9 @@ export const getHotels = async () => {
       longitude: hotel.longitude,
       description: hotel.description,
       price: hotel.price,
+      price2: hotel.price2,
+      price3: hotel.price3,
+      price4: hotel.price4
     };
   });
   return getHotels;

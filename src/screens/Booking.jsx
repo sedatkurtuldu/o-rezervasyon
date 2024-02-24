@@ -15,9 +15,55 @@ import moment from "moment";
 
 const Booking = ({ navigation, route }) => {
   const data = route.params.data;
-  const reservationDateSelect = useSelector((state) => state.reservationDateSelect);
-
+  const reservationDateSelect = useSelector(
+    (state) => state.reservationDateSelect
+  );
+  const roomCount = useSelector((state) => state.reservationRoomSelectCounter);
+  const reservationPeopleCount = useSelector(
+    (state) => state.reservationPeople
+  );
   const [imageUrl, setImageUrl] = useState("");
+
+  const selectedRooms = [];
+  if (roomCount.forOnePerson > 0) {
+    selectedRooms.push(`${roomCount.forOnePerson} - 1 Kişilik`);
+  }
+  if (roomCount.forTwoPerson > 0) {
+    selectedRooms.push(`${roomCount.forTwoPerson} - 2 Kişilik`);
+  }
+  if (roomCount.forThreePerson > 0) {
+    selectedRooms.push(`${roomCount.forThreePerson} - 3 Kişilik`);
+  }
+  if (roomCount.forFourPerson > 0) {
+    selectedRooms.push(`${roomCount.forFourPerson} - 4 Kişilik`);
+  }
+
+  const price = data.price * roomCount.forOnePerson;
+  const price2 = data.price2 * roomCount.forTwoPerson;
+  const price3 = data.price3 * roomCount.forThreePerson;
+  const price4 = data.price4 * roomCount.forFourPerson;
+
+  const totalPrice = price + price2 + price3 + price4;
+
+  const night = reservationDateSelect.endDate === "" ? 1 : moment(reservationDateSelect.endDate).diff(moment(reservationDateSelect.startDate), 'days');
+
+  const payment = (totalPrice === 0 ? data.price : totalPrice) * night;
+
+  const serviceFee = payment * 0.1;
+
+  const totalPriceWithServiceFee = payment + serviceFee;
+
+  const secondText =
+    selectedRooms.length > 0 ? selectedRooms.join(", ") : "1 - 1 Kişilik";
+
+  const totalPeople =
+    reservationPeopleCount.reservationAdultCount +
+    reservationPeopleCount.reservationChildCount;
+  const totalPeopleText = `${totalPeople} kişi`;
+  const babyText =
+    reservationPeopleCount.reservationBabyCount !== 0
+      ? `, ${reservationPeopleCount.reservationBabyCount} bebek`
+      : "";
 
   useEffect(() => {
     const getImages = async () => {
@@ -52,24 +98,37 @@ const Booking = ({ navigation, route }) => {
         <Text style={styles.cardText}>Planınızı Seçiniz</Text>
         <RezervationBookingPlan
           firstText={"Tarihler"}
-          secondText={reservationDateSelect.endDate !== "" ? `${moment(reservationDateSelect.startDate, "YYYY-MM-DD").format("D MMMM")} - ${moment(reservationDateSelect.endDate, "YYYY-MM-DD").format("D MMMM")}` : moment(reservationDateSelect.startDate, "YYYY-MM-DD").format("D MMMM")}
+          secondText={
+            reservationDateSelect.endDate !== ""
+              ? `${moment(reservationDateSelect.startDate, "YYYY-MM-DD").format(
+                  "D MMMM"
+                )} - ${moment(
+                  reservationDateSelect.endDate,
+                  "YYYY-MM-DD"
+                ).format("D MMMM")}`
+              : moment(reservationDateSelect.startDate, "YYYY-MM-DD").format(
+                  "D MMMM"
+                )
+          }
           isMiddle={false}
           navigation={navigation}
           screenName={"ReservationDateSelectScreen"}
         />
         <RezervationBookingPlan
           firstText={"Odalar"}
-          secondText={"1 Kişilik"}
+          secondText={secondText}
           isMiddle={true}
           navigation={navigation}
-          screenName={"ReservationDateSelectScreen"}
+          screenName={"ReservationRoomSelectScreen"}
         />
         <RezervationBookingPlan
           firstText={"Kişiler"}
-          secondText={"1 Kişi"}
+          secondText={
+            totalPeople === 0 ? "1 Kişi" : `${totalPeopleText}${babyText}`
+          }
           isMiddle={false}
           navigation={navigation}
-          screenName={"ReservationDateSelectScreen"}
+          screenName={"ReservationPeopleSelectScreen"}
         />
       </View>
       <Line />
@@ -77,19 +136,19 @@ const Booking = ({ navigation, route }) => {
         <Text style={styles.cardText}>Fiyat Bilgileri</Text>
         <View style={styles.priceInfoContainer}>
           <View style={styles.priceInfo}>
-            <Text>{data.price} x 8 gece</Text>
-            <Text>10.000 ₺</Text>
+            <Text>{totalPrice === 0 ? data.price : totalPrice} x {night} gece</Text>
+            <Text>{payment} ₺</Text>
           </View>
           <View style={styles.priceInfo}>
             <Text>O-Rezervasyon hizmet bedeli</Text>
-            <Text>1000 ₺</Text>
+            <Text>{serviceFee} ₺</Text>
           </View>
           <View style={styles.line}></View>
           <View style={styles.priceInfo}>
             <Text style={{ fontWeight: "bold", fontSize: 15 }}>
               Toplam (TRY)
             </Text>
-            <Text style={{ fontWeight: "bold", fontSize: 15 }}>11.000 ₺</Text>
+            <Text style={{ fontWeight: "bold", fontSize: 15 }}>{totalPriceWithServiceFee} ₺</Text>
           </View>
         </View>
       </View>

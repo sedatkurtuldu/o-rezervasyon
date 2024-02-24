@@ -21,6 +21,8 @@ const ReservationDateSelectScreen = ({ navigation }) => {
     (state) => state.calendarDateRangeIsFirst
   );
 
+  console.log("Res: ", reservationDateSelect)
+
   const [disabledDates, setDisabledDates] = useState({});
 
   useEffect(() => {

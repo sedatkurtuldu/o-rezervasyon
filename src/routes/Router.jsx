@@ -18,6 +18,8 @@ import EditEmailScreen from "../screens/EditEmailScreen";
 import HotelDetailPage from "../screens/HotelDetailPage";
 import Booking from "../screens/Booking";
 import ReservationDateSelectScreen from "../screens/ReservationDateSelectScreen";
+import ReservationRoomSelectScreen from "../screens/ReservationRoomSelectScreen";
+import ReservationPeopleSelectScreen from "../screens/ReservationPeopleSelectScreen";
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -189,6 +191,26 @@ const Router = () => {
         }}
         name="ReservationDateSelectScreen"
         component={ReservationDateSelectScreen}
+      />
+       <Stack.Screen
+        options={{
+          headerShown: true,
+          headerTitle: "Oda Seçin",
+          headerTitleAlign: "center",
+          headerShadowVisible: false
+        }}
+        name="ReservationRoomSelectScreen"
+        component={ReservationRoomSelectScreen}
+      />
+      <Stack.Screen
+        options={{
+          headerShown: true,
+          headerTitle: "Kişi Seçin",
+          headerTitleAlign: "center",
+          headerShadowVisible: false
+        }}
+        name="ReservationPeopleSelectScreen"
+        component={ReservationPeopleSelectScreen}
       />
     </Stack.Navigator>
   );

@@ -129,16 +129,19 @@ const SearchScreenPeople = () => {
                 leftUpperText={'Yetişkinler'}
                 leftBottomText={'13 yaş ve üstü'}
                 isBorder={true}
+                isSearchScreen={true}
               />
               <SearchScreenPeopleInnerItem
                 leftUpperText={'Çocuklar'}
                 leftBottomText={'3-12 yaş'}
                 isBorder={true}
+                isSearchScreen={true}
               />
               <SearchScreenPeopleInnerItem
                 leftUpperText={'Bebekler'}
                 leftBottomText={'3 yaş altı'}
                 isBorder={false}
+                isSearchScreen={true}
               />
             </Animated.View>
           </Animated.View>
