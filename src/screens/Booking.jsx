@@ -7,7 +7,13 @@ import {
   View,
 } from "react-native";
 import React, { useEffect, useState } from "react";
-import { getHotelImages } from "../service/api";
+import {
+  getBookedRoom,
+  getBookedRoomByHotelIdAndRoomTypeId,
+  getHotelImages,
+  getRoomTypeByName,
+  getRoomTypeMappingByHotelIdAndRoomTypeId,
+} from "../service/api";
 import Line from "../components/Line";
 import RezervationBookingPlan from "../components/RezervationBookingPlan";
 import { useSelector } from "react-redux";
@@ -45,7 +51,13 @@ const Booking = ({ navigation, route }) => {
 
   const totalPrice = price + price2 + price3 + price4;
 
-  const night = reservationDateSelect.endDate === "" ? 1 : moment(reservationDateSelect.endDate).diff(moment(reservationDateSelect.startDate), 'days');
+  const night =
+    reservationDateSelect.endDate === ""
+      ? 1
+      : moment(reservationDateSelect.endDate).diff(
+          moment(reservationDateSelect.startDate),
+          "days"
+        );
 
   const payment = (totalPrice === 0 ? data.price : totalPrice) * night;
 
@@ -75,6 +87,42 @@ const Booking = ({ navigation, route }) => {
 
     getImages();
   }, []);
+
+  const handleReservation = async (hotelId) => {
+    let updatedRoomTypes = [];
+
+    for (const selectedRoom of selectedRooms) {
+      const roomType = await getRoomTypeByName(
+        selectedRoom.split("-")[1].trim()
+      );
+      updatedRoomTypes.push({ ...roomType, HotelId: hotelId });
+    }
+
+    let updatedMapping = [];
+
+    for (const mapping of updatedRoomTypes) {
+      const typeMapping = await getRoomTypeMappingByHotelIdAndRoomTypeId(
+        mapping.HotelId,
+        mapping.id
+      );
+      updatedMapping.push(typeMapping);
+    }
+
+    let updatedBookedRooms = [];
+
+    for (const roomType of updatedRoomTypes) {
+      const bookedRoom = await getBookedRoomByHotelIdAndRoomTypeId(
+        roomType.HotelId,
+        roomType.id
+      );
+      updatedBookedRooms.push(bookedRoom);
+    }
+
+    updatedBookedRooms = updatedBookedRooms.filter(room => room !== null);
+
+    console.log("updatedBookedRooms: ", updatedBookedRooms.length)
+
+  };
 
   return (
     <ScrollView showsVerticalScrollIndicator={false} style={styles.container}>
@@ -136,7 +184,9 @@ const Booking = ({ navigation, route }) => {
         <Text style={styles.cardText}>Fiyat Bilgileri</Text>
         <View style={styles.priceInfoContainer}>
           <View style={styles.priceInfo}>
-            <Text>{totalPrice === 0 ? data.price : totalPrice} x {night} gece</Text>
+            <Text>
+              {totalPrice === 0 ? data.price : totalPrice} x {night} gece
+            </Text>
             <Text>{payment} ₺</Text>
           </View>
           <View style={styles.priceInfo}>
@@ -148,7 +198,9 @@ const Booking = ({ navigation, route }) => {
             <Text style={{ fontWeight: "bold", fontSize: 15 }}>
               Toplam (TRY)
             </Text>
-            <Text style={{ fontWeight: "bold", fontSize: 15 }}>{totalPriceWithServiceFee} ₺</Text>
+            <Text style={{ fontWeight: "bold", fontSize: 15 }}>
+              {totalPriceWithServiceFee} ₺
+            </Text>
           </View>
         </View>
       </View>
@@ -161,7 +213,11 @@ const Booking = ({ navigation, route }) => {
         </Text>
       </View>
       <Line />
-      <TouchableOpacity activeOpacity={0.6} style={styles.button}>
+      <TouchableOpacity
+        onPress={() => handleReservation(data.id)}
+        activeOpacity={0.6}
+        style={styles.button}
+      >
         <Text style={styles.buttonText}>Rezerve Et</Text>
       </TouchableOpacity>
     </ScrollView>

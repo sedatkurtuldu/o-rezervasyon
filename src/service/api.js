@@ -109,6 +109,31 @@ export const getRoomsAndTypesMapping = async (id) => {
   return getRoomsAndTypesMapping;
 };
 
+export const getRoomTypeMappingByHotelIdAndRoomTypeId = async (hotelId, roomTypeId) => {
+  const roomTypeMappingsCollection = collection(db, ROOM_TYPE_MAPPING);
+  const q = query(
+    roomTypeMappingsCollection,
+    where("HotelId", "==", hotelId),
+    where("RoomTypeId", "==", roomTypeId),
+    where("Status", "==", 1)
+  );
+  const snapshot = await getDocs(q);
+
+  if (!snapshot.empty) {
+    const doc = snapshot.docs[0];
+    const roomTypeMapping = {
+      id: doc.id,
+      HotelId: doc.data().HotelId,
+      RoomTypeId: doc.data().RoomTypeId,
+      RoomCount: doc.data().RoomCount,
+      Status: doc.data().Status,
+    };
+    return roomTypeMapping;
+  } else {
+    return null;
+  }
+};
+
 const ROOM_TYPE = "roomTypes";
 
 export const getRoomTypes = async (id) => {
@@ -139,6 +164,31 @@ export const getRoomTypes = async (id) => {
 
   return mappedData;
 };
+
+export const getRoomTypeByName = async (name) => {
+  const roomTypesCollection = collection(db, ROOM_TYPE);
+  
+  const q = query(
+    roomTypesCollection,
+    where("RoomName", "==", name),
+    where("Status", "==", 1)
+  );
+
+  const snapshot = await getDocs(q);
+
+  if (!snapshot.empty) {
+    const doc = snapshot.docs[0];
+    const roomType = {
+      id: doc.id,
+      RoomName:  doc.data().RoomName,
+      BedType:  doc.data().BedType,
+      Status:  doc.data().Status,
+    };
+    return roomType;
+  } else {
+    return null;
+  }
+}
 
 const BOOKEDROOMS_TABLE = "bookedRoomes";
 
@@ -196,3 +246,34 @@ export const getBookedRoom = async (id) => {
     return null;
   }
 };
+
+export const getBookedRoomByHotelIdAndRoomTypeId = async (hotelId, roomTypeId) => {
+  const bookedRoomsCollection = collection(db, BOOKEDROOMS_TABLE);
+  const q = query(
+    bookedRoomsCollection,
+    where("HotelId", "==", hotelId),
+    where("RoomTypeId", "==", roomTypeId),
+    where("Status", "==", 1)
+  );
+  const snapshot = await getDocs(q);
+
+  if (!snapshot.empty) {
+    const doc = snapshot.docs[0];
+    const bookedRoom = {
+      id: doc.id,
+      HotelId:  doc.data().HotelId,
+      RoomTypeId:  doc.data().RoomTypeId,
+      UserId:  doc.data().UserId,
+      StartDate:  doc.data().StartDate,
+      EndDate:  doc.data().EndDate,
+      AdultCount:  doc.data().AdultCount,
+      BabyCount:  doc.data().BabyCount,
+      Status:  doc.data().Status,
+    };
+    return bookedRoom;
+  } else {
+    return null;
+  }
+};
+
+
