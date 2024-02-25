@@ -44,7 +44,7 @@ const Favorites = ({ navigation }) => {
       if (user) {
         fetchFavorites();
       }
-    }, [user])
+    }, [user, favorites])
   );
 
   const removeFromFavorites = async (hotelId) => {
@@ -66,8 +66,6 @@ const Favorites = ({ navigation }) => {
   const goToDetailPage = (data) => {
     navigation.navigate('HotelDetailPage', { data });
   };
-
-  console.log('Hotels: ', hotels);
 
   return (
     <View style={styles.container}>
