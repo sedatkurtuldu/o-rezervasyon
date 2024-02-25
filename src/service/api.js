@@ -219,6 +219,39 @@ export const getBookedRooms = async (id) => {
   return getBookedRooms;
 };
 
+export const getBookedRoomsByHotelIdAndUserId = async (hotelId, userId, startDate, endDate) => {
+  const bookedRoomsCollection = collection(db, BOOKEDROOMS_TABLE);
+  const q = query(
+    bookedRoomsCollection,
+    where("HotelId", "==", hotelId),
+    where("UserId", "==", userId),
+    where("Status", "==", 1)
+  );
+  const snapshot = await getDocs(q);
+
+  const getBookedRooms = snapshot.docs.map((doc) => {
+    const id = doc.id;
+    const bookedRoom = doc.data();
+    return {
+      id: id,
+      HotelId: bookedRoom.HotelId,
+      RoomTypeId: bookedRoom.RoomTypeId,
+      UserId: bookedRoom.UserId,
+      StartDate: bookedRoom.StartDate,
+      EndDate: bookedRoom.EndDate,
+      AdultCount: bookedRoom.AdultCount,
+      BabyCount: bookedRoom.BabyCount,
+      Status: bookedRoom.Status,
+    };
+  });
+
+  const filteredBookedRooms = getBookedRooms.filter((room) => {
+    return room.StartDate === startDate && room.EndDate === endDate;
+  });
+
+  return filteredBookedRooms;
+};
+
 export const getBookedRoom = async (id) => {
   const bookedRoomsCollection = collection(db, BOOKEDROOMS_TABLE);
   const q = query(

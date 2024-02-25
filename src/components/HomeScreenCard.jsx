@@ -15,6 +15,7 @@ import moment from "moment";
 import "moment/locale/tr";
 import { db } from "../service/firebase";
 import { doc, updateDoc } from "firebase/firestore";
+import { getEndDateForHomeScreenCard } from "../myFunctions/myFunctions";
 
 const width = Dimensions.get("window").width;
 moment.locale("tr");
@@ -52,75 +53,34 @@ const HomeScreenCard = React.memo(({ data, navigation }) => {
   }, [data.id]);
 
   const EndDates = useCallback(() => {
-    const updateBookedRoomStatus = async (id) => {
-      const data = await getBookedRoom(id);
-      const updatedBookedRoomData = {
-        ...data,
-        Status: 0,
+    const [closestDate, setClosestDate] = useState(null);
+
+    useEffect(() => {
+      const fetchEndDate = async () => {
+        const endDate = await getEndDateForHomeScreenCard(data.id);
+        setClosestDate(endDate);
       };
 
-      const bookedRoomRef = doc(db, "bookedRoomes", id);
-      await updateDoc(bookedRoomRef, updatedBookedRoomData);
-    };
+      fetchEndDate();
+    }, [data.id]);
 
-    if (bookedRooms.length === 0) {
-      const roomEndDatePlusOne = moment().add(1, "days");
-      return (
-        <View
-          style={{
-            flexDirection: "row",
-            alignItems: "center",
-            gap: 2,
-          }}
-        >
-          <Text>En Yakın: </Text>
-          <Text style={{ textDecorationLine: "underline" }}>
-            {roomEndDatePlusOne.format("D MMM")}
-          </Text>
-        </View>
-      );
+    if (!closestDate) {
+      return null;
     }
 
     return (
-      <>
-        {bookedRooms.map((room) => {
-          let roomEndDatePlusOne = moment().add(1, "days");
-          if (bookedRooms.length === 1) {
-            roomEndDatePlusOne = moment(room.EndDate, "YYYY-MM-DD").add(
-              1,
-              "days"
-            );
-            if (roomEndDatePlusOne.isBefore(moment())) {
-              updateBookedRoomStatus(room.id);
-            }
-          } else if (bookedRooms.length > 1) {
-            const maxEndDate = moment.max(
-              bookedRooms.map((room) => moment(room.EndDate, "YYYY-MM-DD"))
-            );
-            roomEndDatePlusOne = maxEndDate.add(1, "days");
-            if (roomEndDatePlusOne.isBefore(moment())) {
-              updateBookedRoomStatus(room.id);
-            }
-          }
-          return (
-            <View
-              key={room.id}
-              style={{
-                flexDirection: "row",
-                alignItems: "center",
-                gap: 2,
-              }}
-            >
-              <Text>En Yakın: </Text>
-              <Text style={{ textDecorationLine: "underline" }}>
-                {roomEndDatePlusOne.format("D MMM")}
-              </Text>
-            </View>
-          );
-        })}
-      </>
+      <View
+        style={{
+          flexDirection: "row",
+          alignItems: "center",
+          gap: 2,
+        }}
+      >
+        <Text>En Yakın: </Text>
+        <Text style={{ textDecorationLine: "underline" }}>{closestDate}</Text>
+      </View>
     );
-  }, [bookedRooms]);
+  }, [data.id]);
 
   const navigateToDetailPage = useCallback(() => {
     navigation.navigate("HotelDetailPage", { data });

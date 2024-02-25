@@ -1,5 +1,4 @@
 import {
-  Alert,
   Image,
   ScrollView,
   StyleSheet,
@@ -8,17 +7,13 @@ import {
   View,
 } from "react-native";
 import React, { useEffect, useState } from "react";
-import {
-  getBookedRoom,
-  getBookedRoomByHotelIdAndRoomTypeId,
-  getHotelImages,
-  getRoomTypeByName,
-  getRoomTypeMappingByHotelIdAndRoomTypeId,
-} from "../service/api";
+import { getHotelImages } from "../service/api";
 import Line from "../components/Line";
 import RezervationBookingPlan from "../components/RezervationBookingPlan";
 import { useSelector } from "react-redux";
 import moment from "moment";
+import { handleReservation } from "../myFunctions/myFunctions";
+import { auth } from "../service/firebase";
 
 const Booking = ({ navigation, route }) => {
   const data = route.params.data;
@@ -88,95 +83,6 @@ const Booking = ({ navigation, route }) => {
 
     getImages();
   }, []);
-
-  const handleReservation = async (hotelId) => {
-    let updatedRoomTypes = [];
-
-    for (const selectedRoom of selectedRooms) {
-      const roomType = await getRoomTypeByName(
-        selectedRoom.split("-")[1].trim()
-      );
-      updatedRoomTypes.push({ ...roomType, HotelId: hotelId });
-    }
-
-    let updatedMapping = [];
-    let updatedBookedRooms = [];
-
-    for (const mapping of updatedRoomTypes) {
-      const typeMapping = await getRoomTypeMappingByHotelIdAndRoomTypeId(
-        mapping.HotelId,
-        mapping.id
-      );
-      updatedMapping.push(typeMapping);
-
-      const bookedRoom = await getBookedRoomByHotelIdAndRoomTypeId(
-        mapping.HotelId,
-        mapping.id
-      );
-      if (bookedRoom) {
-        updatedBookedRooms.push(...bookedRoom);
-      }
-    }
-
-    const personsMapping = {
-      "VFdDN3jPGNeocX9sYZsO": "forOnePersons",
-      "uQ9bhKIT7CjYJpA1sboT": "forTwoPersons",
-      "cHD5du3eMeapMkx8YGyD": "forThreePersons",
-      "9YWnhaMzeDZZNmUJZU6W": "forFourPersons",
-    };
-    let personsRooms = {
-      forOnePersons: [],
-      forTwoPersons: [],
-      forThreePersons: [],
-      forFourPersons: [],
-    };
-
-    updatedBookedRooms.forEach((room) => {
-      const personsKey = personsMapping[room.RoomTypeId];
-      if (personsKey) {
-        personsRooms[personsKey].push(room);
-      }
-    });
-
-    updatedMapping.forEach((mapping) => {
-      const personsKey = personsMapping[mapping.RoomTypeId];
-      if (personsKey) {
-        const roomCount = personsRooms[personsKey].length;
-
-        const overlappingBookedRoom = updatedBookedRooms.find(
-          (bookedRoom) =>
-            bookedRoom.RoomTypeId === mapping.RoomTypeId &&
-            ((moment(bookedRoom.StartDate).isSameOrBefore(
-              reservationDateSelect.endDate
-            ) &&
-              moment(bookedRoom.EndDate).isSameOrAfter(
-                reservationDateSelect.startDate
-              )) ||
-              moment(reservationDateSelect.startDate).isBetween(
-                bookedRoom.StartDate,
-                bookedRoom.EndDate,
-                null,
-                "[]"
-              ) ||
-              moment(reservationDateSelect.endDate).isBetween(
-                bookedRoom.StartDate,
-                bookedRoom.EndDate,
-                null,
-                "[]"
-              ))
-        );
-
-        if (overlappingBookedRoom && roomCount > mapping.RoomCount) {
-          Alert.alert(
-            "Uyarı",
-            "Seçtiğiniz oda tipinde istediğiniz tarihlerde boşluğumuz bulunmamaktadır.",
-            [{ text: "Tamam" }]
-          );
-          return;
-        }
-      }
-    });
-  };
 
   return (
     <ScrollView showsVerticalScrollIndicator={false} style={styles.container}>
@@ -271,7 +177,16 @@ const Booking = ({ navigation, route }) => {
       </View>
       <Line />
       <TouchableOpacity
-        onPress={() => handleReservation(data.id)}
+        onPress={() =>
+          handleReservation(
+            data.id,
+            selectedRooms,
+            reservationDateSelect,
+            reservationPeopleCount,
+            auth.currentUser.uid,
+            navigation
+          )
+        }
         activeOpacity={0.6}
         style={styles.button}
       >
