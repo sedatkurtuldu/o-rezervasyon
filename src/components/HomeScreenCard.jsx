@@ -50,7 +50,7 @@ const HomeScreenCard = React.memo(({ data, navigation }) => {
   }, [data.id, user]);
 
   useFocusEffect(
-    useCallback(() => {
+    React.useCallback(() => {
       const fetchData = async () => {
         try {
           const hotelImagesData = await getHotelImages(data.id);
