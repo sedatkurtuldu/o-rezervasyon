@@ -326,4 +326,55 @@ export const getBookedRoomByHotelIdAndRoomTypeId = async (hotelId, roomTypeId) =
   // }
 };
 
+const FAVORITES = "favorites";
+
+export const getFavorites = async (userId) => {
+  const favoritesCollection = collection(db, FAVORITES);
+  const q = query(
+    favoritesCollection,
+    where("userId", "==", userId),
+    where("isFavorite", "==", true)
+  );
+  const snapshot = await getDocs(q);
+
+  const getFavorites = snapshot.docs.map((doc) => {
+    const id = doc.id;
+    const favorites = doc.data();
+    return {
+      id: id,
+      HotelId: favorites.HotelId,
+      imageUrl: favorites.imageUrl,
+      isFavorite: favorites.isFavorite,
+      userId: favorites.userId,
+      Status: favorites.Status,
+    };
+  });
+  return getFavorites;
+};
+
+export const getFavoriteByHotelIdAndUserId = async (hotelId, userId) => {
+  const favoritesCollection = collection(db, FAVORITES);
+  const q = query(
+    favoritesCollection,
+    where("userId", "==", userId),
+    where("HotelId", "==", hotelId)
+  );
+  const snapshot = await getDocs(q);
+
+  if (!snapshot.empty) {
+    const doc = snapshot.docs[0];
+    const favorite = {
+      id: doc.id,
+      HotelId: doc.data().HotelId,
+      imageUrl: doc.data().imageUrl,
+      isFavorite: doc.data().isFavorite,
+      userId: doc.data().userId,
+      Status: doc.data().Status,
+    };
+    return favorite;
+  } else {
+    return null;
+  }
+};
+
 

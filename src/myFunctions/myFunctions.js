@@ -9,6 +9,9 @@ import {
 import { Alert } from "react-native";
 import { addDoc, collection, doc } from "firebase/firestore";
 import { db } from "../service/firebase";
+import 'moment/locale/tr';
+
+moment.locale('tr');
 
 export const handleReservation = async (
   hotelId,

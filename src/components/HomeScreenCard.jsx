@@ -10,24 +10,21 @@ import {
 } from "react-native";
 import Carousel from "react-native-reanimated-carousel";
 import { Ionicons } from "@expo/vector-icons";
-import { getBookedRoom, getBookedRooms, getHotelImages } from "../service/api";
-import moment from "moment";
-import "moment/locale/tr";
-import { db } from "../service/firebase";
-import { doc, updateDoc } from "firebase/firestore";
+import { getFavoriteByHotelIdAndUserId, getHotelImages } from "../service/api";
 import { getEndDateForHomeScreenCard } from "../myFunctions/myFunctions";
+import { addDoc, collection, doc, updateDoc } from "firebase/firestore";
+import { auth, db } from "../service/firebase";
 
 const width = Dimensions.get("window").width;
-moment.locale("tr");
 
 const HomeScreenCard = React.memo(({ data, navigation }) => {
-  const [isFavorite, setIsFavorite] = useState(false);
   const [hotelImages, setHotelImages] = useState([]);
-  const [bookedRooms, setBookedRooms] = useState([]);
-
-  const handleFavIconPress = useCallback(() => {
-    setIsFavorite((prevIsFavorite) => !prevIsFavorite);
-  }, []);
+  const [isCardFavorite, setIsCardFavorite] = useState(false);
+  const [user, setUser] = useState(null);
+  auth.onAuthStateChanged((user) => {
+    if (user) setUser(user);
+    else setUser(null);
+  });
 
   useEffect(() => {
     const fetchData = async () => {
@@ -38,19 +35,52 @@ const HomeScreenCard = React.memo(({ data, navigation }) => {
         console.error("Error fetching hotels:", error);
       }
     };
-
-    const fetchBookedRooms = async () => {
-      try {
-        const bookedRoomsData = await getBookedRooms(data.id);
-        setBookedRooms(bookedRoomsData);
-      } catch (error) {
-        console.error("Error fetching bookedRooms:", error);
+    const fetchFavorite = async () => {
+      const favorite = await getFavoriteByHotelIdAndUserId(data.id, auth.currentUser.uid);
+      if (favorite !== null) {
+        setIsCardFavorite(favorite.isFavorite);
+      } else {
+        setIsCardFavorite(false);
       }
     };
 
     fetchData();
-    fetchBookedRooms();
+    fetchFavorite();
   }, [data.id]);
+
+  const handleFavIconPress = useCallback(async () => {
+    setIsCardFavorite(!isCardFavorite);
+
+    if (isCardFavorite) {
+      const favorite = await getFavoriteByHotelIdAndUserId(
+        data.id,
+        auth.currentUser.uid
+      );
+      if (favorite !== null) {
+        const docRef = doc(db, "favorites", favorite.id);
+        await updateDoc(docRef, {
+          isFavorite: true,
+        });
+      } else {
+        await addDoc(collection(db, "favorites"), {
+          HotelId: data.id,
+          imageUrl: hotelImages[0].imageUrl,
+          isFavorite: true,
+          userId: auth.currentUser.uid,
+          Status: 1,
+        });
+      }
+    } else {
+      const favorite = await getFavoriteByHotelIdAndUserId(
+        data.id,
+        auth.currentUser.uid
+      );
+      const docRef = doc(db, "favorites", favorite.id);
+      await updateDoc(docRef, {
+        isFavorite: false,
+      });
+    }
+  }, [isCardFavorite, data.id]);
 
   const EndDates = useCallback(() => {
     const [closestDate, setClosestDate] = useState(null);
@@ -89,10 +119,8 @@ const HomeScreenCard = React.memo(({ data, navigation }) => {
   return (
     <Pressable onPress={navigateToDetailPage} style={styles.card}>
       <TouchableOpacity style={styles.favIcon} onPress={handleFavIconPress}>
-        {isFavorite ? (
-          <View>
-            <Ionicons name={"heart"} size={30} color={"#e81f89"} />
-          </View>
+        {isCardFavorite ? (
+          <Ionicons name={"heart"} size={30} color={"#e81f89"} />
         ) : (
           <View>
             <View>
