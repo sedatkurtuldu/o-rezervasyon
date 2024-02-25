@@ -49,43 +49,47 @@ const Favorites = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      {hotels.map((hotel, index) => (
-        <TouchableOpacity
-          key={index}
-          activeOpacity={0.6}
-          onPress={() => goToDetailPage(hotel)}
-          style={styles.cardContainer}
-        >
-          <View style={styles.leftContainer}>
-            {favorites.length > 0 &&
-              favorites
-                .filter((favorite) => favorite.HotelId === hotel.id)
-                .map((favorite, index) => (
-                  <Image
-                    key={index}
-                    style={{ height: 100, borderRadius: 10 }}
-                    source={{ uri: favorite.imageUrl }}
-                  />
-                ))}
-          </View>
-          <View style={styles.rightContainer}>
-            <Text style={{ fontWeight: "600", fontSize: 20 }}>{hotel.name}</Text>
-            <Text>{hotel.district}, {hotel.city}</Text>
-          </View>
-          <View style={styles.favoriteButtonContainer}>
-            <TouchableOpacity
-              activeOpacity={0.6}
-              style={styles.favoriteButton}
-              onPress={() => removeFromFavorites(hotel.id)}
-            >
-              <Text style={{ fontSize: 16, color: "white", fontWeight: "500" }}>
-                Kaldır
-              </Text>
-            </TouchableOpacity>
-          </View>
-        </TouchableOpacity>
-      ))}
-    </View>
+    {hotels.length === 0 && (
+      <Text style={{ textAlign: 'center', fontWeight: 'bold', fontSize: 18 }}>Favoriniz bulunmamaktadır.</Text>
+    )}
+    {hotels.length !== 0 && hotels.map((hotel, index) => (
+      <TouchableOpacity
+        key={index}
+        activeOpacity={0.6}
+        onPress={() => goToDetailPage(hotel)}
+        style={styles.cardContainer}
+      >
+        <View style={styles.leftContainer}>
+          {favorites.length > 0 &&
+            favorites
+              .filter((favorite) => favorite.HotelId === hotel.id)
+              .map((favorite, index) => (
+                <Image
+                  key={index}
+                  style={{ height: 100, borderRadius: 10 }}
+                  source={{ uri: favorite.imageUrl }}
+                />
+              ))}
+        </View>
+        <View style={styles.rightContainer}>
+          <Text style={{ fontWeight: "600", fontSize: 20 }}>{hotel.name}</Text>
+          <Text>{hotel.district}, {hotel.city}</Text>
+        </View>
+        <View style={styles.favoriteButtonContainer}>
+          <TouchableOpacity
+            activeOpacity={0.6}
+            style={styles.favoriteButton}
+            onPress={() => removeFromFavorites(hotel.id)}
+          >
+            <Text style={{ fontSize: 16, color: "white", fontWeight: "500" }}>
+              Kaldır
+            </Text>
+          </TouchableOpacity>
+        </View>
+      </TouchableOpacity>
+    ))}
+  </View>
+  
   );
 };
 

@@ -156,29 +156,3 @@ export const handleReservation = async (
   });
 };
 
-export const getEndDateForHomeScreenCard = async (hotelId) => {
-  const bookedRooms = await getBookedRooms(hotelId);
-
-  const today = moment();
-  let closestDate = null;
-
-  bookedRooms.forEach((room) => {
-    const startDate = moment(room.StartDate);
-    const endDate = moment(room.EndDate);
-
-    if (today.isBetween(startDate, endDate, null, "[]")) {
-      closestDate = moment(endDate).add(1, "day");
-    } else if (
-      today.isBefore(startDate) &&
-      (!closestDate || startDate.isBefore(closestDate))
-    ) {
-      closestDate = moment(startDate);
-    }
-  });
-
-  if (closestDate) {
-    return closestDate.format("D MMM");
-  }
-
-  return today.format("D MMM");
-};

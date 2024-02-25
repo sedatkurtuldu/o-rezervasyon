@@ -1,44 +1,30 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { View, Text, Image, StyleSheet, Dimensions, Pressable, TouchableOpacity } from 'react-native';
+import {
+  View,
+  Text,
+  Image,
+  StyleSheet,
+  Dimensions,
+  Pressable,
+  TouchableOpacity,
+} from 'react-native';
 import Carousel from 'react-native-reanimated-carousel';
 import { Ionicons } from '@expo/vector-icons';
 import { getFavoriteByHotelIdAndUserId, getHotelImages } from '../service/api';
-import { getEndDateForHomeScreenCard } from '../myFunctions/myFunctions';
 import { addDoc, collection, doc, updateDoc } from 'firebase/firestore';
 import { auth, db } from '../service/firebase';
-import { useDispatch, useSelector } from 'react-redux';
-import { setIsFavorited } from '../slices/isFavoritedSlice';
 import { useFocusEffect } from '@react-navigation/native';
 
 const width = Dimensions.get('window').width;
 
-const EndDates = React.memo(({ hotelId }) => {
-  const [closestDate, setClosestDate] = useState(null);
-
-  useEffect(() => {
-    const fetchEndDate = async () => {
-      const endDate = await getEndDateForHomeScreenCard(hotelId);
-      setClosestDate(endDate);
-    };
-    fetchEndDate();
-  }, [hotelId]);
-
-  if (!closestDate) {
-    return null;
-  }
-
-  return (
-    <View style={{ flexDirection: 'row', alignItems: 'center', gap: 2 }}>
-      <Text>En Yakın: </Text>
-      <Text style={{ textDecorationLine: 'underline' }}>{closestDate}</Text>
-    </View>
-  );
-});
-
 const HomeScreenCard = React.memo(({ data, navigation }) => {
   const [hotelImages, setHotelImages] = useState([]);
   const [isCardFavorite, setIsCardFavorite] = useState(false);
-  const user = useSelector(state => state.user);
+  const [user, setUser] = useState(null);
+  auth.onAuthStateChanged((user) => {
+    if (user) setUser(user);
+    else setUser(null);
+  });
 
   useEffect(() => {
     const fetchData = async () => {
@@ -50,7 +36,10 @@ const HomeScreenCard = React.memo(({ data, navigation }) => {
       }
     };
     const fetchFavorite = async () => {
-      const favorite = await getFavoriteByHotelIdAndUserId(data.id, auth.currentUser.uid);
+      const favorite = await getFavoriteByHotelIdAndUserId(
+        data.id,
+        auth.currentUser.uid
+      );
       setIsCardFavorite(favorite !== null && favorite.isFavorite);
     };
 
@@ -71,7 +60,10 @@ const HomeScreenCard = React.memo(({ data, navigation }) => {
         }
       };
       const fetchFavorite = async () => {
-        const favorite = await getFavoriteByHotelIdAndUserId(data.id, auth.currentUser.uid);
+        const favorite = await getFavoriteByHotelIdAndUserId(
+          data.id,
+          auth.currentUser.uid
+        );
         setIsCardFavorite(favorite !== null && favorite.isFavorite);
       };
 
@@ -85,7 +77,10 @@ const HomeScreenCard = React.memo(({ data, navigation }) => {
   const handleFavIconPress = useCallback(async () => {
     setIsCardFavorite(!isCardFavorite);
 
-    const favorite = await getFavoriteByHotelIdAndUserId(data.id, auth.currentUser.uid);
+    const favorite = await getFavoriteByHotelIdAndUserId(
+      data.id,
+      auth.currentUser.uid
+    );
     if (favorite !== null) {
       const docRef = doc(db, 'favorites', favorite.id);
       await updateDoc(docRef, { isFavorite: !isCardFavorite });
@@ -107,7 +102,7 @@ const HomeScreenCard = React.memo(({ data, navigation }) => {
   return (
     <Pressable onPress={navigateToDetailPage} style={styles.card}>
       <TouchableOpacity style={styles.favIcon} onPress={handleFavIconPress}>
-        {isCardFavorite ? (
+        {isCardFavorite && user !== null ? (
           <Ionicons name={'heart'} size={30} color={'#e81f89'} />
         ) : (
           <View>
@@ -140,11 +135,12 @@ const HomeScreenCard = React.memo(({ data, navigation }) => {
           <Text style={{ marginBottom: 3, fontWeight: '500', fontSize: 15 }}>
             {data.district}, {data.city}
           </Text>
-          <EndDates hotelId={data.id} />
         </View>
         <View style={styles.priceContainer}>
           <Text style={styles.price}>{data.price} ₺</Text>
-          <Text style={{ color: '#666', fontWeight: 'normal', marginLeft: 12 }}>gece</Text>
+          <Text style={{ color: '#666', fontWeight: 'normal', marginLeft: 12 }}>
+            gece
+          </Text>
         </View>
       </View>
     </Pressable>
