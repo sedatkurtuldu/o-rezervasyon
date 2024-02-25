@@ -1,63 +1,45 @@
-import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import React, { useEffect, useState } from "react";
-import {
-  getFavoriteByHotelIdAndUserId,
-  getFavorites,
-  getHotels,
-} from "../service/api";
-import { auth, db } from "../service/firebase";
+import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
+import { useFocusEffect } from "@react-navigation/native";
+import { getFavorites, getHotels, getFavoriteByHotelIdAndUserId } from "../service/api";
+import { auth, db } from "../service/firebase";
 import { doc, updateDoc } from "firebase/firestore";
 
 const Favorites = ({ navigation }) => {
-  const dispatch = useDispatch();
-  const isFavorite = useSelector((state) => state.isFavorited);
   const [favorites, setFavorites] = useState([]);
   const [hotels, setHotels] = useState([]);
 
-  useEffect(() => {
-    const fetchFavorites = async () => {
-      const favorites = await getFavorites(auth.currentUser.uid);
-      const hotels = await getHotels();
-
-      const matchedHotels = favorites.map((favorite) => {
-        return hotels.find((hotel) => hotel.id === favorite.HotelId);
-      });
-
-      const filteredHotels = matchedHotels.filter((hotel) => hotel !== null);
-
-      setFavorites(favorites);
-      setHotels(filteredHotels);
-    };
-
-    fetchFavorites();
-  }, []);
-
-  const updateFavorites = async () => {
-    const newFavorites = await getFavorites(auth.currentUser.uid);
-    const newHotels = await getHotels();
-
-    const matchedHotels = newFavorites.map((favorite) => {
-      return newHotels.find((hotel) => hotel.id === favorite.HotelId);
+  const fetchFavorites = async () => {
+    const favorites = await getFavorites(auth.currentUser.uid);
+    const hotels = await getHotels();
+    
+    const matchedHotels = favorites.map((favorite) => {
+      return hotels.find((hotel) => hotel.id === favorite.HotelId);
     });
-
+    
     const filteredHotels = matchedHotels.filter((hotel) => hotel !== null);
-
-    setFavorites(newFavorites);
+    
+    setFavorites(favorites);
     setHotels(filteredHotels);
   };
 
+  useEffect(() => {
+    fetchFavorites();
+  }, []);
+
+  useFocusEffect(() => {
+    fetchFavorites();
+  });
+
   const removeFromFavorites = async (hotelId) => {
-    const favorite = await getFavoriteByHotelIdAndUserId(
-      hotelId,
-      auth.currentUser.uid
-    );
+    const favorite = await getFavoriteByHotelIdAndUserId(hotelId, auth.currentUser.uid);
     if (favorite !== null) {
       const docRef = doc(db, "favorites", favorite.id);
       await updateDoc(docRef, {
         isFavorite: false,
       });
-      updateFavorites();
+      fetchFavorites();
     }
   };
 
@@ -87,12 +69,8 @@ const Favorites = ({ navigation }) => {
                 ))}
           </View>
           <View style={styles.rightContainer}>
-            <Text style={{ fontWeight: "600", fontSize: 20 }}>
-              {hotel.name}
-            </Text>
-            <Text>
-              {hotel.district}, {hotel.city}
-            </Text>
+            <Text style={{ fontWeight: "600", fontSize: 20 }}>{hotel.name}</Text>
+            <Text>{hotel.district}, {hotel.city}</Text>
           </View>
           <View style={styles.favoriteButtonContainer}>
             <TouchableOpacity
