@@ -257,23 +257,40 @@ export const getBookedRoomByHotelIdAndRoomTypeId = async (hotelId, roomTypeId) =
   );
   const snapshot = await getDocs(q);
 
-  if (!snapshot.empty) {
-    const doc = snapshot.docs[0];
-    const bookedRoom = {
-      id: doc.id,
-      HotelId:  doc.data().HotelId,
-      RoomTypeId:  doc.data().RoomTypeId,
-      UserId:  doc.data().UserId,
-      StartDate:  doc.data().StartDate,
-      EndDate:  doc.data().EndDate,
-      AdultCount:  doc.data().AdultCount,
-      BabyCount:  doc.data().BabyCount,
-      Status:  doc.data().Status,
+  const getBookedRooms = snapshot.docs.map((doc) => {
+    const id = doc.id;
+    const bookedRoom = doc.data();
+    return {
+      id: id,
+      HotelId: bookedRoom.HotelId,
+      RoomTypeId: bookedRoom.RoomTypeId,
+      UserId: bookedRoom.UserId,
+      StartDate: bookedRoom.StartDate,
+      EndDate: bookedRoom.EndDate,
+      AdultCount: bookedRoom.AdultCount,
+      BabyCount: bookedRoom.BabyCount,
+      Status: bookedRoom.Status,
     };
-    return bookedRoom;
-  } else {
-    return null;
-  }
+  });
+  return getBookedRooms;
+
+  // if (!snapshot.empty) {
+  //   const doc = snapshot.docs[0];
+  //   const bookedRoom = {
+  //     id: doc.id,
+  //     HotelId:  doc.data().HotelId,
+  //     RoomTypeId:  doc.data().RoomTypeId,
+  //     UserId:  doc.data().UserId,
+  //     StartDate:  doc.data().StartDate,
+  //     EndDate:  doc.data().EndDate,
+  //     AdultCount:  doc.data().AdultCount,
+  //     BabyCount:  doc.data().BabyCount,
+  //     Status:  doc.data().Status,
+  //   };
+  //   return bookedRoom;
+  // } else {
+  //   return null;
+  // }
 };
 
 

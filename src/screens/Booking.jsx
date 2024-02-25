@@ -1,4 +1,5 @@
 import {
+  Alert,
   Image,
   ScrollView,
   StyleSheet,
@@ -99,6 +100,7 @@ const Booking = ({ navigation, route }) => {
     }
 
     let updatedMapping = [];
+    let updatedBookedRooms = [];
 
     for (const mapping of updatedRoomTypes) {
       const typeMapping = await getRoomTypeMappingByHotelIdAndRoomTypeId(
@@ -106,22 +108,74 @@ const Booking = ({ navigation, route }) => {
         mapping.id
       );
       updatedMapping.push(typeMapping);
-    }
 
-    let updatedBookedRooms = [];
-
-    for (const roomType of updatedRoomTypes) {
       const bookedRoom = await getBookedRoomByHotelIdAndRoomTypeId(
-        roomType.HotelId,
-        roomType.id
+        mapping.HotelId,
+        mapping.id
       );
-      updatedBookedRooms.push(bookedRoom);
+      if (bookedRoom) {
+        updatedBookedRooms.push(...bookedRoom);
+      }
     }
 
-    updatedBookedRooms = updatedBookedRooms.filter(room => room !== null);
+    const personsMapping = {
+      "VFdDN3jPGNeocX9sYZsO": "forOnePersons",
+      "uQ9bhKIT7CjYJpA1sboT": "forTwoPersons",
+      "cHD5du3eMeapMkx8YGyD": "forThreePersons",
+      "9YWnhaMzeDZZNmUJZU6W": "forFourPersons",
+    };
+    let personsRooms = {
+      forOnePersons: [],
+      forTwoPersons: [],
+      forThreePersons: [],
+      forFourPersons: [],
+    };
 
-    console.log("updatedBookedRooms: ", updatedBookedRooms.length)
+    updatedBookedRooms.forEach((room) => {
+      const personsKey = personsMapping[room.RoomTypeId];
+      if (personsKey) {
+        personsRooms[personsKey].push(room);
+      }
+    });
 
+    updatedMapping.forEach((mapping) => {
+      const personsKey = personsMapping[mapping.RoomTypeId];
+      if (personsKey) {
+        const roomCount = personsRooms[personsKey].length;
+
+        const overlappingBookedRoom = updatedBookedRooms.find(
+          (bookedRoom) =>
+            bookedRoom.RoomTypeId === mapping.RoomTypeId &&
+            ((moment(bookedRoom.StartDate).isSameOrBefore(
+              reservationDateSelect.endDate
+            ) &&
+              moment(bookedRoom.EndDate).isSameOrAfter(
+                reservationDateSelect.startDate
+              )) ||
+              moment(reservationDateSelect.startDate).isBetween(
+                bookedRoom.StartDate,
+                bookedRoom.EndDate,
+                null,
+                "[]"
+              ) ||
+              moment(reservationDateSelect.endDate).isBetween(
+                bookedRoom.StartDate,
+                bookedRoom.EndDate,
+                null,
+                "[]"
+              ))
+        );
+
+        if (overlappingBookedRoom && roomCount > mapping.RoomCount) {
+          Alert.alert(
+            "Uyarı",
+            "Seçtiğiniz oda tipinde istediğiniz tarihlerde boşluğumuz bulunmamaktadır.",
+            [{ text: "Tamam" }]
+          );
+          return;
+        }
+      }
+    });
   };
 
   return (
@@ -161,6 +215,7 @@ const Booking = ({ navigation, route }) => {
           isMiddle={false}
           navigation={navigation}
           screenName={"ReservationDateSelectScreen"}
+          data={data}
         />
         <RezervationBookingPlan
           firstText={"Odalar"}
@@ -168,6 +223,7 @@ const Booking = ({ navigation, route }) => {
           isMiddle={true}
           navigation={navigation}
           screenName={"ReservationRoomSelectScreen"}
+          data={data}
         />
         <RezervationBookingPlan
           firstText={"Kişiler"}
@@ -177,6 +233,7 @@ const Booking = ({ navigation, route }) => {
           isMiddle={false}
           navigation={navigation}
           screenName={"ReservationPeopleSelectScreen"}
+          data={data}
         />
       </View>
       <Line />

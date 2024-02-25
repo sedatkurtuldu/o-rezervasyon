@@ -1,10 +1,22 @@
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { getRoomTypes } from "../service/api";
 
-const RezervationBookingPlan = ({ firstText, secondText, isMiddle, navigation, screenName }) => {
+const RezervationBookingPlan = ({ firstText, secondText, isMiddle, navigation, screenName, data }) => {
+  
+  const [roomTypes, setRoomTypes] = useState([]);
+  
+  useEffect(() => {
+    const roomTypes = async () => {
+      const roomTypes = await getRoomTypes(data.id);
+      setRoomTypes(roomTypes);
+    };
+
+    roomTypes();
+  }, []);
 
   const handleNavigation = () => {
-    navigation.navigate(screenName)
+    navigation.navigate(screenName, { roomTypes })
   }
 
   return (

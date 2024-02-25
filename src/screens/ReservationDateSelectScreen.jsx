@@ -95,11 +95,11 @@ const ReservationDateSelectScreen = ({ navigation }) => {
     };
   }
 
+  //  minDate={moment(isFirst.minDate).format("YYYY-MM-DD")}
   return (
     <View style={styles.container}>
       <Calendar
         markingType={"period"}
-        minDate={moment(isFirst.minDate).format("YYYY-MM-DD")}
         current={moment().format("YYYY-MM-DD")}
         enableSwipeMonths
         firstDay={1}
