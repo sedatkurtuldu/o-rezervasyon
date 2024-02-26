@@ -10,13 +10,17 @@ import React, { useEffect, useState } from "react";
 import { getHotelImages } from "../service/api";
 import Line from "../components/Line";
 import RezervationBookingPlan from "../components/RezervationBookingPlan";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import moment from "moment";
 import { handleReservation } from "../myFunctions/myFunctions";
 import { auth } from "../service/firebase";
+import { setReservationPeopleCount } from "../slices/reservationPeopleSelectSlice";
+import { setCount } from "../slices/peopleCounterSlice";
+import { setReservationRoomCount } from "../slices/reservationRoomSelectSlice";
 
 const Booking = ({ navigation, route }) => {
   const data = route.params.data;
+  const dispatch = useDispatch();
   const reservationDateSelect = useSelector(
     (state) => state.reservationDateSelect
   );
@@ -62,7 +66,7 @@ const Booking = ({ navigation, route }) => {
   const totalPriceWithServiceFee = payment + serviceFee;
 
   const secondText =
-    selectedRooms.length > 0 ? selectedRooms.join(", ") : "1 - 1 Kişilik";
+    selectedRooms.length > 0 ? selectedRooms.join(", ") : "Oda Seçiniz";
 
   const totalPeople =
     reservationPeopleCount.reservationAdultCount +
@@ -81,7 +85,32 @@ const Booking = ({ navigation, route }) => {
       }
     };
 
+    const resetReservationRoomAndPeopleState = () => {
+      dispatch(
+        setReservationRoomCount({
+          forOnePerson: 0,
+          forTwoPerson: 0,
+          forThreePerson: 0,
+          forFourPerson: 0,
+          status: "idle",
+          error: null,
+        })
+      );
+
+      dispatch(
+        setReservationPeopleCount({
+          reservationAdultCount: 0,
+          reservationChildCount: 0,
+          reservationBabyCount: 0,
+          status: "idle",
+          error: null,
+        })
+      );
+    };
+
     getImages();
+
+    resetReservationRoomAndPeopleState();
   }, []);
 
   return (
@@ -134,7 +163,7 @@ const Booking = ({ navigation, route }) => {
         <RezervationBookingPlan
           firstText={"Kişiler"}
           secondText={
-            totalPeople === 0 ? "1 Kişi" : `${totalPeopleText}${babyText}`
+            totalPeople === 0 ? "Kişi Seçiniz" : `${totalPeopleText}${babyText}`
           }
           isMiddle={false}
           navigation={navigation}

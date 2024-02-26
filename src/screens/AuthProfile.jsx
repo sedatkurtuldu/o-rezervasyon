@@ -61,6 +61,7 @@ const AuthProfile = ({ navigation }) => {
           displayPhoto={false}
           displayEditProfileText={false}
           navigation={navigation}
+          routeName={"MyReservations"}
         />
       </View>
       <TouchableOpacity

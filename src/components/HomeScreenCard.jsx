@@ -95,12 +95,12 @@ const HomeScreenCard = React.memo(({ data, navigation }) => {
     }
   }, [isCardFavorite, data.id, hotelImages]);
 
-  const navigateToDetailPage = useCallback(() => {
-    navigation.navigate('HotelDetailPage', { data });
+  const navigateToDetailPage = useCallback((user) => {
+    navigation.navigate('HotelDetailPage', { params: { data: data, user: user }} );
   }, [data, navigation]);
 
   return (
-    <Pressable onPress={navigateToDetailPage} style={styles.card}>
+    <Pressable onPress={() => navigateToDetailPage(user)} style={styles.card}>
       <TouchableOpacity style={styles.favIcon} onPress={handleFavIconPress}>
         {isCardFavorite && user !== null ? (
           <Ionicons name={'heart'} size={30} color={'#e81f89'} />

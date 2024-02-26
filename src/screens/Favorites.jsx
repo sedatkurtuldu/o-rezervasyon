@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { useFocusEffect } from '@react-navigation/native';
 import {
@@ -68,7 +68,7 @@ const Favorites = ({ navigation }) => {
   };
 
   return (
-    <View style={styles.container}>
+    <ScrollView showsVerticalScrollIndicator={false} style={styles.container}>
       {hotels.length === 0 || user === null ? (
         <Text style={{ textAlign: 'center', fontWeight: 'bold', fontSize: 18 }}>
           Favoriniz bulunmamaktadır.
@@ -117,7 +117,7 @@ const Favorites = ({ navigation }) => {
           </TouchableOpacity>
         ))
       )}
-    </View>
+    </ScrollView>
   );
 };
 
@@ -133,6 +133,7 @@ const styles = StyleSheet.create({
   cardContainer: {
     flexDirection: 'row',
     gap: 5,
+    marginVertical: 8
   },
   leftContainer: {
     width: '30%',

@@ -1,4 +1,4 @@
-import { collection, getDocs, where, query } from "firebase/firestore";
+import { collection, getDocs, where, query, doc, getDoc } from "firebase/firestore";
 import { db } from "./firebase";
 
 const TABLE = "hotels";
@@ -165,6 +165,24 @@ export const getRoomTypes = async (id) => {
   return mappedData;
 };
 
+export const getAllRoomTypes = async () => {
+  const roomTypesCollection = collection(db, ROOM_TYPE);
+
+  const snapshot = await getDocs(roomTypesCollection);
+
+  const getRoomTypes = snapshot.docs.map((doc) => {
+    const id = doc.id;
+    const roomTypes = doc.data();
+    return {
+      id: id,
+      RoomName: roomTypes.RoomName,
+      BedType: roomTypes.BedType,
+      Status: roomTypes.Status,
+    };
+  });
+  return getRoomTypes;
+};
+
 export const getRoomTypeByName = async (name) => {
   const roomTypesCollection = collection(db, ROOM_TYPE);
   
@@ -219,7 +237,35 @@ export const getBookedRooms = async (id) => {
   return getBookedRooms;
 };
 
-export const getBookedRoomsByHotelIdAndUserId = async (hotelId, userId, startDate, endDate) => {
+export const getBookedRoomsByHotelIdAndUserId = async (hotelIds, userId) => {
+  const bookedRoomsCollection = collection(db, BOOKEDROOMS_TABLE);
+  const q = query(
+    bookedRoomsCollection,
+    where("HotelId", "in", hotelIds),
+    where("UserId", "==", userId),
+    where("Status", "==", 1)
+  );
+  const snapshot = await getDocs(q);
+
+  const getBookedRooms = snapshot.docs.map((doc) => {
+    const id = doc.id;
+    const bookedRoom = doc.data();
+    return {
+      id: id,
+      HotelId: bookedRoom.HotelId,
+      RoomTypeId: bookedRoom.RoomTypeId,
+      UserId: bookedRoom.UserId,
+      StartDate: bookedRoom.StartDate,
+      EndDate: bookedRoom.EndDate,
+      AdultCount: bookedRoom.AdultCount,
+      BabyCount: bookedRoom.BabyCount,
+      Status: bookedRoom.Status,
+    };
+  });
+  return getBookedRooms;
+};
+
+export const getBookedRoomsByStartDateAndEndDate = async (hotelId, userId, startDate, endDate) => {
   const bookedRoomsCollection = collection(db, BOOKEDROOMS_TABLE);
   const q = query(
     bookedRoomsCollection,
@@ -253,32 +299,27 @@ export const getBookedRoomsByHotelIdAndUserId = async (hotelId, userId, startDat
 };
 
 export const getBookedRoom = async (id) => {
-  const bookedRoomsCollection = collection(db, BOOKEDROOMS_TABLE);
-  const q = query(
-    bookedRoomsCollection,
-    where("id", "==", id),
-    where("Status", "==", 1)
-  );
-  const snapshot = await getDocs(q);
+  const docRef = doc(db, BOOKEDROOMS_TABLE, id);
+  const snapshot = await getDoc(docRef);
 
-  if (!snapshot.empty) {
-    const doc = snapshot.docs[0];
+  if (snapshot.exists() && snapshot.data().Status === 1) {
     const bookedRoom = {
-      id: doc.id,
-      HotelId:  doc.data().HotelId,
-      RoomTypeId:  doc.data().RoomTypeId,
-      UserId:  doc.data().UserId,
-      StartDate:  doc.data().StartDate,
-      EndDate:  doc.data().EndDate,
-      AdultCount:  doc.data().AdultCount,
-      BabyCount:  doc.data().BabyCount,
-      Status:  doc.data().Status,
+      id: snapshot.id,
+      HotelId: snapshot.data().HotelId,
+      RoomTypeId: snapshot.data().RoomTypeId,
+      UserId: snapshot.data().UserId,
+      StartDate: snapshot.data().StartDate,
+      EndDate: snapshot.data().EndDate,
+      AdultCount: snapshot.data().AdultCount,
+      BabyCount: snapshot.data().BabyCount,
+      Status: snapshot.data().Status,
     };
     return bookedRoom;
   } else {
     return null;
   }
 };
+
 
 export const getBookedRoomByHotelIdAndRoomTypeId = async (hotelId, roomTypeId) => {
   const bookedRoomsCollection = collection(db, BOOKEDROOMS_TABLE);
@@ -306,24 +347,6 @@ export const getBookedRoomByHotelIdAndRoomTypeId = async (hotelId, roomTypeId) =
     };
   });
   return getBookedRooms;
-
-  // if (!snapshot.empty) {
-  //   const doc = snapshot.docs[0];
-  //   const bookedRoom = {
-  //     id: doc.id,
-  //     HotelId:  doc.data().HotelId,
-  //     RoomTypeId:  doc.data().RoomTypeId,
-  //     UserId:  doc.data().UserId,
-  //     StartDate:  doc.data().StartDate,
-  //     EndDate:  doc.data().EndDate,
-  //     AdultCount:  doc.data().AdultCount,
-  //     BabyCount:  doc.data().BabyCount,
-  //     Status:  doc.data().Status,
-  //   };
-  //   return bookedRoom;
-  // } else {
-  //   return null;
-  // }
 };
 
 const FAVORITES = "favorites";

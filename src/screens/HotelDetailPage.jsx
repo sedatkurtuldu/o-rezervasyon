@@ -10,7 +10,7 @@ import {
 } from "react-native";
 import React, { useEffect, useRef, useState } from "react";
 import Carousel from "react-native-reanimated-carousel";
-import { getBookedRooms, getHotelImages, getRoomTypes } from "../service/api";
+import { getBookedRooms, getFavoriteByHotelIdAndUserId, getHotelImages, getRoomTypes } from "../service/api";
 import { AntDesign } from "@expo/vector-icons";
 import { Ionicons } from "@expo/vector-icons";
 import MapView, { Marker } from "react-native-maps";
@@ -18,11 +18,14 @@ import { SimpleLineIcons } from "@expo/vector-icons";
 import moment from "moment";
 import { useDispatch } from "react-redux";
 import { setReservationDateSelect } from "../slices/reservationDateSelectSlice";
+import { addDoc, collection, doc, updateDoc } from "firebase/firestore";
+import { auth, db } from "../service/firebase";
 
 const width = Dimensions.get("window").width;
 
 const HotelDetailPage = ({ navigation, route }) => {
-  const data = route.params.data;
+  const data = route.params.params.data;
+  const user = route.params.params.user;
 
   const mapRef = useRef(null);
   const dispatch = useDispatch();
@@ -33,7 +36,6 @@ const HotelDetailPage = ({ navigation, route }) => {
   const [isFavorite, setIsFavorite] = useState(false);
   const [showFullDescription, setShowFullDescription] = useState(false);
   const [endDate, setEndDate] = useState("");
-
   useEffect(() => {
     const fetchHotelImages = async () => {
       const images = await getHotelImages(data.id);
@@ -61,6 +63,14 @@ const HotelDetailPage = ({ navigation, route }) => {
       });
     };
 
+    const fetchFavorite = async () => {
+      const favorite = await getFavoriteByHotelIdAndUserId(
+        data.id,
+        auth.currentUser.uid
+      );
+      setIsFavorite(favorite !== null && favorite.isFavorite);
+    };
+
     userLocation();
 
     roomTypes();
@@ -68,10 +78,31 @@ const HotelDetailPage = ({ navigation, route }) => {
     fetchHotelImages();
 
     fetchBookedRoomsForEndDate();
+
+    if (user) {
+      fetchFavorite();
+    }
   }, []);
 
-  const handleFavIconPress = () => {
+  const handleFavIconPress = async () => {
     setIsFavorite(!isFavorite);
+
+    const favorite = await getFavoriteByHotelIdAndUserId(
+      data.id,
+      auth.currentUser.uid
+    );
+    if (favorite !== null) {
+      const docRef = doc(db, 'favorites', favorite.id);
+      await updateDoc(docRef, { isFavorite: !isFavorite });
+    } else {
+      await addDoc(collection(db, 'favorites'), {
+        HotelId: data.id,
+        imageUrl: hotelImages[0].imageUrl,
+        isFavorite: true,
+        userId: auth.currentUser.uid,
+        Status: 1,
+      });
+    }
   };
 
   const toggleDescription = () => {
@@ -139,7 +170,7 @@ const HotelDetailPage = ({ navigation, route }) => {
           />
         </TouchableOpacity>
         <TouchableOpacity style={styles.favIcon} onPress={handleFavIconPress}>
-          {isFavorite ? (
+          {isFavorite && user !== null ? (
             <View style={{ top: 36, right: 10 }}>
               <Ionicons name={"heart"} size={30} color={"#e81f89"} />
             </View>

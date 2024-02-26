@@ -1,8 +1,7 @@
 import moment from "moment";
 import {
   getBookedRoomByHotelIdAndRoomTypeId,
-  getBookedRooms,
-  getBookedRoomsByHotelIdAndUserId,
+  getBookedRoomsByStartDateAndEndDate,
   getRoomTypeByName,
   getRoomTypeMappingByHotelIdAndRoomTypeId,
 } from "../service/api";
@@ -107,7 +106,7 @@ export const handleReservation = async (
         );
         showAlert = false;
       } else {
-        const existingReservation = await getBookedRoomsByHotelIdAndUserId(
+        const existingReservation = await getBookedRoomsByStartDateAndEndDate(
           hotelId,
           userId,
           reservationDateSelect.startDate,

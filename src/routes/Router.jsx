@@ -20,6 +20,7 @@ import Booking from "../screens/Booking";
 import ReservationDateSelectScreen from "../screens/ReservationDateSelectScreen";
 import ReservationRoomSelectScreen from "../screens/ReservationRoomSelectScreen";
 import ReservationPeopleSelectScreen from "../screens/ReservationPeopleSelectScreen";
+import MyReservations from "../screens/MyReservations";
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -156,6 +157,17 @@ const Router = () => {
       <Stack.Screen
         options={{
           headerShown: true,
+          headerTitle: "Rezervasyonlarım",
+          headerTitleAlign: "center",
+          headerShadowVisible: false,
+        }}
+        name="MyReservations"
+        component={MyReservations}
+      />
+
+      <Stack.Screen
+        options={{
+          headerShown: true,
           headerTitle: "Email Düzenle",
           headerTitleAlign: "center",
           headerShadowVisible: false,
@@ -167,7 +179,7 @@ const Router = () => {
 
       <Stack.Screen
         options={{
-          headerShadowVisible: false
+          headerShadowVisible: false,
         }}
         name="HotelDetailPage"
         component={HotelDetailPage}
@@ -177,27 +189,27 @@ const Router = () => {
           headerShown: true,
           headerTitle: "Rezervasyon Yap",
           headerTitleAlign: "center",
-          headerShadowVisible: false
+          headerShadowVisible: false,
         }}
         name="Booking"
         component={Booking}
       />
-       <Stack.Screen
+      <Stack.Screen
         options={{
           headerShown: true,
           headerTitle: "Tarih Seçin",
           headerTitleAlign: "center",
-          headerShadowVisible: false
+          headerShadowVisible: false,
         }}
         name="ReservationDateSelectScreen"
         component={ReservationDateSelectScreen}
       />
-       <Stack.Screen
+      <Stack.Screen
         options={{
           headerShown: true,
           headerTitle: "Oda Seçin",
           headerTitleAlign: "center",
-          headerShadowVisible: false
+          headerShadowVisible: false,
         }}
         name="ReservationRoomSelectScreen"
         component={ReservationRoomSelectScreen}
@@ -207,7 +219,7 @@ const Router = () => {
           headerShown: true,
           headerTitle: "Kişi Seçin",
           headerTitleAlign: "center",
-          headerShadowVisible: false
+          headerShadowVisible: false,
         }}
         name="ReservationPeopleSelectScreen"
         component={ReservationPeopleSelectScreen}
