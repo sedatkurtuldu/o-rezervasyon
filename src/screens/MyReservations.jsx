@@ -13,7 +13,6 @@ import moment from "moment";
 import { doc, updateDoc } from "firebase/firestore";
 
 const MyReservations = ({ navigation }) => {
-  const [hotelImages, setHotelImages] = useState([]);
   const [bookedRooms, setBookedRooms] = useState([]);
   const [user, setUser] = useState(null);
   auth.onAuthStateChanged((user) => {
@@ -40,6 +39,9 @@ const MyReservations = ({ navigation }) => {
           const roomType = roomTypes.find(
             (roomType) => roomType.id === room.RoomTypeId
           );
+          const hotelImage = images.find(
+            (image) => image.HotelId === room.HotelId
+          );
           if (hotel) {
             return {
               ...room,
@@ -48,17 +50,13 @@ const MyReservations = ({ navigation }) => {
               hotelDistrict: hotel.district,
               hotel: hotel,
               roomTypeName: roomType.RoomName,
+              imageUrl: hotelImage.imageUrl,
             };
           }
           return null;
         })
         .filter((room) => room !== null);
 
-      const matchedHotelImages = hotels.map((hotel) => {
-        return images.find((image) => image.HotelId === hotel.id);
-      });
-
-      setHotelImages(matchedHotelImages);
       setBookedRooms(hotelsDto);
     };
     if (user) {
@@ -92,6 +90,9 @@ const MyReservations = ({ navigation }) => {
               const roomType = roomTypes.find(
                 (roomType) => roomType.id === room.RoomTypeId
               );
+              const hotelImage = images.find(
+                (image) => image.HotelId === room.HotelId
+              );
               if (hotel) {
                 return {
                   ...room,
@@ -100,17 +101,12 @@ const MyReservations = ({ navigation }) => {
                   hotelDistrict: hotel.district,
                   hotel: hotel,
                   roomTypeName: roomType.RoomName,
+                  imageUrl: hotelImage.imageUrl,
                 };
               }
               return null;
             })
             .filter((room) => room !== null);
-
-          const matchedHotelImages = hotels.map((hotel) => {
-            return images.find((image) => image.HotelId === hotel.id);
-          });
-
-          setHotelImages(matchedHotelImages);
           setBookedRooms(hotelsDto);
         };
         fetchData();
@@ -142,7 +138,7 @@ const MyReservations = ({ navigation }) => {
             style={styles.cardContainer}
           >
             <View style={styles.leftContainer}>
-              {hotelImages.length > 0 &&
+              {/* {hotelImages.length > 0 &&
                 hotelImages
                   .filter((image) => image.HotelId === room.HotelId)
                   .map((image, index) => (
@@ -151,7 +147,12 @@ const MyReservations = ({ navigation }) => {
                       style={{ height: 100, borderRadius: 10 }}
                       source={{ uri: image.imageUrl }}
                     />
-                  ))}
+                  ))} */}
+              <Image
+                key={index}
+                style={{ height: 100, borderRadius: 10 }}
+                source={{ uri: room.imageUrl }}
+              />
             </View>
             <View style={styles.rightContainer}>
               <Text style={{ fontWeight: "600", fontSize: 20 }}>
