@@ -63,8 +63,10 @@ const Favorites = ({ navigation }) => {
     }
   };
 
-  const goToDetailPage = (data) => {
-    navigation.navigate('HotelDetailPage', { data });
+  const goToDetailPage = (data, user) => {
+    navigation.navigate("HotelDetailPage", {
+      params: { data: data, user: user },
+    });
   };
 
   return (
@@ -78,7 +80,7 @@ const Favorites = ({ navigation }) => {
           <TouchableOpacity
             key={index}
             activeOpacity={0.6}
-            onPress={() => goToDetailPage(hotel)}
+            onPress={() => goToDetailPage(hotel, user)}
             style={styles.cardContainer}
           >
             <View style={styles.leftContainer}>
