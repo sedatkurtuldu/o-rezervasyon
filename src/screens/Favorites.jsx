@@ -1,7 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { useDispatch, useSelector } from 'react-redux';
-import { useFocusEffect } from '@react-navigation/native';
 import {
   getFavorites,
   getHotels,
@@ -9,11 +7,15 @@ import {
 } from '../service/api';
 import { auth, db } from '../service/firebase';
 import { doc, updateDoc } from 'firebase/firestore';
+import { useIsFocused } from '@react-navigation/native';
 
 const Favorites = ({ navigation }) => {
   const [favorites, setFavorites] = useState([]);
   const [hotels, setHotels] = useState([]);
   const [user, setUser] = useState(null);
+
+  const isFocused = useIsFocused();
+
   auth.onAuthStateChanged((user) => {
     if (user) setUser(user);
     else setUser(null);
@@ -37,15 +39,7 @@ const Favorites = ({ navigation }) => {
     if (user) {
       fetchFavorites();
     }
-  }, []);
-
-  useFocusEffect(
-    React.useCallback(() => {
-      if (user) {
-        fetchFavorites();
-      }
-    }, [user, favorites])
-  );
+  }, [isFocused]);
 
   const removeFromFavorites = async (hotelId) => {
     if (user) {
@@ -64,9 +58,7 @@ const Favorites = ({ navigation }) => {
   };
 
   const goToDetailPage = (data, user) => {
-    navigation.navigate("HotelDetailPage", {
-      params: { data: data, user: user },
-    });
+    navigation.navigate("HotelDetailPage", { data });
   };
 
   return (

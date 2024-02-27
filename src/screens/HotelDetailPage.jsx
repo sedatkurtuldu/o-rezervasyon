@@ -24,8 +24,7 @@ import { auth, db } from "../service/firebase";
 const width = Dimensions.get("window").width;
 
 const HotelDetailPage = ({ navigation, route }) => {
-  const data = route.params.params.data;
-  const user = route.params.params.user;
+  const data = route.params.data;
 
   const mapRef = useRef(null);
   const dispatch = useDispatch();
@@ -36,6 +35,21 @@ const HotelDetailPage = ({ navigation, route }) => {
   const [isFavorite, setIsFavorite] = useState(false);
   const [showFullDescription, setShowFullDescription] = useState(false);
   const [endDate, setEndDate] = useState("");
+  const [user, setUser] = useState(null);
+
+  auth.onAuthStateChanged((user) => {
+    if (user) setUser(user);
+    else setUser(null);
+  });
+
+  const fetchFavorite = async () => {
+    const favorite = await getFavoriteByHotelIdAndUserId(
+      data.id,
+      auth.currentUser.uid
+    );
+    setIsFavorite(favorite !== null && favorite.isFavorite);
+  };
+
   useEffect(() => {
     const fetchHotelImages = async () => {
       const images = await getHotelImages(data.id);
@@ -62,15 +76,6 @@ const HotelDetailPage = ({ navigation, route }) => {
         longitudeDelta: 0.0421,
       });
     };
-
-    const fetchFavorite = async () => {
-      const favorite = await getFavoriteByHotelIdAndUserId(
-        data.id,
-        auth.currentUser.uid
-      );
-      setIsFavorite(favorite !== null && favorite.isFavorite);
-    };
-
     userLocation();
 
     roomTypes();
@@ -79,10 +84,14 @@ const HotelDetailPage = ({ navigation, route }) => {
 
     fetchBookedRoomsForEndDate();
 
-    if (user) {
-      fetchFavorite();
-    }
   }, []);
+
+  useEffect(() => {
+    const unsubscribe = navigation.addListener("focus", () => {
+      fetchFavorite();
+    });
+    return unsubscribe;
+  }, [navigation]);
 
   const handleFavIconPress = async () => {
     setIsFavorite(!isFavorite);

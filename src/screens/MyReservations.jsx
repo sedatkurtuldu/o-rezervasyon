@@ -15,56 +15,62 @@ import { doc, updateDoc } from "firebase/firestore";
 const MyReservations = ({ navigation }) => {
   const [bookedRooms, setBookedRooms] = useState([]);
   const [user, setUser] = useState(null);
+  const [hasData, setHasData] = useState(false);
   auth.onAuthStateChanged((user) => {
     if (user) setUser(user);
     else setUser(null);
   });
 
-  useEffect(() => {
-    const fetchData = async () => {
-      const hotels = await getHotels();
-      const images = await getAllHotelImages();
-      const roomTypes = await getAllRoomTypes();
+  const fetchData = async () => {
+    const hotels = await getHotels();
+    const images = await getAllHotelImages();
+    const roomTypes = await getAllRoomTypes();
 
-      const hotelIds = Array.from(new Set(hotels.map((hotel) => hotel.id)));
+    const hotelIds = Array.from(new Set(hotels.map((hotel) => hotel.id)));
 
-      const bookedRooms = await getBookedRoomsByHotelIdAndUserId(
-        hotelIds,
-        auth.currentUser.uid
-      );
+    const bookedRooms = await getBookedRoomsByHotelIdAndUserId(
+      hotelIds,
+      auth.currentUser.uid
+    );
 
-      const hotelsDto = bookedRooms
-        .map((room) => {
-          const hotel = hotels.find((hotel) => hotel.id === room.HotelId);
-          const roomType = roomTypes.find(
-            (roomType) => roomType.id === room.RoomTypeId
-          );
-          const hotelImage = images.find(
-            (image) => image.HotelId === room.HotelId
-          );
-          if (hotel) {
-            return {
-              ...room,
-              hotelName: hotel.name,
-              hotelCity: hotel.city,
-              hotelDistrict: hotel.district,
-              hotel: hotel,
-              roomTypeName: roomType.RoomName,
-              imageUrl: hotelImage.imageUrl,
-            };
-          }
-          return null;
-        })
-        .filter((room) => room !== null);
+    const hotelsDto = bookedRooms
+      .map((room) => {
+        const hotel = hotels.find((hotel) => hotel.id === room.HotelId);
+        const roomType = roomTypes.find(
+          (roomType) => roomType.id === room.RoomTypeId
+        );
+        const hotelImage = images.find(
+          (image) => image.HotelId === room.HotelId
+        );
+        if (hotel) {
+          return {
+            ...room,
+            hotelName: hotel.name,
+            hotelCity: hotel.city,
+            hotelDistrict: hotel.district,
+            hotel: hotel,
+            roomTypeName: roomType.RoomName,
+            imageUrl: hotelImage.imageUrl,
+          };
+        }
+        return null;
+      })
+      .filter((room) => room !== null);
 
-      setBookedRooms(hotelsDto);
-    };
-    if (user) {
-      fetchData();
+    setBookedRooms(hotelsDto);
+    if (hotelsDto.length > 0) {
+      setHasData(true);
     }
-  }, [user]);
+  };
 
-  const updateBookedRoom = async (roomId, user) => {
+  useEffect(() => {
+    const unsubscribe = navigation.addListener("focus", () => {
+      fetchData();
+    });
+    return unsubscribe;
+  }, [navigation]);
+
+  const removeFromReservations = async (roomId, user) => {
     if (user) {
       const bookedRoom = await getBookedRoom(roomId);
       if (bookedRoom !== null) {
@@ -72,60 +78,17 @@ const MyReservations = ({ navigation }) => {
         await updateDoc(docRef, {
           Status: 0,
         });
-        const fetchData = async () => {
-          const hotels = await getHotels();
-          const images = await getAllHotelImages();
-          const roomTypes = await getAllRoomTypes();
-
-          const hotelIds = Array.from(new Set(hotels.map((hotel) => hotel.id)));
-
-          const bookedRooms = await getBookedRoomsByHotelIdAndUserId(
-            hotelIds,
-            auth.currentUser.uid
-          );
-
-          const hotelsDto = bookedRooms
-            .map((room) => {
-              const hotel = hotels.find((hotel) => hotel.id === room.HotelId);
-              const roomType = roomTypes.find(
-                (roomType) => roomType.id === room.RoomTypeId
-              );
-              const hotelImage = images.find(
-                (image) => image.HotelId === room.HotelId
-              );
-              if (hotel) {
-                return {
-                  ...room,
-                  hotelName: hotel.name,
-                  hotelCity: hotel.city,
-                  hotelDistrict: hotel.district,
-                  hotel: hotel,
-                  roomTypeName: roomType.RoomName,
-                  imageUrl: hotelImage.imageUrl,
-                };
-              }
-              return null;
-            })
-            .filter((room) => room !== null);
-          setBookedRooms(hotelsDto);
-        };
         fetchData();
       }
     }
   };
 
-  const removeFromFavorites = (roomId, user) => {
-    updateBookedRoom(roomId, user);
-  };
-
-  const goToDetailPage = (data, user) => {
-    navigation.navigate("HotelDetailPage", {
-      params: { data: data, user: user },
-    });
+  const goToDetailPage = (data) => {
+    navigation.navigate("HotelDetailPage", { data });
   };
   return (
     <ScrollView showsVerticalScrollIndicator={false} style={styles.container}>
-      {bookedRooms.length === 0 || user === null ? (
+      {!hasData && user === null ? (
         <Text style={{ textAlign: "center", fontWeight: "bold", fontSize: 18 }}>
           Rezervasyonunuz bulunmamaktadır.
         </Text>
@@ -138,16 +101,6 @@ const MyReservations = ({ navigation }) => {
             style={styles.cardContainer}
           >
             <View style={styles.leftContainer}>
-              {/* {hotelImages.length > 0 &&
-                hotelImages
-                  .filter((image) => image.HotelId === room.HotelId)
-                  .map((image, index) => (
-                    <Image
-                      key={index}
-                      style={{ height: 100, borderRadius: 10 }}
-                      source={{ uri: image.imageUrl }}
-                    />
-                  ))} */}
               <Image
                 key={index}
                 style={{ height: 100, borderRadius: 10 }}
@@ -176,7 +129,7 @@ const MyReservations = ({ navigation }) => {
               <TouchableOpacity
                 activeOpacity={0.6}
                 style={styles.favoriteButton}
-                onPress={() => removeFromFavorites(room.id, user)}
+                onPress={() => removeFromReservations(room.id, user)}
               >
                 <Text
                   style={{ fontSize: 16, color: "white", fontWeight: "500" }}
