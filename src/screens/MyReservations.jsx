@@ -37,7 +37,9 @@ const MyReservations = ({ navigation }) => {
       const hotelsDto = bookedRooms
         .map((room) => {
           const hotel = hotels.find((hotel) => hotel.id === room.HotelId);
-          const roomType = roomTypes.find((roomType) => roomType.id === room.RoomTypeId);
+          const roomType = roomTypes.find(
+            (roomType) => roomType.id === room.RoomTypeId
+          );
           if (hotel) {
             return {
               ...room,
@@ -45,7 +47,7 @@ const MyReservations = ({ navigation }) => {
               hotelCity: hotel.city,
               hotelDistrict: hotel.district,
               hotel: hotel,
-              roomTypeName: roomType.RoomName
+              roomTypeName: roomType.RoomName,
             };
           }
           return null;
@@ -75,6 +77,7 @@ const MyReservations = ({ navigation }) => {
         const fetchData = async () => {
           const hotels = await getHotels();
           const images = await getAllHotelImages();
+          const roomTypes = await getAllRoomTypes();
 
           const hotelIds = Array.from(new Set(hotels.map((hotel) => hotel.id)));
 
@@ -86,6 +89,9 @@ const MyReservations = ({ navigation }) => {
           const hotelsDto = bookedRooms
             .map((room) => {
               const hotel = hotels.find((hotel) => hotel.id === room.HotelId);
+              const roomType = roomTypes.find(
+                (roomType) => roomType.id === room.RoomTypeId
+              );
               if (hotel) {
                 return {
                   ...room,
@@ -93,6 +99,7 @@ const MyReservations = ({ navigation }) => {
                   hotelCity: hotel.city,
                   hotelDistrict: hotel.district,
                   hotel: hotel,
+                  roomTypeName: roomType.RoomName,
                 };
               }
               return null;
@@ -156,7 +163,8 @@ const MyReservations = ({ navigation }) => {
               <Text>
                 {room.BabyCount === 0
                   ? `${room.AdultCount} Yetişkin`
-                  : `${room.AdultCount} Yetişkin, ${room.BabyCount} Bebek`} - {room.roomTypeName}
+                  : `${room.AdultCount} Yetişkin, ${room.BabyCount} Bebek`}{" "}
+                - {room.roomTypeName}
               </Text>
               <Text>
                 {moment(room.StartDate).format("DD/MM/YYYY")} -{" "}
