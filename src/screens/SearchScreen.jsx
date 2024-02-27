@@ -1,15 +1,13 @@
 import { StyleSheet, Text, View } from "react-native";
 import React from "react";
 import SearchScreenWhereTo from "../components/SearchScreenWhereTo";
-import SearchScreenWhen from "../components/SearchScreenWhen";
-import SearchScreenPeople from "../components/SearchScreenPeople";
+import SearchScreenRooms from "../components/SearchScreenRooms";
 
 const SearchScreen = () => {
   return (
     <View style={styles.container}>
       <SearchScreenWhereTo />
-      <SearchScreenWhen />
-      <SearchScreenPeople />
+      <SearchScreenRooms />
     </View>
   );
 };
