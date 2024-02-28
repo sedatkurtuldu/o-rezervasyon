@@ -1,21 +1,25 @@
 import { createSlice } from "@reduxjs/toolkit";
 
-const intialState = {
-  city: '',
+const initialState = {
+  city: "",
   status: "idle",
   error: null,
 };
 
 const selectedCitySlice = createSlice({
-    name: "selectedCity",
-    initialState: intialState,
-    reducers: {
-      setSelectedCity: (state, action) => {
+  name: "selectedCity",
+  initialState: initialState,
+  reducers: {
+    setSelectedCity: (state, action) => {
+      if (action.payload !== null) {
         state.city = action.payload;
-      },
+      }
+      else {
+        return initialState;
+      }
     },
-  });
-  
-  export const selectedCityReducer = selectedCitySlice.reducer;
-  export const { setSelectedCity } = selectedCitySlice.actions;
-  
+  },
+});
+
+export const selectedCityReducer = selectedCitySlice.reducer;
+export const { setSelectedCity } = selectedCitySlice.actions;

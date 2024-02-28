@@ -51,7 +51,7 @@ const SearchScreenWhereTo = () => {
   };
 
   const handleSearchTextChange = (text) => {
-    dispatch(setSelectedCity(text));
+    dispatch(setSelectedCity(text.toUpperCase()));
   };
 
   const handleSelectedListItem = (item) => {
@@ -159,7 +159,7 @@ const SearchScreenWhereTo = () => {
                   placeholder="Yerleri arayın" 
                   value={selectedCity}
                   onChangeText={handleSearchTextChange}
-                  style={styles.input} 
+                  style={styles.input}
                 />
               </View>
               <View style={styles.flatList}>

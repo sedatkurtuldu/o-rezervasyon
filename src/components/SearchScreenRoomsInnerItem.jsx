@@ -1,6 +1,8 @@
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import React, { useState } from "react";
+import React from "react";
 import Checkbox from "expo-checkbox";
+import { useDispatch, useSelector } from "react-redux";
+import { setSearchScreenRooms } from "../slices/searchScreenRoomsSlice";
 
 const SearchScreenRoomsInnerItem = ({
   leftUpperText,
@@ -8,7 +10,14 @@ const SearchScreenRoomsInnerItem = ({
   isBorder,
   id,
 }) => {
-  const [isSelected, setSelection] = useState(false);
+  const dispatch = useDispatch();
+
+  const roomTypesRedux = useSelector((state) => state.searchScreenRooms);
+  const isSelected = roomTypesRedux.find((roomType) => roomType.roomTypeId === id)?.isChecked || false;
+
+  const handleChecked = () => {
+    dispatch(setSearchScreenRooms({ roomTypeId: id, isChecked: !isSelected }));
+  };
 
   return (
     <View
@@ -22,8 +31,9 @@ const SearchScreenRoomsInnerItem = ({
         <Checkbox
           key={id}
           value={isSelected}
-          onValueChange={setSelection}
+          onValueChange={handleChecked}
           style={styles.checkbox}
+          color="#cb1d53"
         />
       </View>
     </View>

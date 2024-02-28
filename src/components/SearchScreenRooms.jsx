@@ -17,12 +17,14 @@ import Animated, {
 
 import { getAllRoomTypes } from "../service/api";
 import SearchScreenRoomsInnerItem from "./SearchScreenRoomsInnerItem";
+import { useSelector } from "react-redux";
 
 const height = Dimensions.get("window").height;
 
 const SearchScreenRooms = () => {
   const isCardExpanded = useSharedValue(false);
 
+  const roomTypesRedux = useSelector((state) => state.searchScreenRooms);
   const [roomTypes, setRoomTypes] = useState([]);
 
   useEffect(() => {
@@ -110,9 +112,17 @@ const SearchScreenRooms = () => {
         <Animated.View style={styles.iconContainer}>
           <Animated.View style={[styles.placeContainer, placeContainerStyle]}>
             <Text style={styles.placeText}>Odalar</Text>
-            <Text style={[styles.placeText, { color: "gray", fontSize: 14 }]}>
-              Oda Tipi İle Arama
-            </Text>
+            {roomTypesRedux.every((roomType) => !roomType.isChecked) || roomTypesRedux.length === 0 ? (
+              <Text style={[styles.placeText, { color: "gray", fontSize: 14 }]}>
+                Oda Tipi İle Arama
+              </Text>
+            ) : (
+              <Text
+                style={[styles.placeText, { fontSize: 16, fontWeight: "bold" }]}
+              >
+                Seçildi
+              </Text>
+            )}
           </Animated.View>
           <Animated.View
             style={[styles.cardTextContainer, cardTextContainerStyle]}

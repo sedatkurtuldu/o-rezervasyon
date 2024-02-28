@@ -13,59 +13,64 @@ import * as Location from "expo-location";
 import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 import MyBottomSheet from "../components/MyBottomSheet";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
-import { getAllHotelImages, getHotelImages, getHotels } from "../service/api";
+import { getAllHotelImages, getHotels } from "../service/api";
 import Carousel from "react-native-reanimated-carousel";
+import { useRoute } from "@react-navigation/native";
 
 const width = Dimensions.get("window").width;
 
 const HomeScreen = ({ navigation }) => {
   const mapRef = useRef(null);
   const bottomSheetRef = useRef(null);
+  const route = useRoute();
+
   const [initialRegion, setInitialRegion] = useState(null);
   const [hotels, setHotels] = useState([]);
+  const [filteredHotels, setFilteredHotels] = useState([]);
+  console.log("Filtered: ", filteredHotels);
   const [hotelImages, setHotelImages] = useState([]);
 
+  const requestLocationPermission = async () => {
+    try {
+      const { status } = await Location.requestForegroundPermissionsAsync();
+      if (status === "granted") {
+        const location = await Location.getCurrentPositionAsync({});
+        const { latitude, longitude } = location.coords;
+        setInitialRegion({
+          latitude,
+          longitude,
+          latitudeDelta: 0.0922,
+          longitudeDelta: 0.0421,
+        });
+      }
+    } catch (err) {
+      console.warn(err);
+    }
+  };
+
+  const fetchHotels = async () => {
+    try {
+      const data = await getHotels();
+      setHotels(data);
+    } catch (error) {
+      console.error("Error fetching hotels:", error);
+    }
+  };
+
+  const fetchHotelImages = async () => {
+    try {
+      const images = await getAllHotelImages();
+      setHotelImages(images);
+    } catch (error) {
+      console.error("Error fetching hotel images:", error);
+    }
+  };
+
+  const alwaysOnBottomSheet = () => {
+    bottomSheetRef.current?.openBottomSheet();
+  };
+
   useEffect(() => {
-    const requestLocationPermission = async () => {
-      try {
-        const { status } = await Location.requestForegroundPermissionsAsync();
-        if (status === "granted") {
-          const location = await Location.getCurrentPositionAsync({});
-          const { latitude, longitude } = location.coords;
-          setInitialRegion({
-            latitude,
-            longitude,
-            latitudeDelta: 0.0922,
-            longitudeDelta: 0.0421,
-          });
-        }
-      } catch (err) {
-        console.warn(err);
-      }
-    };
-
-    const fetchHotels = async () => {
-      try {
-        const data = await getHotels();
-        setHotels(data);
-      } catch (error) {
-        console.error("Error fetching hotels:", error);
-      }
-    };
-
-    const fetchHotelImages = async () => {
-      try {
-        const images = await getAllHotelImages();
-        setHotelImages(images);
-      } catch (error) {
-        console.error("Error fetching hotel images:", error);
-      }
-    };
-
-    const alwaysOnBottomSheet = () => {
-      bottomSheetRef.current?.openBottomSheet();
-    };
-
     requestLocationPermission();
 
     fetchHotels();
@@ -146,7 +151,7 @@ const HomeScreen = ({ navigation }) => {
         )}
         <FlatList
           style={styles.flatList}
-          data={hotels}
+          data={filteredHotels !== undefined ? filteredHotels : hotels}
           horizontal
           renderItem={renderFlatListItem}
           keyExtractor={(item) => item.id.toString()}

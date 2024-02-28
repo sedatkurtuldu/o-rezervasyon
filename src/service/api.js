@@ -109,6 +109,24 @@ export const getRoomsAndTypesMapping = async (id) => {
   return getRoomsAndTypesMapping;
 };
 
+export const getAllRoomsAndTypesMapping = async () => {
+  const roomsAndTypesCollection = collection(db, ROOM_TYPE_MAPPING);
+  const snapshot = await getDocs(roomsAndTypesCollection);
+
+  const getRoomsAndTypesMapping = snapshot.docs.map((doc) => {
+    const id = doc.id;
+    const roomsAndTypes = doc.data();
+    return {
+      id: id,
+      HotelId: roomsAndTypes.HotelId,
+      RoomTypeId: roomsAndTypes.RoomTypeId,
+      RoomCount: roomsAndTypes.RoomCount,
+      Status: roomsAndTypes.Status,
+    };
+  });
+  return getRoomsAndTypesMapping;
+};
+
 export const getRoomTypeMappingByHotelIdAndRoomTypeId = async (hotelId, roomTypeId) => {
   const roomTypeMappingsCollection = collection(db, ROOM_TYPE_MAPPING);
   const q = query(

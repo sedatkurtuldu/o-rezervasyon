@@ -1,25 +1,29 @@
 import { createSlice } from "@reduxjs/toolkit";
 
-const intialState = {
-  forOnePerson: false,
-  forTwoPerson: false,
-  forThreePerson: false,
-  forFourPerson: false,
-  status: "idle",
-  error: null,
-};
+export const initialState = [];
 
 const searchScreenRoomsSlice = createSlice({
-    name: "reservationDateSelect",
-    initialState: intialState,
-    reducers: {
-        setSearchScreenRooms: (state, action) => {
-        state.startDate = action.payload.startDate;
-        state.endDate = action.payload.endDate;
-      },
+  name: "searchScreenRooms",
+  initialState,
+  reducers: {
+    setSearchScreenRooms: (state, action) => {
+      const payload = action.payload;
+      if (payload !== null) {
+        const existingRoom = state.find(
+          (room) => room.roomTypeId === payload.roomTypeId
+        );
+        if (existingRoom) {
+          existingRoom.isChecked = payload.isChecked;
+        } else {
+          state.push(payload);
+        }
+      } else {
+        return initialState;
+      }
     },
-  });
-  
-  export const searchScreenRoomsSliceReducer = searchScreenRoomsSlice.reducer;
-  export const { setSearchScreenRooms } = searchScreenRoomsSlice.actions;
-  
+  },
+});
+
+
+export const searchScreenRoomsReducer = searchScreenRoomsSlice.reducer;
+export const { setSearchScreenRooms } = searchScreenRoomsSlice.actions;

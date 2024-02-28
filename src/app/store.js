@@ -8,6 +8,7 @@ import { reservationDateSelectSliceReducer } from "../slices/reservationDateSele
 import { calendarDateRangeIsFirstReducer } from "../slices/calendarDateRangeIsFirstSlice";
 import { reservationRoomSelectReducer } from "../slices/reservationRoomSelectSlice";
 import { reservationPeopleCounterReducer } from "../slices/reservationPeopleSelectSlice";
+import { searchScreenRoomsReducer } from "../slices/searchScreenRoomsSlice";
 
 const store = configureStore({
     reducer: {
@@ -19,7 +20,8 @@ const store = configureStore({
         reservationDateSelect: reservationDateSelectSliceReducer,
         calendarDateRangeIsFirst: calendarDateRangeIsFirstReducer,
         reservationRoomSelectCounter: reservationRoomSelectReducer,
-        reservationPeople: reservationPeopleCounterReducer
+        reservationPeople: reservationPeopleCounterReducer,
+        searchScreenRooms: searchScreenRoomsReducer
     }
   });
   
