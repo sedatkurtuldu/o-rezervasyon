@@ -1,4 +1,4 @@
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import React from "react";
 import Checkbox from "expo-checkbox";
 import { useDispatch, useSelector } from "react-redux";
@@ -20,7 +20,8 @@ const SearchScreenRoomsInnerItem = ({
   };
 
   return (
-    <View
+    <ScrollView
+      showsVerticalScrollIndicator={false}
       style={[styles.roomContainer, { borderBottomWidth: isBorder ? 1 : 0 }]}
     >
       <View style={styles.roomLeftTextContainer}>
@@ -36,7 +37,7 @@ const SearchScreenRoomsInnerItem = ({
           color="#cb1d53"
         />
       </View>
-    </View>
+    </ScrollView>
   );
 };
 
