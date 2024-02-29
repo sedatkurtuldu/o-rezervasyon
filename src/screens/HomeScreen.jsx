@@ -151,7 +151,7 @@ const HomeScreen = ({ navigation }) => {
         )}
         <FlatList
           style={styles.flatList}
-          data={filteredHotels !== undefined ? filteredHotels : hotels}
+          data={filteredHotels && filteredHotels.length > 0 ? filteredHotels : hotels}
           horizontal
           renderItem={renderFlatListItem}
           keyExtractor={(item) => item.id.toString()}
