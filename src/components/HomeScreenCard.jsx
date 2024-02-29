@@ -96,12 +96,9 @@ const HomeScreenCard = React.memo(({ data, navigation }) => {
     }
   }, [isCardFavorite, data.id, hotelImages]);
 
-  const navigateToDetailPage = useCallback(
-    () => {
-      navigation.navigate("HotelDetailPage", { data });
-    },
-    [data, navigation]
-  );
+  const navigateToDetailPage = useCallback(() => {
+    navigation.navigate("HotelDetailPage", { data });
+  }, [data, navigation]);
 
   return (
     <Pressable onPress={navigateToDetailPage} style={styles.card}>
@@ -119,20 +116,22 @@ const HomeScreenCard = React.memo(({ data, navigation }) => {
           </View>
         )}
       </TouchableOpacity>
-      <Carousel
-        loop
-        width={width * 0.9}
-        height={width / 1.5}
-        autoPlay={true}
-        data={hotelImages}
-        scrollAnimationDuration={1000}
-        renderItem={({ item }) => (
-          <Image source={{ uri: item.imageUrl }} style={styles.image} />
-        )}
-        panGestureHandlerProps={{
-          activeOffsetX: [-10, 10],
-        }}
-      />
+      <View style={styles.carousel}>
+        <Carousel
+          loop
+          width={width * 0.9}
+          height={width / 1.5}
+          autoPlay={true}
+          data={hotelImages}
+          scrollAnimationDuration={1000}
+          renderItem={({ item }) => (
+            <Image source={{ uri: item.imageUrl }} style={styles.image} />
+          )}
+          panGestureHandlerProps={{
+            activeOffsetX: [-10, 10],
+          }}
+        />
+      </View>
       <View style={styles.contentContainer}>
         <View style={styles.content}>
           <Text style={styles.title}>{data.name}</Text>
@@ -162,15 +161,22 @@ const styles = StyleSheet.create({
       width: 0,
       height: 1,
     },
-    shadowOpacity: Platform.OS === "ios" ? 0.22 : 1.22,
+    shadowOpacity: Platform.OS === "ios" ? 0.42 : 1.22,
     shadowRadius: 3.22,
     elevation: 3,
     marginBottom: 20,
-    overflow: "hidden",
+    borderTopLeftRadius:10,
+    borderTopRightRadius:10
+  },
+  carousel:{
+    borderTopLeftRadius:10,
+    borderTopRightRadius:10
   },
   image: {
-    width: width,
+    width: width *0.9,
     height: width / 1.5,
+    borderTopLeftRadius:10,
+    borderTopRightRadius:10
   },
   contentContainer: {
     flexDirection: "row",

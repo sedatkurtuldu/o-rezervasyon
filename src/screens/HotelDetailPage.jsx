@@ -190,7 +190,6 @@ const HotelDetailPage = ({ navigation, route }) => {
           style={styles.headerBackButton}
         >
           <AntDesign
-            style={styles.leftCircleIcon}
             name="left"
             size={18}
             color="black"
@@ -371,10 +370,8 @@ const styles = StyleSheet.create({
     top: 45,
     left: 20,
     zIndex: 999,
-  },
-  leftCircleIcon: {
-    padding: 5,
     borderRadius: 50,
+    padding: 5,    
     backgroundColor: "white",
   },
   favIcon: {
