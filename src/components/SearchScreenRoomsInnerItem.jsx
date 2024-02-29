@@ -22,7 +22,7 @@ const SearchScreenRoomsInnerItem = ({
   return (
     <ScrollView
       showsVerticalScrollIndicator={false}
-      style={[styles.roomContainer, { borderBottomWidth: isBorder ? 1 : 0 }]}
+      contentContainerStyle={[styles.roomContainer, { borderBottomWidth: isBorder ? 1 : 0 }]}
     >
       <View style={styles.roomLeftTextContainer}>
         <Text style={{ fontSize: 18, fontWeight: "500" }}>{leftUpperText}</Text>

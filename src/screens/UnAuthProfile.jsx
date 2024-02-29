@@ -54,19 +54,20 @@ const styles = StyleSheet.create({
   loginButtonContainer: {
     justifyContent: "center",
     alignItems: "center",
-    marginTop: 40,
+    marginTop: 30,
+    
   },
   loginButton: {
-    width: "90%",
+    backgroundColor: "#cb1d53",
+    padding: 15,
+    borderRadius: 10,
+    alignItems: "center",
+    width:"90%"
   },
   loginButtonText: {
-    padding: 14,
-    backgroundColor: "#cb1d53",
     color: "white",
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: "bold",
-    textAlign: "center",
-    borderRadius: 10,
   },
   registerContainer: {
     flexDirection: "row",

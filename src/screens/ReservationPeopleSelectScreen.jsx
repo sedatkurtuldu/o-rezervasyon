@@ -1,10 +1,12 @@
-import { StyleSheet, Text, View } from 'react-native'
+import { ScrollView, StyleSheet, Text, View } from 'react-native'
 import React from 'react'
 import SearchScreenPeopleInnerItem from '../components/SearchScreenPeopleInnerItem'
 
 const ReservationPeopleSelectScreen = () => {
   return (
-    <View style={styles.container}>
+    <ScrollView
+    showsVerticalScrollIndicator={false}
+    contentContainerStyle={styles.container}>
       <SearchScreenPeopleInnerItem
         leftUpperText={"Yetişkinler"}
         leftBottomText={"13 yaş ve üstü"}
@@ -23,7 +25,7 @@ const ReservationPeopleSelectScreen = () => {
         isBorder={false}
         isSearchScreen={false}
       />
-    </View>
+    </ScrollView>
   )
 }
 

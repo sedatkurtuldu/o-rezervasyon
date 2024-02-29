@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, TouchableOpacity, View, TextInput, Text } from 'react-native';
+import { StyleSheet, TouchableOpacity, View, TextInput, Text, Platform } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { AntDesign } from '@expo/vector-icons';
 
@@ -31,13 +31,13 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    padding: 16,
+    padding: Platform.OS === "ios" ? 5 : 16,
     shadowColor: '#000',
     shadowOffset: {
       width: 0,
       height: 1,
     },
-    shadowOpacity: 1.22,
+    shadowOpacity:Platform.OS === "ios" ? 0.22 : 1.22,
     shadowRadius: 3.22,
     elevation: 3,
     backgroundColor: 'white',

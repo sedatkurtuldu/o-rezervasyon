@@ -7,6 +7,7 @@ import {
   Dimensions,
   Pressable,
   TouchableOpacity,
+  Platform,
 } from "react-native";
 import Carousel from "react-native-reanimated-carousel";
 import { Ionicons } from "@expo/vector-icons";
@@ -157,9 +158,12 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     borderRadius: 10,
     shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 2,
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: Platform.OS === "ios" ? 0.22 : 1.22,
+    shadowRadius: 3.22,
     elevation: 3,
     marginBottom: 20,
     overflow: "hidden",

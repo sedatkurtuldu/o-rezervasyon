@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View } from "react-native";
+import { ScrollView, StyleSheet, Text, View } from "react-native";
 import React from "react";
 import SearchScreenPeopleInnerItem from "../components/SearchScreenPeopleInnerItem";
 
@@ -6,7 +6,9 @@ const ReservationRoomSelectScreen = ({ route }) => {
   const roomTypes = route.params.roomTypes;
 
   return (
-    <View style={styles.container}>
+    <ScrollView
+    showsVerticalScrollIndicator={false}
+    contentContainerStyle={styles.container}>
       {roomTypes.map((roomType, index) => (
         <SearchScreenPeopleInnerItem
           key={roomType.id}
@@ -15,7 +17,7 @@ const ReservationRoomSelectScreen = ({ route }) => {
           isBorder={index !== roomTypes.length - 1}
         />
       ))}
-    </View>
+    </ScrollView>
   );
 };
 
