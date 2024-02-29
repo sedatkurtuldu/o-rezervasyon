@@ -19,7 +19,7 @@ const MyBottomSheet = React.forwardRef((props, ref) => {
   const bottomSheetModalRef = useRef(null);
 
   const { navigation } = props;
-
+  const { filteredHotels } = props;
   const [hotels, setHotels] = useState([]);
 
   useEffect(() => {
@@ -61,7 +61,7 @@ const MyBottomSheet = React.forwardRef((props, ref) => {
         >
           <View style={styles.contentContainer}>
             <BottomSheetFlatList
-              data={hotels}
+              data={filteredHotels && filteredHotels.length > 0 ? filteredHotels : hotels}
               renderItem={renderItem}
               keyExtractor={(item) => item.id.toString()}
               showsVerticalScrollIndicator={false}

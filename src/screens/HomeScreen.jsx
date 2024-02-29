@@ -22,12 +22,12 @@ const width = Dimensions.get("window").width;
 const HomeScreen = ({ navigation }) => {
   const mapRef = useRef(null);
   const bottomSheetRef = useRef(null);
+
   const route = useRoute();
+  const filteredHotels = route.params?.filteredHotels;
 
   const [initialRegion, setInitialRegion] = useState(null);
   const [hotels, setHotels] = useState([]);
-  const [filteredHotels, setFilteredHotels] = useState([]);
-  console.log("Filtered: ", filteredHotels);
   const [hotelImages, setHotelImages] = useState([]);
 
   const requestLocationPermission = async () => {
@@ -157,7 +157,7 @@ const HomeScreen = ({ navigation }) => {
           keyExtractor={(item) => item.id.toString()}
           showsHorizontalScrollIndicator={false}
         />
-        <MyBottomSheet ref={bottomSheetRef} navigation={navigation} />
+        <MyBottomSheet ref={bottomSheetRef} navigation={navigation} filteredHotels={filteredHotels} />
       </GestureHandlerRootView>
     </BottomSheetModalProvider>
   );
