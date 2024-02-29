@@ -43,7 +43,13 @@ const Favorites = ({ navigation }) => {
   };
 
   useEffect(() => {
-    if (user) {
+    if (auth.currentUser) {
+      fetchFavorites();
+    }
+  }, []);
+
+  useEffect(() => {
+    if (auth.currentUser) {
       fetchFavorites();
     }
   }, [isFocused]);
@@ -64,7 +70,7 @@ const Favorites = ({ navigation }) => {
     }
   };
 
-  const goToDetailPage = (data, user) => {
+  const goToDetailPage = (data) => {
     navigation.navigate("HotelDetailPage", { data });
   };
 
@@ -82,7 +88,7 @@ const Favorites = ({ navigation }) => {
             <TouchableOpacity
               key={index}
               activeOpacity={0.6}
-              onPress={() => goToDetailPage(hotel, user)}
+              onPress={() => goToDetailPage(hotel)}
               style={styles.cardContainer}
             >
               <View style={styles.leftContainer}>
@@ -141,7 +147,7 @@ const Favorites = ({ navigation }) => {
               textAlign: "center",
               fontWeight: "500",
               fontSize: 16,
-              textDecorationLine: 'underline'
+              textDecorationLine: "underline",
             }}
           >
             Kaydolun veya Giriş Yapın.
