@@ -8,9 +8,9 @@ import {
 import { Alert } from "react-native";
 import { addDoc, collection, doc } from "firebase/firestore";
 import { db } from "../service/firebase";
-import 'moment/locale/tr';
+import "moment/locale/tr";
 
-moment.locale('tr');
+moment.locale("tr");
 
 export const handleReservation = async (
   hotelId,
@@ -20,6 +20,19 @@ export const handleReservation = async (
   userId,
   navigation
 ) => {
+  if (
+    !reservationDateSelect.endDate ||
+    selectedRooms.length === 0 ||
+    reservationPeopleCount.reservationAdultCount === 0
+  ) {
+    Alert.alert(
+      "Uyarı",
+      "Lütfen oda, tarih ve kişi seçimi yapınız.",
+      [{ text: "TAMAM" }]
+    );
+    return;
+  }
+
   let updatedRoomTypes = [];
 
   for (const selectedRoom of selectedRooms) {
@@ -47,9 +60,9 @@ export const handleReservation = async (
   }
 
   const personsMapping = {
-    "VFdDN3jPGNeocX9sYZsO": "forOnePersons",
-    "uQ9bhKIT7CjYJpA1sboT": "forTwoPersons",
-    "cHD5du3eMeapMkx8YGyD": "forThreePersons",
+    VFdDN3jPGNeocX9sYZsO: "forOnePersons",
+    uQ9bhKIT7CjYJpA1sboT: "forTwoPersons",
+    cHD5du3eMeapMkx8YGyD: "forThreePersons",
     "9YWnhaMzeDZZNmUJZU6W": "forFourPersons",
   };
   let personsRooms = {
@@ -154,4 +167,3 @@ export const handleReservation = async (
     }
   });
 };
-

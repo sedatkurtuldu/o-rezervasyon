@@ -8,7 +8,11 @@ import {
 import React, { useEffect, useState } from "react";
 import { Feather } from "@expo/vector-icons";
 import { auth, db } from "../service/firebase";
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile } from "@firebase/auth";
+import {
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  updateProfile,
+} from "@firebase/auth";
 import { useDispatch } from "react-redux";
 import { setPhone, setUserId } from "../slices/userSlice";
 import { setName, setSurname } from "../slices/userSlice";
@@ -19,7 +23,8 @@ const RegisterPasswordScreen = ({ route, navigation }) => {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const [showPasswordConfirmation, setShowPasswordConfirmation] = useState(false);
+  const [showPasswordConfirmation, setShowPasswordConfirmation] =
+    useState(false);
   const [passwordMismatch, setPasswordMismatch] = useState(false);
 
   const dispatch = useDispatch();
@@ -28,8 +33,8 @@ const RegisterPasswordScreen = ({ route, navigation }) => {
     dispatch(setPhone(values.phone));
     dispatch(setName(values.name));
     dispatch(setSurname(values.surname));
-  }, [])
-  
+  }, []);
+
   const toggleShowPassword = (type) => {
     if (type === "password") {
       setShowPassword(!showPassword);
@@ -58,7 +63,6 @@ const RegisterPasswordScreen = ({ route, navigation }) => {
     });
   };
 
-
   const handleRegister = async () => {
     if (
       password !== confirmPassword &&
@@ -67,21 +71,23 @@ const RegisterPasswordScreen = ({ route, navigation }) => {
     ) {
       setPasswordMismatch(true);
       return;
-    }
-    else {
+    } else {
       try {
-        await createUserWithEmailAndPassword(auth, values.email, confirmPassword);
-
-        await updateProfile(auth.currentUser, {
-          displayName: values.name
-        });
+        await createUserWithEmailAndPassword(
+          auth,
+          values.email,
+          confirmPassword
+        );
 
         await signInWithEmailAndPassword(auth, values.email, confirmPassword);
 
-        await handleAddUser();
-        
-        navigation.navigate("Profile")
+        await updateProfile(auth.currentUser, {
+          displayName: values.name,
+        });
 
+        await handleAddUser();
+
+        navigation.navigate("Profile");
       } catch (createUserError) {
         console.error("Kullanıcı oluşturma hatası: ", createUserError);
       }

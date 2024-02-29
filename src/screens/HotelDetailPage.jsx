@@ -1,4 +1,5 @@
 import {
+  Alert,
   Dimensions,
   FlatList,
   Image,
@@ -10,7 +11,12 @@ import {
 } from "react-native";
 import React, { useEffect, useRef, useState } from "react";
 import Carousel from "react-native-reanimated-carousel";
-import { getBookedRooms, getFavoriteByHotelIdAndUserId, getHotelImages, getRoomTypes } from "../service/api";
+import {
+  getBookedRooms,
+  getFavoriteByHotelIdAndUserId,
+  getHotelImages,
+  getRoomTypes,
+} from "../service/api";
 import { AntDesign } from "@expo/vector-icons";
 import { Ionicons } from "@expo/vector-icons";
 import MapView, { Marker } from "react-native-maps";
@@ -65,7 +71,12 @@ const HotelDetailPage = ({ navigation, route }) => {
       const bookedRooms = await getBookedRooms(data.id);
       const endDate = getEndDate(bookedRooms);
       setEndDate(endDate);
-      dispatch(setReservationDateSelect({startDate: moment(endDate, "D MMM").format("YYYY-MM-DD"), endDate: ''}))
+      dispatch(
+        setReservationDateSelect({
+          startDate: moment(endDate, "D MMM").format("YYYY-MM-DD"),
+          endDate: "",
+        })
+      );
     };
 
     const userLocation = async () => {
@@ -83,7 +94,6 @@ const HotelDetailPage = ({ navigation, route }) => {
     fetchHotelImages();
 
     fetchBookedRoomsForEndDate();
-
   }, []);
 
   useEffect(() => {
@@ -101,10 +111,10 @@ const HotelDetailPage = ({ navigation, route }) => {
       auth.currentUser.uid
     );
     if (favorite !== null) {
-      const docRef = doc(db, 'favorites', favorite.id);
+      const docRef = doc(db, "favorites", favorite.id);
       await updateDoc(docRef, { isFavorite: !isFavorite });
     } else {
-      await addDoc(collection(db, 'favorites'), {
+      await addDoc(collection(db, "favorites"), {
         HotelId: data.id,
         imageUrl: hotelImages[0].imageUrl,
         isFavorite: true,
@@ -132,7 +142,15 @@ const HotelDetailPage = ({ navigation, route }) => {
   };
 
   const handleReservation = () => {
-    navigation.navigate("Booking", { data });
+    if (user === null) {
+      Alert.alert("Uyarı!", "Rezervasyon yapmak için giriş yapınız!", [
+        {
+          text: "TAMAM"
+        },
+      ]);
+    } else {
+      navigation.navigate("Booking", { data });
+    }
   };
 
   const getEndDate = (bookedRooms) => {

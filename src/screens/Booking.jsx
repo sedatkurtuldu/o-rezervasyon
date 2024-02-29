@@ -15,7 +15,6 @@ import moment from "moment";
 import { handleReservation } from "../myFunctions/myFunctions";
 import { auth } from "../service/firebase";
 import { setReservationPeopleCount } from "../slices/reservationPeopleSelectSlice";
-import { setCount } from "../slices/peopleCounterSlice";
 import { setReservationRoomCount } from "../slices/reservationRoomSelectSlice";
 
 const Booking = ({ navigation, route }) => {

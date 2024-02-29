@@ -1,15 +1,13 @@
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import React, { useEffect, useState } from "react";
-import { auth, db } from "../service/firebase";
+import { auth } from "../service/firebase";
 import AuthProfileCard from "../components/AuthProfileCard";
-import { addDoc, collection } from "firebase/firestore";
 import { getUser } from "../service/api";
 import { useDispatch, useSelector } from "react-redux";
 import { setIsUpdated } from "../slices/isEditUpdated";
-import { setName, setPhone, setSurname } from "../slices/userSlice";
+import { setName, setPhone, setSurname, setUserId } from "../slices/userSlice";
 
 const AuthProfile = ({ navigation }) => {
-  //TO-DO: DİĞER BUTONLARIN ACTIVE OPACITY PROP'U 0.6 OLARAK AYARLANACAK!!!!
   //TO-DO: REGİSTER OLURKEN PROMISE UNRESOLVE HATASI VAR ONA BAK!!!
   const dispatch = useDispatch();
   const user = useSelector((state) => state.user);
@@ -33,7 +31,11 @@ const AuthProfile = ({ navigation }) => {
     auth
       .signOut()
       .then(() => {
-        navigation.navigate("HomeScreen");
+        dispatch(setName(''));
+        dispatch(setSurname(''));
+        dispatch(setPhone(''));
+        dispatch(setUserId(''));
+        navigation.navigate("Profile");
       })
       .catch((error) => {
         console.error("Çıkış yaparken hata oluştu: ", error);

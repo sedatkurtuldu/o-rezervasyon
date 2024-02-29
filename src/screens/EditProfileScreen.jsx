@@ -8,15 +8,15 @@ import {
 } from "react-native";
 import React, { useState } from "react";
 import { auth, db } from "../service/firebase";
-import { verifyBeforeUpdateEmail } from "@firebase/auth";
 import { getUser } from "../service/api";
-import { doc, updateDoc } from "firebase/firestore";
+import { deleteDoc, doc, updateDoc } from "firebase/firestore";
 import { useDispatch } from "react-redux";
 import { setIsUpdated } from "../slices/isEditUpdated";
+import { setName, setPhone, setSurname, setUserId } from "../slices/userSlice";
 
 const EditProfileScreen = ({ route, navigation }) => {
-  const [name, setName] = useState(route.params.name);
-  const [surname, setSurname] = useState(route.params.surname);
+  const [name, setname] = useState(route.params.name);
+  const [surname, setsurname] = useState(route.params.surname);
   const [phoneNumber, setPhoneNumber] = useState(route.params.phoneNumber);
 
   const dispatch = useDispatch();
@@ -63,17 +63,61 @@ const EditProfileScreen = ({ route, navigation }) => {
     navigation.navigate("EditEmailScreen");
   };
 
+  const handleDeleteAccount = async () => {
+    Alert.alert(
+      "Hesabı Sil",
+      "Hesabınızı silmek istediğinize emin misiniz?",
+      [
+        {
+          text: "Vazgeç",
+          style: "cancel",
+        },
+        {
+          text: "Evet, Sil",
+          onPress: async () => {
+            try {
+              const user = await getUser(auth.currentUser.uid);
+              await deleteDoc(doc(db, "users", user.id));
+  
+              await auth.currentUser.delete();
+  
+              Alert.alert("Başarılı!", "Hesabınız başarıyla silindi.", [
+                {
+                  text: "TAMAM",
+                },
+              ]);
+
+              navigation.navigate("Profile")
+              dispatch(setName(''));
+              dispatch(setSurname(''));
+              dispatch(setPhone(''));
+              dispatch(setUserId(''));
+            } catch (error) {
+              Alert.alert("Hata!", "Hesap silinirken bir hata oluştu.", [
+                {
+                  text: "TAMAM",
+                },
+              ]);
+  
+              console.error("Hesap silinirken hata oluştu:", error);
+            }
+          },
+        },
+      ]
+    );
+  };
+
   return (
     <View style={styles.container}>
       <TextInput
         value={name}
-        onChangeText={setName}
+        onChangeText={setname}
         style={styles.input}
         placeholder="Adı"
       />
       <TextInput
         value={surname}
-        onChangeText={setSurname}
+        onChangeText={setsurname}
         style={styles.input}
         placeholder="Soyadı"
       />
@@ -96,6 +140,15 @@ const EditProfileScreen = ({ route, navigation }) => {
         </View>
         <TouchableOpacity onPress={navigateToEmailScreen} activeOpacity={0.6}>
           <Text style={styles.editText}>Düzenle</Text>
+        </TouchableOpacity>
+      </View>
+      <View style={styles.emailContainer}>
+        <View>
+          <Text style={styles.emailText}>Hesabı Kaldır</Text>
+          <Text style={styles.emailEmail}>{name} {surname}</Text>
+        </View>
+        <TouchableOpacity activeOpacity={0.6} onPress={handleDeleteAccount}>
+          <Text style={styles.editText}>Sil</Text>
         </TouchableOpacity>
       </View>
     </View>

@@ -1,13 +1,20 @@
-import React, { useEffect, useState } from 'react';
-import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import React, { useEffect, useState } from "react";
+import {
+  Image,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import {
   getFavorites,
   getHotels,
   getFavoriteByHotelIdAndUserId,
-} from '../service/api';
-import { auth, db } from '../service/firebase';
-import { doc, updateDoc } from 'firebase/firestore';
-import { useIsFocused } from '@react-navigation/native';
+} from "../service/api";
+import { auth, db } from "../service/firebase";
+import { doc, updateDoc } from "firebase/firestore";
+import { useIsFocused } from "@react-navigation/native";
 
 const Favorites = ({ navigation }) => {
   const [favorites, setFavorites] = useState([]);
@@ -48,7 +55,7 @@ const Favorites = ({ navigation }) => {
         auth.currentUser.uid
       );
       if (favorite !== null) {
-        const docRef = doc(db, 'favorites', favorite.id);
+        const docRef = doc(db, "favorites", favorite.id);
         await updateDoc(docRef, {
           isFavorite: false,
         });
@@ -63,53 +70,83 @@ const Favorites = ({ navigation }) => {
 
   return (
     <ScrollView showsVerticalScrollIndicator={false} style={styles.container}>
-      {hotels.length === 0 || user === null ? (
-        <Text style={{ textAlign: 'center', fontWeight: 'bold', fontSize: 18 }}>
-          Favoriniz bulunmamaktadır.
-        </Text>
-      ) : (
-        hotels.map((hotel, index) => (
-          <TouchableOpacity
-            key={index}
-            activeOpacity={0.6}
-            onPress={() => goToDetailPage(hotel, user)}
-            style={styles.cardContainer}
+      {user ? (
+        hotels.length === 0 ? (
+          <Text
+            style={{ textAlign: "center", fontWeight: "bold", fontSize: 18 }}
           >
-            <View style={styles.leftContainer}>
-              {favorites.length > 0 &&
-                favorites
-                  .filter((favorite) => favorite.HotelId === hotel.id)
-                  .map((favorite, index) => (
-                    <Image
-                      key={index}
-                      style={{ height: 100, borderRadius: 10 }}
-                      source={{ uri: favorite.imageUrl }}
-                    />
-                  ))}
-            </View>
-            <View style={styles.rightContainer}>
-              <Text style={{ fontWeight: '600', fontSize: 20 }}>
-                {hotel.name}
-              </Text>
-              <Text>
-                {hotel.district}, {hotel.city}
-              </Text>
-            </View>
-            <View style={styles.favoriteButtonContainer}>
-              <TouchableOpacity
-                activeOpacity={0.6}
-                style={styles.favoriteButton}
-                onPress={() => removeFromFavorites(hotel.id)}
-              >
-                <Text
-                  style={{ fontSize: 16, color: 'white', fontWeight: '500' }}
-                >
-                  Kaldır
+            Favoriniz bulunmamaktadır.
+          </Text>
+        ) : (
+          hotels.map((hotel, index) => (
+            <TouchableOpacity
+              key={index}
+              activeOpacity={0.6}
+              onPress={() => goToDetailPage(hotel, user)}
+              style={styles.cardContainer}
+            >
+              <View style={styles.leftContainer}>
+                {favorites.length > 0 &&
+                  favorites
+                    .filter((favorite) => favorite.HotelId === hotel.id)
+                    .map((favorite, index) => (
+                      <Image
+                        key={index}
+                        style={{ height: 100, borderRadius: 10 }}
+                        source={{ uri: favorite.imageUrl }}
+                      />
+                    ))}
+              </View>
+              <View style={styles.rightContainer}>
+                <Text style={{ fontWeight: "600", fontSize: 20 }}>
+                  {hotel.name}
                 </Text>
-              </TouchableOpacity>
-            </View>
-          </TouchableOpacity>
-        ))
+                <Text>
+                  {hotel.district}, {hotel.city}
+                </Text>
+              </View>
+              <View style={styles.favoriteButtonContainer}>
+                <TouchableOpacity
+                  activeOpacity={0.6}
+                  style={styles.favoriteButton}
+                  onPress={() => removeFromFavorites(hotel.id)}
+                >
+                  <Text
+                    style={{ fontSize: 16, color: "white", fontWeight: "500" }}
+                  >
+                    Kaldır
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            </TouchableOpacity>
+          ))
+        )
+      ) : (
+        <TouchableOpacity
+          activeOpacity={0.6}
+          style={{ gap: 10 }}
+          onPress={() => navigation.navigate("Profile")}
+        >
+          <Text
+            style={{
+              textAlign: "center",
+              fontWeight: "bold",
+              fontSize: 18,
+            }}
+          >
+            Favorilerinizi görmek için
+          </Text>
+          <Text
+            style={{
+              textAlign: "center",
+              fontWeight: "500",
+              fontSize: 16,
+              textDecorationLine: 'underline'
+            }}
+          >
+            Kaydolun veya Giriş Yapın.
+          </Text>
+        </TouchableOpacity>
       )}
     </ScrollView>
   );
@@ -120,33 +157,33 @@ export default Favorites;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: 'white',
+    backgroundColor: "white",
     padding: 20,
     gap: 10,
   },
   cardContainer: {
-    flexDirection: 'row',
+    flexDirection: "row",
     gap: 5,
-    marginVertical: 8
+    marginVertical: 8,
   },
   leftContainer: {
-    width: '30%',
-    justifyContent: 'center',
+    width: "30%",
+    justifyContent: "center",
   },
   rightContainer: {
-    width: '45%',
+    width: "45%",
     gap: 6,
-    justifyContent: 'center',
+    justifyContent: "center",
     marginLeft: 10,
   },
   favoriteButtonContainer: {
-    width: '20%',
-    alignItems: 'center',
-    justifyContent: 'center',
+    width: "20%",
+    alignItems: "center",
+    justifyContent: "center",
   },
   favoriteButton: {
     padding: 10,
-    backgroundColor: '#cb1d53',
+    backgroundColor: "#cb1d53",
     borderRadius: 10,
   },
 });
