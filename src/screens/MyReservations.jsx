@@ -88,7 +88,7 @@ const MyReservations = ({ navigation }) => {
   };
   return (
     <ScrollView showsVerticalScrollIndicator={false} style={styles.container}>
-      {!hasData && user === null ? (
+      {!hasData && user !== null ? (
         <Text style={{ textAlign: "center", fontWeight: "bold", fontSize: 18 }}>
           Rezervasyonunuz bulunmamaktadır.
         </Text>
