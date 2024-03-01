@@ -60,9 +60,9 @@ export const handleReservation = async (
   }
 
   const personsMapping = {
-    VFdDN3jPGNeocX9sYZsO: "forOnePersons",
-    uQ9bhKIT7CjYJpA1sboT: "forTwoPersons",
-    cHD5du3eMeapMkx8YGyD: "forThreePersons",
+    "VFdDN3jPGNeocX9sYZsO": "forOnePersons",
+    "uQ9bhKIT7CjYJpA1sboT": "forTwoPersons",
+    "cHD5du3eMeapMkx8YGyD": "forThreePersons",
     "9YWnhaMzeDZZNmUJZU6W": "forFourPersons",
   };
   let personsRooms = {
