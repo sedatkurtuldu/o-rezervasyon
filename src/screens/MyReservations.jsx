@@ -61,6 +61,9 @@ const MyReservations = ({ navigation }) => {
     if (hotelsDto.length > 0) {
       setHasData(true);
     }
+    else {
+      setHasData(false);
+    }
   };
 
   useEffect(() => {
@@ -68,7 +71,7 @@ const MyReservations = ({ navigation }) => {
       fetchData();
     });
     return unsubscribe;
-  }, [navigation]);
+  }, [navigation, !hasData]);
 
   const removeFromReservations = async (roomId, user) => {
     if (user) {
