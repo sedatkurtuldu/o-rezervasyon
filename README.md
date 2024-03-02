@@ -53,4 +53,4 @@ Not: proje ilk çalıştırıldığında veya git pull işlemi gerçekleştirild
 - Expo, proje geliştirme sürecini kolaylaştırmak için kullanılan bir platformdur.
 - Proje, Redux ve React Navigation gibi popüler React Native kütüphanelerini içerir.
 
-Detaylı bilgi için projenin kaynak kodunu inceleyebilirsiniz: [O'Rezervasyon GitHub Repository](https://github.com/sedatkurtuldu/o-rezervasyon)
+Detaylı bilgi için projenin kaynak kodunu inceleyebilirsiniz.
