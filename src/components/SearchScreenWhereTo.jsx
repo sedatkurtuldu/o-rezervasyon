@@ -51,7 +51,7 @@ const SearchScreenWhereTo = () => {
   };
 
   const handleSearchTextChange = (text) => {
-    dispatch(setSelectedCity(text.toUpperCase()));
+    dispatch(setSelectedCity(text));
   };
 
   const handleSelectedListItem = (item) => {

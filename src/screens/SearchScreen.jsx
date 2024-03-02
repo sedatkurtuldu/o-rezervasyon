@@ -36,7 +36,7 @@ const SearchScreen = ({ navigation }) => {
     const filteredHotels = hotels.filter(
       (hotel) =>
         hotelIds.some((item) => item === hotel.id) &&
-        hotel.city === selectedCity
+        hotel.city === selectedCity.toUpperCase()
     );
 
     navigation.navigate("HomeScreen", { filteredHotels });
