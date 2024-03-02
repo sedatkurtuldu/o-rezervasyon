@@ -17,7 +17,7 @@ const EditEmailScreen = ({ navigation }) => {
               text: "TAMAM",
               onPress: () => {
                 auth.signOut();
-                navigation.replace("LoginScreen");
+                navigation.navigate("Profile");
               },
             },
           ]

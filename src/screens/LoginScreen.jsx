@@ -1,4 +1,5 @@
 import {
+  Alert,
   StyleSheet,
   Text,
   TextInput,
@@ -30,7 +31,15 @@ const LoginScreen = ({ navigation }) => {
 
       console.error("Giriş yaparken bir hata oluştu: ", error.message);
 
-      alert("Giriş yaparken bir hata oluştu, lütfen tekrar deneyin.");
+      Alert.alert(
+        "Başarısız!",
+        "Giriş yaparken bir hata oluştu, lütfen tekrar deneyin.",
+        [
+          {
+            text: "TAMAM",
+          },
+        ]
+      );
     }
   };
 
