@@ -112,6 +112,10 @@ const SearchScreenPeopleInnerItem = ({
         }
 
         break;
+
+
+
+
       case "1 Kişilik":
         dispatch({
           type: "reservationRoomSelectCounter/setReservationRoomCount",
@@ -197,6 +201,8 @@ const SearchScreenPeopleInnerItem = ({
         } else {
           return reservationPeopleCount.reservationBabyCount;
         }
+
+        
       case "1 Kişilik":
         return roomCount.forOnePerson;
       case "2 Kişilik":

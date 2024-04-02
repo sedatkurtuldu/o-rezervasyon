@@ -1,16 +1,17 @@
-import moment from "moment";
+import moment from 'moment';
 import {
+  getAllRoomTypes,
   getBookedRoomByHotelIdAndRoomTypeId,
   getBookedRoomsByStartDateAndEndDate,
   getRoomTypeByName,
   getRoomTypeMappingByHotelIdAndRoomTypeId,
-} from "../service/api";
-import { Alert } from "react-native";
-import { addDoc, collection, doc } from "firebase/firestore";
-import { db } from "../service/firebase";
-import "moment/locale/tr";
+} from '../service/api';
+import { Alert } from 'react-native';
+import { addDoc, collection, doc } from 'firebase/firestore';
+import { db } from '../service/firebase';
+import 'moment/locale/tr';
 
-moment.locale("tr");
+moment.locale('tr');
 
 export const handleReservation = async (
   hotelId,
@@ -25,18 +26,16 @@ export const handleReservation = async (
     selectedRooms.length === 0 ||
     reservationPeopleCount.reservationAdultCount === 0
   ) {
-    Alert.alert(
-      "Uyarı",
-      "Lütfen oda, tarih ve kişi seçimi yapınız.",
-      [{ text: "TAMAM" }]
-    );
+    Alert.alert('Uyarı', 'Lütfen oda, tarih ve kişi seçimi yapınız.', [
+      { text: 'TAMAM' },
+    ]);
     return;
   }
 
   let updatedRoomTypes = [];
 
   for (const selectedRoom of selectedRooms) {
-    const roomType = await getRoomTypeByName(selectedRoom.split("-")[1].trim());
+    const roomType = await getRoomTypeByName(selectedRoom.split('-')[1].trim());
     updatedRoomTypes.push({ ...roomType, HotelId: hotelId });
   }
 
@@ -59,11 +58,32 @@ export const handleReservation = async (
     }
   }
 
+  const RoomTypes = await getAllRoomTypes();
+  
+  const PersonsMapping = {};
+  RoomTypes.forEach((room) => {
+    PersonsMapping[room.id] = room.RoomName;
+  });
+  
+  let PersonsRooms = {};
+  Object.values(PersonsMapping).forEach((roomName) => {
+    PersonsRooms[roomName] = [];
+  });
+  
+  updatedBookedRooms.forEach((room) => {
+    const personsKey = PersonsMapping[room.RoomTypeId];
+    if (personsKey) {
+      PersonsRooms[personsKey].push(room);
+    }
+  });
+
+  console.log("PersonsRooms: ", PersonsRooms);
+
   const personsMapping = {
-    "VFdDN3jPGNeocX9sYZsO": "forOnePersons",
-    "uQ9bhKIT7CjYJpA1sboT": "forTwoPersons",
-    "cHD5du3eMeapMkx8YGyD": "forThreePersons",
-    "9YWnhaMzeDZZNmUJZU6W": "forFourPersons",
+    VFdDN3jPGNeocX9sYZsO: 'forOnePersons',
+    uQ9bhKIT7CjYJpA1sboT: 'forTwoPersons',
+    cHD5du3eMeapMkx8YGyD: 'forThreePersons',
+    '9YWnhaMzeDZZNmUJZU6W': 'forFourPersons',
   };
   let personsRooms = {
     forOnePersons: [],
@@ -101,21 +121,21 @@ export const handleReservation = async (
               bookedRoom.StartDate,
               bookedRoom.EndDate,
               null,
-              "[]"
+              '[]'
             ) ||
             moment(reservationDateSelect.endDate).isBetween(
               bookedRoom.StartDate,
               bookedRoom.EndDate,
               null,
-              "[]"
+              '[]'
             ))
       );
 
       if (overlappingBookedRoom && roomCount > mapping.RoomCount) {
         Alert.alert(
-          "Uyarı",
-          "Seçtiğiniz oda tipinde istediğiniz tarihlerde boşluğumuz bulunmamaktadır.",
-          [{ text: "Tamam" }]
+          'Uyarı',
+          'Seçtiğiniz oda tipinde istediğiniz tarihlerde boşluğumuz bulunmamaktadır.',
+          [{ text: 'Tamam' }]
         );
         showAlert = false;
       } else {
@@ -127,7 +147,7 @@ export const handleReservation = async (
         );
 
         if (existingReservation.length === 0 && showAlert) {
-          await addDoc(collection(db, "bookedRoomes"), {
+          await addDoc(collection(db, 'bookedRoomes'), {
             AdultCount:
               reservationPeopleCount.reservationAdultCount +
               reservationPeopleCount.reservationChildCount,
@@ -141,13 +161,13 @@ export const handleReservation = async (
           });
           if (index === updatedMapping.length - 1) {
             Alert.alert(
-              "Başarılı",
-              "Rezervasyonunuz başarıyla tamamlanmıştır.",
+              'Başarılı',
+              'Rezervasyonunuz başarıyla tamamlanmıştır.',
               [
                 {
-                  text: "Tamam",
+                  text: 'Tamam',
                   onPress: () => {
-                    navigation.navigate("HomeScreen");
+                    navigation.navigate('HomeScreen');
                   },
                 },
               ]
@@ -157,9 +177,9 @@ export const handleReservation = async (
           if (index === updatedMapping.length - 1) {
             showAlert = false;
             Alert.alert(
-              "Uyarı",
-              "Bu otelde zaten bir rezervasyonunuz bulunmaktadır.",
-              [{ text: "Tamam" }]
+              'Uyarı',
+              'Bu otelde zaten bir rezervasyonunuz bulunmaktadır.',
+              [{ text: 'Tamam' }]
             );
           }
         }
