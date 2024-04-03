@@ -77,25 +77,10 @@ export const handleReservation = async (
     }
   });
 
-  console.log("PersonsRooms: ", PersonsRooms);
-
-  const personsMapping = {
-    VFdDN3jPGNeocX9sYZsO: 'forOnePersons',
-    uQ9bhKIT7CjYJpA1sboT: 'forTwoPersons',
-    cHD5du3eMeapMkx8YGyD: 'forThreePersons',
-    '9YWnhaMzeDZZNmUJZU6W': 'forFourPersons',
-  };
-  let personsRooms = {
-    forOnePersons: [],
-    forTwoPersons: [],
-    forThreePersons: [],
-    forFourPersons: [],
-  };
-
   updatedBookedRooms.forEach((room) => {
-    const personsKey = personsMapping[room.RoomTypeId];
+    const personsKey = PersonsMapping[room.RoomTypeId];
     if (personsKey) {
-      personsRooms[personsKey].push(room);
+      PersonsRooms[personsKey].push(room);
     }
   });
 
@@ -104,9 +89,9 @@ export const handleReservation = async (
   updatedMapping.forEach(async (mapping, index) => {
     if (!showAlert) return;
 
-    const personsKey = personsMapping[mapping.RoomTypeId];
+    const personsKey = PersonsMapping[mapping.RoomTypeId];
     if (personsKey) {
-      const roomCount = personsRooms[personsKey].length;
+      const roomCount = PersonsRooms[personsKey].length;
 
       const overlappingBookedRoom = updatedBookedRooms.find(
         (bookedRoom) =>

@@ -1,8 +1,9 @@
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import React from "react";
+import React, { useEffect } from "react";
 import { EvilIcons } from "@expo/vector-icons";
 import CounterActions from "../enums/CounterEnum";
 import { useDispatch, useSelector } from "react-redux";
+import { setReservationRoom } from "../slices/reservationRoomSlice";
 
 const SearchScreenPeopleInnerItem = ({
   leftUpperText,
@@ -11,16 +12,27 @@ const SearchScreenPeopleInnerItem = ({
   isSearchScreen,
 }) => {
   const count = useSelector((state) => state.peopleCounter || initialState);
-  const roomCount = useSelector(
-    (state) => state.reservationRoomSelectCounter || initialState
-  );
-  const reservationPeopleCount = useSelector(
-    (state) => state.reservationPeople || initialState
-  );
-
+  const reservationPeopleCount = useSelector((state) => state.reservationPeople || initialState);
+  const reservationRoom = useSelector((state) => state.reservationRoom);
   const dispatch = useDispatch();
 
+  useEffect(() => {
+    if(Object.keys(reservationRoom).length === 0){
+      dispatch(setReservationRoom({ [leftUpperText]: 0 }));
+    }
+    else {
+      dispatch(setReservationRoom({ ...reservationRoom }));
+    }
+   
+  }, [leftUpperText]); 
+
   const handleCounter = (action, category) => {
+
+    const currentCount = reservationRoom[leftUpperText] || 0;
+    const newCount = Math.max(currentCount + (action === CounterActions.PLUS ? 1 : -1), 0);
+
+    dispatch(setReservationRoom({ ...reservationRoom, [leftUpperText]: newCount }));
+
     switch (category) {
       case "Yetişkinler":
         if (isSearchScreen) {
@@ -110,71 +122,6 @@ const SearchScreenPeopleInnerItem = ({
             },
           });
         }
-
-        break;
-
-
-
-
-      case "1 Kişilik":
-        dispatch({
-          type: "reservationRoomSelectCounter/setReservationRoomCount",
-          payload: {
-            forOnePerson: Math.max(
-              roomCount.forOnePerson +
-                (action === CounterActions.PLUS ? 1 : -1),
-              0
-            ),
-            forTwoPerson: roomCount.forTwoPerson,
-            forThreePerson: roomCount.forThreePerson,
-            forFourPerson: roomCount.forFourPerson,
-          },
-        });
-        break;
-      case "2 Kişilik":
-        dispatch({
-          type: "reservationRoomSelectCounter/setReservationRoomCount",
-          payload: {
-            forOnePerson: roomCount.forOnePerson,
-            forTwoPerson: Math.max(
-              roomCount.forTwoPerson +
-                (action === CounterActions.PLUS ? 1 : -1),
-              0
-            ),
-            forThreePerson: roomCount.forThreePerson,
-            forFourPerson: roomCount.forFourPerson,
-          },
-        });
-        break;
-      case "3 Kişilik":
-        dispatch({
-          type: "reservationRoomSelectCounter/setReservationRoomCount",
-          payload: {
-            forOnePerson: roomCount.forOnePerson,
-            forTwoPerson: roomCount.forTwoPerson,
-            forThreePerson: Math.max(
-              roomCount.forThreePerson +
-                (action === CounterActions.PLUS ? 1 : -1),
-              0
-            ),
-            forFourPerson: roomCount.forFourPerson,
-          },
-        });
-        break;
-      case "4 Kişilik":
-        dispatch({
-          type: "reservationRoomSelectCounter/setReservationRoomCount",
-          payload: {
-            forOnePerson: roomCount.forOnePerson,
-            forTwoPerson: roomCount.forTwoPerson,
-            forThreePerson: roomCount.forThreePerson,
-            forFourPerson: Math.max(
-              roomCount.forFourPerson +
-                (action === CounterActions.PLUS ? 1 : -1),
-              0
-            ),
-          },
-        });
         break;
       default:
         return;
@@ -201,17 +148,10 @@ const SearchScreenPeopleInnerItem = ({
         } else {
           return reservationPeopleCount.reservationBabyCount;
         }
-
+      case category:
+        return reservationRoom[category];
         
-      case "1 Kişilik":
-        return roomCount.forOnePerson;
-      case "2 Kişilik":
-        return roomCount.forTwoPerson;
-      case "3 Kişilik":
-        return roomCount.forThreePerson;
-      case "4 Kişilik":
-        return roomCount.forFourPerson;
-      default:
+        default:
         return 0;
     }
   };

@@ -7,74 +7,55 @@ import {
   View,
 } from "react-native";
 import React, { useEffect, useState } from "react";
-import { getHotelImages } from "../service/api";
+import { getAllRoomTypes, getHotelImages } from "../service/api";
 import Line from "../components/Line";
 import RezervationBookingPlan from "../components/RezervationBookingPlan";
 import { useDispatch, useSelector } from "react-redux";
 import moment from "moment";
 import { handleReservation } from "../myFunctions/myFunctions";
 import { auth } from "../service/firebase";
-import { setReservationPeopleCount } from "../slices/reservationPeopleSelectSlice";
-import { setReservationRoomCount } from "../slices/reservationRoomSelectSlice";
+import { resetReservationPeopleCount } from "../slices/reservationPeopleSelectSlice";
+import { resetReservationRoom } from "../slices/reservationRoomSlice";
 
 const Booking = ({ navigation, route }) => {
   const data = route.params.data;
   const dispatch = useDispatch();
-  const reservationDateSelect = useSelector(
-    (state) => state.reservationDateSelect
-  );
-  const roomCount = useSelector((state) => state.reservationRoomSelectCounter);
-  const reservationPeopleCount = useSelector(
-    (state) => state.reservationPeople
-  );
+  const reservationDateSelect = useSelector((state) => state.reservationDateSelect);
+  const reservationRoom = useSelector((state) => state.reservationRoom);
+  const reservationPeopleCount = useSelector((state) => state.reservationPeople);
   const [imageUrl, setImageUrl] = useState("");
+  const [roomTypes, setRoomTypes] = useState([]);
 
+  const sortedRoomTypes = roomTypes.sort((a, b) => a.RoomName.localeCompare(b.RoomName));
   const selectedRooms = [];
-  if (roomCount.forOnePerson > 0) {
-    selectedRooms.push(`${roomCount.forOnePerson} - 1 Kişilik`);
-  }
-  if (roomCount.forTwoPerson > 0) {
-    selectedRooms.push(`${roomCount.forTwoPerson} - 2 Kişilik`);
-  }
-  if (roomCount.forThreePerson > 0) {
-    selectedRooms.push(`${roomCount.forThreePerson} - 3 Kişilik`);
-  }
-  if (roomCount.forFourPerson > 0) {
-    selectedRooms.push(`${roomCount.forFourPerson} - 4 Kişilik`);
+  
+  for (const roomType of sortedRoomTypes) {
+    const reservationRoomValue = reservationRoom[roomType.RoomName];
+    if (reservationRoomValue !== undefined && reservationRoom[roomType.RoomName] !== 0) {
+      selectedRooms.push(`${reservationRoomValue} - ${roomType.RoomName}`);
+    }
   }
 
-  const price = data.price * roomCount.forOnePerson;
-  const price2 = data.price2 * roomCount.forTwoPerson;
-  const price3 = data.price3 * roomCount.forThreePerson;
-  const price4 = data.price4 * roomCount.forFourPerson;
+  // const price = data.price * roomCount.forOnePerson;
+  // const price2 = data.price2 * roomCount.forTwoPerson;
+  // const price3 = data.price3 * roomCount.forThreePerson;
+  // const price4 = data.price4 * roomCount.forFourPerson;
 
-  const totalPrice = price + price2 + price3 + price4;
+  // const totalPrice = price + price2 + price3 + price4;
 
-  const night =
-    reservationDateSelect.endDate === ""
-      ? 1
-      : moment(reservationDateSelect.endDate).diff(
-          moment(reservationDateSelect.startDate),
-          "days"
-        );
+  const night = reservationDateSelect.endDate === "" ? 1 : moment(reservationDateSelect.endDate).diff(moment(reservationDateSelect.startDate),"days");
 
-  const payment = (totalPrice === 0 ? data.price : totalPrice) * night;
+  // const payment = (totalPrice === 0 ? data.price : totalPrice) * night;
 
-  const serviceFee = payment * 0.1;
+  // const serviceFee = payment * 0.1;
 
-  const totalPriceWithServiceFee = payment + serviceFee;
+  // const totalPriceWithServiceFee = payment + serviceFee;
 
-  const secondText =
-    selectedRooms.length > 0 ? selectedRooms.join(", ") : "Oda Seçiniz";
+  const secondText = selectedRooms.length > 0 ? selectedRooms.join(", ") : "Oda Seçiniz";
 
-  const totalPeople =
-    reservationPeopleCount.reservationAdultCount +
-    reservationPeopleCount.reservationChildCount;
+  const totalPeople = reservationPeopleCount.reservationAdultCount + reservationPeopleCount.reservationChildCount;
   const totalPeopleText = `${totalPeople} kişi`;
-  const babyText =
-    reservationPeopleCount.reservationBabyCount !== 0
-      ? `, ${reservationPeopleCount.reservationBabyCount} bebek`
-      : "";
+  const babyText = reservationPeopleCount.reservationBabyCount !== 0 ? `, ${reservationPeopleCount.reservationBabyCount} bebek` : "";
 
   useEffect(() => {
     const getImages = async () => {
@@ -84,28 +65,20 @@ const Booking = ({ navigation, route }) => {
       }
     };
 
-    const resetReservationRoomAndPeopleState = () => {
-      dispatch(
-        setReservationRoomCount({
-          forOnePerson: 0,
-          forTwoPerson: 0,
-          forThreePerson: 0,
-          forFourPerson: 0,
-          status: "idle",
-          error: null,
-        })
-      );
+    const getRoomTypes = async () => {
+      const roomTypes = await getAllRoomTypes();
 
-      dispatch(
-        setReservationPeopleCount({
-          reservationAdultCount: 0,
-          reservationChildCount: 0,
-          reservationBabyCount: 0,
-          status: "idle",
-          error: null,
-        })
-      );
+      setRoomTypes(roomTypes);
+    }
+
+    const resetReservationRoomAndPeopleState = () => {
+
+      dispatch(resetReservationRoom());
+
+      dispatch(resetReservationPeopleCount());
     };
+
+    getRoomTypes();
 
     getImages();
 
@@ -176,13 +149,14 @@ const Booking = ({ navigation, route }) => {
         <View style={styles.priceInfoContainer}>
           <View style={styles.priceInfo}>
             <Text>
-              {totalPrice === 0 ? data.price : totalPrice} x {night} gece
+              {/* {totalPrice === 0 ? data.price : totalPrice} x {night} gece */}
+              x {night} gece
             </Text>
-            <Text>{payment} ₺</Text>
+            <Text> payment ₺</Text>
           </View>
           <View style={styles.priceInfo}>
             <Text>O-Rezervasyon hizmet bedeli</Text>
-            <Text>{serviceFee} ₺</Text>
+            <Text> serviceFee ₺</Text>
           </View>
           <View style={styles.line}></View>
           <View style={styles.priceInfo}>
@@ -190,7 +164,7 @@ const Booking = ({ navigation, route }) => {
               Toplam (TRY)
             </Text>
             <Text style={{ fontWeight: "bold", fontSize: 15 }}>
-              {totalPriceWithServiceFee} ₺
+              totalPriceWithServiceFee ₺
             </Text>
           </View>
         </View>

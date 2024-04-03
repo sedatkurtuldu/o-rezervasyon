@@ -17,8 +17,11 @@ const reservationPeopleCounterSlice = createSlice({
       state.reservationChildCount = action.payload.reservationChildCount;
       state.reservationBabyCount = action.payload.reservationBabyCount;
     },
+    resetReservationPeopleCount: () => {
+      return initialState;
+    }
   },
 });
 
 export const reservationPeopleCounterReducer = reservationPeopleCounterSlice.reducer;
-export const { setReservationPeopleCount } = reservationPeopleCounterSlice.actions;
+export const { setReservationPeopleCount, resetReservationPeopleCount } = reservationPeopleCounterSlice.actions;
