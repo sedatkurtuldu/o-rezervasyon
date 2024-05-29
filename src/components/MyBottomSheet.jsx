@@ -6,27 +6,43 @@ import React, {
   useEffect,
   useState,
 } from "react";
-import { View, Text, StyleSheet, Button, FlatList } from "react-native";
+import { View, Text, StyleSheet } from "react-native";
 import {
   BottomSheetFlatList,
   BottomSheetModal,
   BottomSheetModalProvider,
 } from "@gorhom/bottom-sheet";
 import HomeScreenCard from "./HomeScreenCard";
-import { getHotels } from "../service/api";
+import { getHotels, getAllRoomsAndTypesMapping } from "../service/api";
 
 const MyBottomSheet = React.forwardRef((props, ref) => {
   const bottomSheetModalRef = useRef(null);
-
-  const { navigation } = props;
-  const { filteredHotels } = props;
+  const { navigation, filteredHotels } = props;
   const [hotels, setHotels] = useState([]);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const hotelsData = await getHotels();
-        setHotels(hotelsData);
+        const allPrices = await getAllRoomsAndTypesMapping();
+
+        const hotelPriceMap = new Map();
+        allPrices.forEach(price => {
+          const { HotelId, Price } = price;
+          if (!hotelPriceMap.has(HotelId) || hotelPriceMap.get(HotelId).Price > Price) {
+            hotelPriceMap.set(HotelId, price);
+          }
+        });
+
+        const updatedHotelsData = hotelsData.map(hotel => {
+          const priceData = hotelPriceMap.get(hotel.id);
+          if (priceData) {
+            return { ...hotel, Price: priceData.Price };
+          }
+          return hotel;
+        });
+
+        setHotels(updatedHotelsData);
       } catch (error) {
         console.error("Error fetching hotels:", error);
       }
@@ -43,11 +59,9 @@ const MyBottomSheet = React.forwardRef((props, ref) => {
 
   const snapPoints = useMemo(() => ["4%", "50%", "100%"], []);
 
-  const handleSheetChanges = useCallback((index) => {
-    // console.log('handleSheetChanges', index);
-  }, []);
-
-  const renderItem = ({ item }) => <HomeScreenCard data={item} navigation={navigation}/>;
+  const renderItem = ({ item }) => (
+    <HomeScreenCard data={item} navigation={navigation} />
+  );
 
   return (
     <BottomSheetModalProvider>
@@ -56,7 +70,6 @@ const MyBottomSheet = React.forwardRef((props, ref) => {
           ref={bottomSheetModalRef}
           index={2}
           snapPoints={snapPoints}
-          onChange={handleSheetChanges}
           enablePanDownToClose={false}
         >
           <View style={styles.contentContainer}>

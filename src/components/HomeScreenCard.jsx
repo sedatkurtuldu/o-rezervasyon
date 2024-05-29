@@ -37,10 +37,7 @@ const HomeScreenCard = React.memo(({ data, navigation }) => {
       }
     };
     const fetchFavorite = async () => {
-      const favorite = await getFavoriteByHotelIdAndUserId(
-        data.id,
-        auth.currentUser.uid
-      );
+      const favorite = await getFavoriteByHotelIdAndUserId(data.id, auth.currentUser.uid);
       setIsCardFavorite(favorite !== null && favorite.isFavorite);
     };
 
@@ -61,10 +58,7 @@ const HomeScreenCard = React.memo(({ data, navigation }) => {
         }
       };
       const fetchFavorite = async () => {
-        const favorite = await getFavoriteByHotelIdAndUserId(
-          data.id,
-          auth.currentUser.uid
-        );
+        const favorite = await getFavoriteByHotelIdAndUserId(data.id, auth.currentUser.uid);
         setIsCardFavorite(favorite !== null && favorite.isFavorite);
       };
 
@@ -78,10 +72,7 @@ const HomeScreenCard = React.memo(({ data, navigation }) => {
   const handleFavIconPress = useCallback(async () => {
     setIsCardFavorite(!isCardFavorite);
 
-    const favorite = await getFavoriteByHotelIdAndUserId(
-      data.id,
-      auth.currentUser.uid
-    );
+    const favorite = await getFavoriteByHotelIdAndUserId(data.id, auth.currentUser.uid);
     if (favorite !== null) {
       const docRef = doc(db, "favorites", favorite.id);
       await updateDoc(docRef, { isFavorite: !isCardFavorite });
@@ -140,7 +131,7 @@ const HomeScreenCard = React.memo(({ data, navigation }) => {
           </Text>
         </View>
         <View style={styles.priceContainer}>
-          <Text style={styles.price}>{data.price} ₺</Text>
+          <Text style={styles.price}>{data.Price} ₺</Text>
           <Text style={{ color: "#666", fontWeight: "normal", marginLeft: 12 }}>
             gece
           </Text>

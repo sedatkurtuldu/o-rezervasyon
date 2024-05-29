@@ -31,9 +31,7 @@ const SearchScreenRooms = () => {
     const fetchRoomTypes = async () => {
       const roomTypes = await getAllRoomTypes();
 
-      const sortedRoomTypes = roomTypes.sort((a, b) =>
-        a.RoomName.localeCompare(b.RoomName)
-      );
+      const sortedRoomTypes = roomTypes.sort((a, b) => a.RoomName.localeCompare(b.RoomName));
       setRoomTypes(sortedRoomTypes);
     };
 

@@ -13,7 +13,7 @@ import * as Location from "expo-location";
 import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 import MyBottomSheet from "../components/MyBottomSheet";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
-import { getAllHotelImages, getHotels } from "../service/api";
+import { getAllHotelImages, getAllRoomsAndTypesMapping, getHotels } from "../service/api";
 import Carousel from "react-native-reanimated-carousel";
 import { useRoute } from "@react-navigation/native";
 
@@ -51,7 +51,25 @@ const HomeScreen = ({ navigation }) => {
   const fetchHotels = async () => {
     try {
       const data = await getHotels();
-      setHotels(data);
+      const allPrices = await getAllRoomsAndTypesMapping();
+
+        const hotelPriceMap = new Map();
+        allPrices.forEach(price => {
+          const { HotelId, Price } = price;
+          if (!hotelPriceMap.has(HotelId) || hotelPriceMap.get(HotelId).Price > Price) {
+            hotelPriceMap.set(HotelId, price);
+          }
+        });
+
+        const updatedHotelsData = data.map(hotel => {
+          const priceData = hotelPriceMap.get(hotel.id);
+          if (priceData) {
+            return { ...hotel, Price: priceData.Price };
+          }
+          return hotel;
+        });
+
+      setHotels(updatedHotelsData);
     } catch (error) {
       console.error("Error fetching hotels:", error);
     }
@@ -120,7 +138,7 @@ const HomeScreen = ({ navigation }) => {
         />
         <View style={styles.cardContent}>
           <Text style={styles.cardTitle}>{item.name}</Text>
-          <Text style={styles.cardPrice}>{`${item.price.toString()} ₺`}</Text>
+          <Text style={styles.cardPrice}>{`${item.Price} ₺`}</Text>
         </View>
       </TouchableOpacity>
     );
@@ -144,7 +162,7 @@ const HomeScreen = ({ navigation }) => {
                   longitude: hotel.longitude,
                 }}
                 title={hotel.name}
-                description={hotel.price.toString()}
+                description={hotel.Price.toString()}
               />
             ))}
           </MapView>

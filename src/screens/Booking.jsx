@@ -26,10 +26,9 @@ const Booking = ({ navigation, route }) => {
   const [imageUrl, setImageUrl] = useState("");
   const [roomTypes, setRoomTypes] = useState([]);
 
-  const sortedRoomTypes = roomTypes.sort((a, b) => a.RoomName.localeCompare(b.RoomName));
   const selectedRooms = [];
   
-  for (const roomType of sortedRoomTypes) {
+  for (const roomType of roomTypes) {
     const reservationRoomValue = reservationRoom[roomType.RoomName];
     if (reservationRoomValue !== undefined && reservationRoom[roomType.RoomName] !== 0) {
       selectedRooms.push(`${reservationRoomValue} - ${roomType.RoomName}`);
@@ -68,7 +67,7 @@ const Booking = ({ navigation, route }) => {
     const getRoomTypes = async () => {
       const roomTypes = await getAllRoomTypes();
 
-      setRoomTypes(roomTypes);
+      setRoomTypes(roomTypes.sort((a, b) => a.RoomName.localeCompare(b.RoomName)));
     }
 
     const resetReservationRoomAndPeopleState = () => {

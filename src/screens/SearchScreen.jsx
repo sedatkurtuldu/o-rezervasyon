@@ -33,11 +33,25 @@ const SearchScreen = ({ navigation }) => {
       )
     );
 
+    const hotelPriceMap = new Map();
+    mapping.forEach(price => {
+      const { HotelId, Price } = price;
+      if (!hotelPriceMap.has(HotelId) || hotelPriceMap.get(HotelId).Price > Price) {
+        hotelPriceMap.set(HotelId, price);
+      }
+    });
+
     const filteredHotels = hotels.filter(
       (hotel) =>
         hotelIds.some((item) => item === hotel.id) &&
         hotel.city === selectedCity.toUpperCase()
-    );
+    ).map(hotel => {
+      const priceData = hotelPriceMap.get(hotel.id);
+      if (priceData) {
+        return { ...hotel, Price: priceData.Price };
+      }
+      return hotel;
+    });
 
     navigation.navigate("HomeScreen", { filteredHotels });
   };

@@ -311,7 +311,7 @@ const HotelDetailPage = ({ navigation, route }) => {
                 longitude: data.longitude,
               }}
               title={data.name}
-              description={data.price.toString()}
+              description={data.Price.toString()}
             />
           </MapView>
           <TouchableOpacity
@@ -326,7 +326,7 @@ const HotelDetailPage = ({ navigation, route }) => {
       <View style={styles.reservationContainer}>
         <View style={styles.reservationTextContainer}>
           <View style={styles.reservationPriceContainer}>
-            <Text style={styles.priceText}>{data.price} ₺</Text>
+            <Text style={styles.priceText}>{data.Price} ₺</Text>
             <Text style={{ color: "#595959" }}>gece</Text>
           </View>
           <View

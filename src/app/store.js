@@ -6,7 +6,6 @@ import userSlice from "../slices/userSlice";
 import isEditUpdated from "../slices/isEditUpdated";
 import { reservationDateSelectSliceReducer } from "../slices/reservationDateSelectSlice";
 import { calendarDateRangeIsFirstReducer } from "../slices/calendarDateRangeIsFirstSlice";
-import { reservationRoomSelectReducer } from "../slices/reservationRoomSelectSlice";
 import { reservationPeopleCounterReducer } from "../slices/reservationPeopleSelectSlice";
 import { searchScreenRoomsReducer } from "../slices/searchScreenRoomsSlice";
 import { reservationRoomReducer } from "../slices/reservationRoomSlice";
@@ -20,7 +19,6 @@ const store = configureStore({
         isUpdated: isEditUpdated,
         reservationDateSelect: reservationDateSelectSliceReducer,
         calendarDateRangeIsFirst: calendarDateRangeIsFirstReducer,
-        reservationRoomSelectCounter: reservationRoomSelectReducer,
         reservationPeople: reservationPeopleCounterReducer,
         searchScreenRooms: searchScreenRoomsReducer,
         reservationRoom: reservationRoomReducer

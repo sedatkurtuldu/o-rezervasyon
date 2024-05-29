@@ -17,11 +17,7 @@ export const getHotels = async () => {
       district: hotel.district,
       latitude: hotel.latitude,
       longitude: hotel.longitude,
-      description: hotel.description,
-      price: hotel.price,
-      price2: hotel.price2,
-      price3: hotel.price3,
-      price4: hotel.price4
+      description: hotel.description
     };
   });
   return getHotels;
@@ -103,6 +99,7 @@ export const getRoomsAndTypesMapping = async (id) => {
       HotelId: roomsAndTypes.HotelId,
       RoomTypeId: roomsAndTypes.RoomTypeId,
       RoomCount: roomsAndTypes.RoomCount,
+      Price: roomsAndTypes.Price,
       Status: roomsAndTypes.Status,
     };
   });
@@ -121,6 +118,7 @@ export const getAllRoomsAndTypesMapping = async () => {
       HotelId: roomsAndTypes.HotelId,
       RoomTypeId: roomsAndTypes.RoomTypeId,
       RoomCount: roomsAndTypes.RoomCount,
+      Price: roomsAndTypes.Price,
       Status: roomsAndTypes.Status,
     };
   });

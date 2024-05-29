@@ -9,9 +9,7 @@ const searchScreenRoomsSlice = createSlice({
     setSearchScreenRooms: (state, action) => {
       const payload = action.payload;
       if (payload !== null) {
-        const existingRoom = state.find(
-          (room) => room.roomTypeId === payload.roomTypeId
-        );
+        const existingRoom = state.find((room) => room.roomTypeId === payload.roomTypeId);
         if (existingRoom) {
           existingRoom.isChecked = payload.isChecked;
         } else {
