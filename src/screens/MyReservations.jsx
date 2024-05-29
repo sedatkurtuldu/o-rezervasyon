@@ -4,6 +4,7 @@ import { TouchableOpacity } from "react-native-gesture-handler";
 import {
   getAllHotelImages,
   getAllRoomTypes,
+  getAllRoomsAndTypesMapping,
   getBookedRoom,
   getBookedRoomsByHotelIdAndUserId,
   getHotels,
@@ -22,9 +23,27 @@ const MyReservations = ({ navigation }) => {
   });
 
   const fetchData = async () => {
-    const hotels = await getHotels();
     const images = await getAllHotelImages();
     const roomTypes = await getAllRoomTypes();
+
+    const data = await getHotels();
+      const allPrices = await getAllRoomsAndTypesMapping();
+
+        const hotelPriceMap = new Map();
+        allPrices.forEach(price => {
+          const { HotelId, Price } = price;
+          if (!hotelPriceMap.has(HotelId) || hotelPriceMap.get(HotelId).Price > Price) {
+            hotelPriceMap.set(HotelId, price);
+          }
+        });
+
+        const hotels = data.map(hotel => {
+          const priceData = hotelPriceMap.get(hotel.id);
+          if (priceData) {
+            return { ...hotel, Price: priceData.Price };
+          }
+          return hotel;
+        });
 
     const hotelIds = Array.from(new Set(hotels.map((hotel) => hotel.id)));
 
@@ -100,7 +119,7 @@ const MyReservations = ({ navigation }) => {
           <TouchableOpacity
             key={index}
             activeOpacity={0.6}
-            onPress={() => goToDetailPage(room.hotel, user)}
+            onPress={() => goToDetailPage(room.hotel)}
             style={styles.cardContainer}
           >
             <View style={styles.leftContainer}>
