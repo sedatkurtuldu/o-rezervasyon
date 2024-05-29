@@ -7,7 +7,7 @@ import {
   View,
 } from "react-native";
 import React, { useEffect, useState } from "react";
-import { getAllRoomTypes, getHotelImages } from "../service/api";
+import { getAllRoomTypes, getHotelImages, getRoomsAndTypesMapping } from "../service/api";
 import Line from "../components/Line";
 import RezervationBookingPlan from "../components/RezervationBookingPlan";
 import { useDispatch, useSelector } from "react-redux";
@@ -25,6 +25,7 @@ const Booking = ({ navigation, route }) => {
   const reservationPeopleCount = useSelector((state) => state.reservationPeople);
   const [imageUrl, setImageUrl] = useState("");
   const [roomTypes, setRoomTypes] = useState([]);
+  const [totalPrice, setTotalPrice] = useState(0);
 
   const selectedRooms = [];
   
@@ -35,20 +36,13 @@ const Booking = ({ navigation, route }) => {
     }
   }
 
-  // const price = data.price * roomCount.forOnePerson;
-  // const price2 = data.price2 * roomCount.forTwoPerson;
-  // const price3 = data.price3 * roomCount.forThreePerson;
-  // const price4 = data.price4 * roomCount.forFourPerson;
-
-  // const totalPrice = price + price2 + price3 + price4;
-
   const night = reservationDateSelect.endDate === "" ? 1 : moment(reservationDateSelect.endDate).diff(moment(reservationDateSelect.startDate),"days");
 
-  // const payment = (totalPrice === 0 ? data.price : totalPrice) * night;
+  const payment = totalPrice * night;
 
-  // const serviceFee = payment * 0.1;
+  const serviceFee = payment * 0.1;
 
-  // const totalPriceWithServiceFee = payment + serviceFee;
+  const totalPriceWithServiceFee = payment + serviceFee;
 
   const secondText = selectedRooms.length > 0 ? selectedRooms.join(", ") : "Oda Seçiniz";
 
@@ -83,6 +77,39 @@ const Booking = ({ navigation, route }) => {
 
     resetReservationRoomAndPeopleState();
   }, []);
+
+  useEffect(() => {
+    const roomTypesMapping = async () => {
+      const mapping = await getRoomsAndTypesMapping(data.id);
+      
+      const roomTypes = await getAllRoomTypes();
+      
+      const mappedRoomTypes = mapping.map(item => {
+        const roomType = roomTypes.find(x => x.id === item.RoomTypeId);
+        return {
+          RoomName: roomType.RoomName,
+          Price: item.Price
+        };
+      });
+
+      const getRoomCount = (roomName) => {
+        return reservationRoom[roomName] !== undefined ? reservationRoom[roomName] : 0;
+      };
+
+      const finalRoomData = mappedRoomTypes.map(item => ({
+        RoomName: item.RoomName,
+        Price: item.Price,
+        RoomCount: getRoomCount(item.RoomName)
+      }));
+      
+      const totalPrice = finalRoomData.reduce((acc, item) => acc + (item.Price * item.RoomCount), 0);
+  
+      setTotalPrice(totalPrice);
+
+    }
+    roomTypesMapping();
+  }, [reservationRoom])
+  
 
   return (
     <ScrollView showsVerticalScrollIndicator={false} style={styles.container}>
@@ -148,14 +175,13 @@ const Booking = ({ navigation, route }) => {
         <View style={styles.priceInfoContainer}>
           <View style={styles.priceInfo}>
             <Text>
-              {/* {totalPrice === 0 ? data.price : totalPrice} x {night} gece */}
-              x {night} gece
+              {totalPrice} x {night} gece
             </Text>
-            <Text> payment ₺</Text>
+            <Text> {payment} ₺</Text>
           </View>
           <View style={styles.priceInfo}>
             <Text>O-Rezervasyon hizmet bedeli</Text>
-            <Text> serviceFee ₺</Text>
+            <Text>{serviceFee} ₺</Text>
           </View>
           <View style={styles.line}></View>
           <View style={styles.priceInfo}>
@@ -163,7 +189,7 @@ const Booking = ({ navigation, route }) => {
               Toplam (TRY)
             </Text>
             <Text style={{ fontWeight: "bold", fontSize: 15 }}>
-              totalPriceWithServiceFee ₺
+              {totalPriceWithServiceFee} ₺
             </Text>
           </View>
         </View>
